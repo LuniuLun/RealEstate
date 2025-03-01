@@ -1,0 +1,67 @@
+package apidemo.models;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "Tokens")
+public class Token {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "token_id")
+  private Integer tokenId;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
+
+  @Column(nullable = false, unique = true, length = 255)
+  private String token;
+
+  @Column(name = "expires_at", nullable = false)
+  private LocalDateTime expiresAt;
+
+  @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+  private LocalDateTime createdAt;
+
+  public Integer getTokenId() {
+    return tokenId;
+  }
+
+  public void setTokenId(Integer tokenId) {
+    this.tokenId = tokenId;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+  public LocalDateTime getExpiresAt() {
+    return expiresAt;
+  }
+
+  public void setExpiresAt(LocalDateTime expiresAt) {
+    this.expiresAt = expiresAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+}
