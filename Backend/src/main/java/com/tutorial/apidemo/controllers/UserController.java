@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -20,9 +21,16 @@ public class UserController {
   }
 
   @GetMapping
-  public ResponseEntity<List<User>> getAllUsers() {
-    List<User> users = userService.getAllUsers();
-    return users.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(users);
+  public List<User> getAllUsers(@RequestParam(required = false) Integer limit,
+      @RequestParam(required = false) Integer page,
+      @RequestParam(required = false) String sortBy,
+      @RequestParam(required = false) String typeOfSort,
+      @RequestParam Map<String, String> filters) {
+    filters.remove("page");
+    filters.remove("limit");
+    filters.remove("sortBy");
+    filters.remove("typeOfSort");
+    return userService.getAllUsers(limit, page, sortBy, typeOfSort, filters);
   }
 
   @GetMapping("/{id}")
@@ -58,5 +66,10 @@ public class UserController {
     } catch (RuntimeException e) {
       return ResponseEntity.notFound().build();
     }
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+    return ResponseEntity.badRequest().body(ex.getMessage());
   }
 }
