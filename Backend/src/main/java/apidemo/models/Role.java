@@ -1,4 +1,4 @@
-package com.tutorial.apidemo.models;
+package apidemo.models;
 
 import jakarta.persistence.*;
 

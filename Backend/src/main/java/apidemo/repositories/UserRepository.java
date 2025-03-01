@@ -1,14 +1,17 @@
-package com.tutorial.apidemo.repositories;
+package apidemo.repositories;
 
-import com.tutorial.apidemo.models.User;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import apidemo.models.User;
+
 public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
-  User findByUsername(String username);
+  Optional<User> findByUsername(String username);
 
-  User findByEmail(String email);
+  Optional<User> findByEmail(String email);
 
-  User findByPhone(String phone);
+  Optional<User> findByPhone(String phone);
 }

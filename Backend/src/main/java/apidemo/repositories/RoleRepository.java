@@ -1,7 +1,8 @@
-package com.tutorial.apidemo.repositories;
+package apidemo.repositories;
 
-import com.tutorial.apidemo.models.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import apidemo.models.Role;
 
 public interface RoleRepository extends JpaRepository<Role, Integer> {
 }
