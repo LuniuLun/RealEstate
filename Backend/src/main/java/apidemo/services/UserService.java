@@ -1,9 +1,5 @@
-package com.tutorial.apidemo.services;
+package apidemo.services;
 
-import com.tutorial.apidemo.models.Role;
-import com.tutorial.apidemo.models.User;
-import com.tutorial.apidemo.repositories.RoleRepository;
-import com.tutorial.apidemo.repositories.UserRepository;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -13,11 +9,19 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
+import apidemo.models.Role;
+import apidemo.models.Token;
+import apidemo.models.User;
+import apidemo.repositories.RoleRepository;
+import apidemo.repositories.TokenRepository;
+import apidemo.repositories.UserRepository;
+
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,11 +29,13 @@ public class UserService {
 
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
+  private final TokenService tokenService;
 
   @Autowired
-  public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+  public UserService(UserRepository userRepository, RoleRepository roleRepository, TokenService tokenService) {
     this.roleRepository = roleRepository;
     this.userRepository = userRepository;
+    this.tokenService = tokenService;
   }
 
   public List<User> getAllUsers(Integer limit, Integer page, String sortBy, String typeOfSort,
@@ -105,4 +111,27 @@ public class UserService {
     }
     userRepository.deleteById(userId);
   }
+
+  public Optional<Token> login(String username, String password) {
+    try {
+      Optional<User> user = userRepository.findByUsername(username);
+      if (user.isPresent() && user.get().getPassword().equals(password)) {
+        User currentUser = user.get();
+
+        // Check and get valid token
+        Optional<Token> validToken = tokenService.getValidTokenForUser(currentUser.getUserId());
+        if (validToken.isPresent()) {
+          return validToken;
+        }
+
+        // Create new token if there is no valid token
+        Token newToken = tokenService.createTokenForUser(currentUser);
+        return Optional.of(newToken);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException("An error occurred during login: " + e.getMessage(), e);
+    }
+    return Optional.empty();
+  }
+
 }
