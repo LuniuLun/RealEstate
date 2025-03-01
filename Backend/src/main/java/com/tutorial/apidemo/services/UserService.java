@@ -4,12 +4,21 @@ import com.tutorial.apidemo.models.Role;
 import com.tutorial.apidemo.models.User;
 import com.tutorial.apidemo.repositories.RoleRepository;
 import com.tutorial.apidemo.repositories.UserRepository;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -23,8 +32,29 @@ public class UserService {
     this.userRepository = userRepository;
   }
 
-  public List<User> getAllUsers() {
-    return userRepository.findAll();
+  public List<User> getAllUsers(Integer limit, Integer page, String sortBy, String typeOfSort,
+      Map<String, String> filters) {
+    if (page != null && page < 1) {
+      throw new IllegalArgumentException("Page index must be greater than zero");
+    }
+
+    Sort.Direction direction = ("desc".equalsIgnoreCase(typeOfSort)) ? Sort.Direction.DESC : Sort.Direction.ASC;
+    Pageable pageRequest = (limit != null && page != null)
+        ? PageRequest.of(page - 1, limit, Sort.by(direction, sortBy))
+        : PageRequest.of(0, 10, Sort.by(direction, sortBy));
+
+    Specification<User> spec = (root, query, criteriaBuilder) -> {
+      Predicate predicate = criteriaBuilder.conjunction();
+      for (Map.Entry<String, String> entry : filters.entrySet()) {
+        if (entry.getValue() != null && !entry.getValue().isEmpty()) {
+          predicate = criteriaBuilder.and(predicate,
+              criteriaBuilder.like(root.get(entry.getKey()).as(String.class), "%" + entry.getValue() + "%"));
+        }
+      }
+      return predicate;
+    };
+
+    return userRepository.findAll(spec, pageRequest).getContent();
   }
 
   public Optional<User> getUserById(Integer userId) {
