@@ -7,22 +7,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
 import apidemo.models.Role;
 import apidemo.models.Token;
 import apidemo.models.User;
 import apidemo.repositories.RoleRepository;
-import apidemo.repositories.TokenRepository;
 import apidemo.repositories.UserRepository;
 
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
