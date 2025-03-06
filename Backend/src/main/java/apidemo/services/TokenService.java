@@ -1,6 +1,5 @@
 package apidemo.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import apidemo.models.Token;
@@ -16,7 +15,6 @@ public class TokenService {
 
   private final TokenRepository tokenRepository;
 
-  @Autowired
   public TokenService(TokenRepository tokenRepository) {
     this.tokenRepository = tokenRepository;
   }

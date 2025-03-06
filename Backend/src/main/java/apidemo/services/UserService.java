@@ -1,7 +1,6 @@
 package apidemo.services;
 
 import jakarta.persistence.criteria.Predicate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,7 +25,6 @@ public class UserService {
   private final RoleRepository roleRepository;
   private final TokenService tokenService;
 
-  @Autowired
   public UserService(UserRepository userRepository, RoleRepository roleRepository, TokenService tokenService) {
     this.roleRepository = roleRepository;
     this.userRepository = userRepository;
@@ -39,10 +37,13 @@ public class UserService {
       throw new IllegalArgumentException("Page index must be greater than zero");
     }
 
-    Sort.Direction direction = ("desc".equalsIgnoreCase(typeOfSort)) ? Sort.Direction.DESC : Sort.Direction.ASC;
+    // Provide a default sort field if sortBy is null or empty
+    String sortField = (sortBy == null || sortBy.isEmpty()) ? "userId" : sortBy;
+
+    Sort.Direction direction = ("asc".equalsIgnoreCase(typeOfSort)) ? Sort.Direction.ASC : Sort.Direction.DESC;
     Pageable pageRequest = (limit != null && page != null)
-        ? PageRequest.of(page - 1, limit, Sort.by(direction, sortBy))
-        : PageRequest.of(0, 10, Sort.by(direction, sortBy));
+        ? PageRequest.of(page - 1, limit, Sort.by(direction, sortField))
+        : PageRequest.of(0, 10, Sort.by(direction, sortField));
 
     Specification<User> spec = (root, query, criteriaBuilder) -> {
       Predicate predicate = criteriaBuilder.conjunction();
