@@ -1,6 +1,5 @@
 package apidemo.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,18 +19,18 @@ public class UserController {
   private final UserService userService;
   private final TokenService tokenService;
 
-  @Autowired
   public UserController(UserService userService, TokenService tokenService) {
     this.userService = userService;
     this.tokenService = tokenService;
   }
 
   @GetMapping
-  public List<User> getAllUsers(@RequestParam(required = false) Integer limit,
+  public List<User> getAllUsers(
+      @RequestParam(required = false) Integer limit,
       @RequestParam(required = false) Integer page,
       @RequestParam(required = false) String sortBy,
       @RequestParam(required = false) String typeOfSort,
-      @RequestParam Map<String, String> filters) {
+      @RequestParam(required = false) Map<String, String> filters) {
     filters.remove("page");
     filters.remove("limit");
     filters.remove("sortBy");
