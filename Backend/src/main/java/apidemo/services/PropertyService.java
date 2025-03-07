@@ -1,16 +1,18 @@
 package apidemo.services;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import apidemo.models.Property;
 import apidemo.repositories.PropertyRepository;
+import apidemo.utils.Filter;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,15 +25,22 @@ public class PropertyService {
   private final PropertyLegalDocumentService propertyLegalDocumentService;
   private final UserService userService;
   private final PropertyMLService propertyMLService;
+  private final LandService landService;
+  private final HouseService houseService;
+  private final Filter filter = new Filter();
 
   public PropertyService(PropertyRepository propertyRepository,
       CategoryService categoryService,
       PropertyLegalDocumentService propertyLegalDocumentService,
-      UserService userService) {
+      UserService userService,
+      LandService landService,
+      HouseService houseService) {
     this.propertyRepository = propertyRepository;
     this.categoryService = categoryService;
     this.propertyLegalDocumentService = propertyLegalDocumentService;
     this.userService = userService;
+    this.landService = landService;
+    this.houseService = houseService;
     this.propertyMLService = new PropertyMLService();
   }
 
@@ -41,65 +50,63 @@ public class PropertyService {
 
   public List<Property> getAllProperties(Integer limit, Integer page, String sortBy, String typeOfSort,
       Map<String, String> filters) {
+    // Validate page number
     if (page != null && page < 1) {
       throw new IllegalArgumentException("Page index must be greater than zero");
     }
 
-    // Determine sort direction, and use a default field if none is provided
-    Sort.Direction direction = ("asc".equalsIgnoreCase(typeOfSort)) ? Sort.Direction.ASC : Sort.Direction.DESC;
-    String sortField = (sortBy == null || sortBy.isEmpty()) ? "propertyId" : sortBy;
-    Pageable pageRequest = (limit != null && page != null)
-        ? PageRequest.of(page - 1, limit, Sort.by(direction, sortField))
-        : PageRequest.of(0, 10, Sort.by(direction, sortField));
+    // Configure pagination and sorting
+    Pageable pageRequest = filter.createPageRequest(limit, page, sortBy, typeOfSort);
 
-    Specification<Property> spec = (root, query, criteriaBuilder) -> {
-      // Initialize the default predicate
-      Predicate predicate = criteriaBuilder.conjunction();
+    // Build specification with filters
+    Specification<Property> spec = buildPropertySpecification(filters);
 
-      // Apply string filters for fields other than price and area
-      for (Map.Entry<String, String> entry : filters.entrySet()) {
-        String key = entry.getKey();
-        String value = entry.getValue();
+    // Execute query
+    return propertyRepository.findAll(spec, pageRequest).getContent();
+  }
+
+  /**
+   * Builds a specification for Property filtering
+   */
+  private Specification<Property> buildPropertySpecification(Map<String, String> filters) {
+    return (root, query, criteriaBuilder) -> {
+      List<Predicate> predicates = new ArrayList<>();
+
+      // Apply text filters
+      filters.forEach((key, value) -> {
         if (value != null && !value.isEmpty() &&
             !key.equals("minPrice") && !key.equals("maxPrice") &&
             !key.equals("minArea") && !key.equals("maxArea")) {
-          predicate = criteriaBuilder.and(predicate,
-              criteriaBuilder.like(root.get(key).as(String.class), "%" + value + "%"));
+          predicates.add(criteriaBuilder.like(root.get(key).as(String.class), "%" + value + "%"));
         }
-      }
+      });
 
-      // Filter by price range
-      String minPriceStr = filters.get("minPrice");
-      String maxPriceStr = filters.get("maxPrice");
-      if (minPriceStr != null && !minPriceStr.isEmpty() && maxPriceStr != null && !maxPriceStr.isEmpty()) {
-        try {
-          double minPrice = Double.parseDouble(minPriceStr);
-          double maxPrice = Double.parseDouble(maxPriceStr);
-          predicate = criteriaBuilder.and(predicate,
-              criteriaBuilder.between(root.get("price"), minPrice, maxPrice));
-        } catch (NumberFormatException e) {
-          throw new IllegalArgumentException("Invalid price range values");
-        }
-      }
+      // Apply range filters
+      applyRangeFilter(predicates, filters, "price", "minPrice", "maxPrice", criteriaBuilder, root);
+      applyRangeFilter(predicates, filters, "area", "minArea", "maxArea", criteriaBuilder, root);
 
-      // Filter by area range
-      String minAreaStr = filters.get("minArea");
-      String maxAreaStr = filters.get("maxArea");
-      if (minAreaStr != null && !minAreaStr.isEmpty() && maxAreaStr != null && !maxAreaStr.isEmpty()) {
-        try {
-          double minArea = Double.parseDouble(minAreaStr);
-          double maxArea = Double.parseDouble(maxAreaStr);
-          predicate = criteriaBuilder.and(predicate,
-              criteriaBuilder.between(root.get("area"), minArea, maxArea));
-        } catch (NumberFormatException e) {
-          throw new IllegalArgumentException("Invalid area range values");
-        }
-      }
-
-      return predicate;
+      return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     };
+  }
 
-    return propertyRepository.findAll(spec, pageRequest).getContent();
+  /**
+   * Applies a numeric range filter for a given field
+   */
+  private void applyRangeFilter(List<Predicate> predicates, Map<String, String> filters,
+      String fieldName, String minKey, String maxKey,
+      CriteriaBuilder criteriaBuilder, Root<Property> root) {
+    String minValue = filters.get(minKey);
+    String maxValue = filters.get(maxKey);
+
+    if (minValue != null && !minValue.isEmpty() && maxValue != null && !maxValue.isEmpty()) {
+      try {
+        double min = Double.parseDouble(minValue);
+        double max = Double.parseDouble(maxValue);
+        predicates.add(criteriaBuilder.between(root.get(fieldName), min, max));
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("Invalid " + fieldName + " range values");
+      }
+    }
   }
 
   public List<Property> getPropertiesById(int userId) {
@@ -128,7 +135,30 @@ public class PropertyService {
       property.setStatus(Property.PropertyStatus.PENDING);
     }
 
-    return propertyRepository.save(property);
+    // Delegate land characteristics handling
+    if (property.getLand() != null) {
+      property.setLand(landService.prepareLand(property.getLand(), property));
+    }
+
+    // Delegate house characteristics handling
+    if (property.getHouse() != null) {
+      property.setHouse(houseService.prepareHouse(property.getHouse(), property));
+    }
+
+    // Save property
+    Property savedProperty = propertyRepository.save(property);
+
+    // Process land characteristics after saving
+    if (property.getLand() != null) {
+      landService.processLandCharacteristics(savedProperty.getLand());
+    }
+
+    // Process house characteristics after saving
+    if (property.getHouse() != null) {
+      houseService.processHouseCharacteristics(savedProperty.getHouse());
+    }
+
+    return savedProperty;
   }
 
   @Transactional
