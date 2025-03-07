@@ -1,9 +1,7 @@
 package apidemo.services;
 
 import jakarta.persistence.criteria.Predicate;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +10,7 @@ import apidemo.models.Token;
 import apidemo.models.User;
 import apidemo.repositories.RoleRepository;
 import apidemo.repositories.UserRepository;
+import apidemo.utils.Filter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +23,7 @@ public class UserService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final TokenService tokenService;
+  private final Filter filter = new Filter();
 
   public UserService(UserRepository userRepository, RoleRepository roleRepository, TokenService tokenService) {
     this.roleRepository = roleRepository;
@@ -33,17 +33,8 @@ public class UserService {
 
   public List<User> getAllUsers(Integer limit, Integer page, String sortBy, String typeOfSort,
       Map<String, String> filters) {
-    if (page != null && page < 1) {
-      throw new IllegalArgumentException("Page index must be greater than zero");
-    }
-
-    // Provide a default sort field if sortBy is null or empty
-    String sortField = (sortBy == null || sortBy.isEmpty()) ? "userId" : sortBy;
-
-    Sort.Direction direction = ("asc".equalsIgnoreCase(typeOfSort)) ? Sort.Direction.ASC : Sort.Direction.DESC;
-    Pageable pageRequest = (limit != null && page != null)
-        ? PageRequest.of(page - 1, limit, Sort.by(direction, sortField))
-        : PageRequest.of(0, 10, Sort.by(direction, sortField));
+    // Configure pagination and sorting
+    Pageable pageRequest = filter.createPageRequest(limit, page, sortBy, typeOfSort);
 
     Specification<User> spec = (root, query, criteriaBuilder) -> {
       Predicate predicate = criteriaBuilder.conjunction();
