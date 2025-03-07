@@ -64,13 +64,13 @@ public class UserService {
   }
 
   public User createUser(User user) {
-    if (userRepository.findByUsername(user.getUsername()) != null) {
+    if (userRepository.findByUsername(user.getUsername()).isPresent()) {
       throw new RuntimeException("Username " + user.getUsername() + " is already taken.");
     }
-    if (userRepository.findByEmail(user.getEmail()) != null) {
+    if (userRepository.findByEmail(user.getEmail()).isPresent()) {
       throw new RuntimeException("Email " + user.getEmail() + " is already taken.");
     }
-    if (userRepository.findByPhone(user.getPhone()) != null) {
+    if (userRepository.findByPhone(user.getPhone()).isPresent()) {
       throw new RuntimeException("Phone " + user.getPhone() + " is already taken.");
     }
     Role role = roleRepository.findById(user.getRole().getId())
@@ -115,7 +115,7 @@ public class UserService {
         User currentUser = user.get();
 
         // Check and get valid token
-        Optional<Token> validToken = tokenService.getValidTokenForUser(currentUser.getUserId());
+        Optional<Token> validToken = tokenService.getValidTokenForUser(currentUser.getId());
         if (validToken.isPresent()) {
           return validToken;
         }
