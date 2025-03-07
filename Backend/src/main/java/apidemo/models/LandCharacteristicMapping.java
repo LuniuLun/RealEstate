@@ -36,4 +36,16 @@ public class LandCharacteristicMapping {
   public Land getLand() {
     return land;
   }
+
+  public void setLand(Land land) {
+    this.land = land;
+  }
+
+  public LandCharacteristic getLandCharacteristic() {
+    return landCharacteristic;
+  }
+
+  public void setLandCharacteristic(LandCharacteristic landCharacteristic) {
+    this.landCharacteristic = landCharacteristic;
+  }
 }
