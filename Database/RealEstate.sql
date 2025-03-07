@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 03, 2025 lúc 05:53 AM
+-- Thời gian đã tạo: Th3 07, 2025 lúc 05:33 AM
 -- Phiên bản máy phục vụ: 10.4.28-MariaDB
 -- Phiên bản PHP: 8.1.17
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `real_estate`
 --
-CREATE DATABASE IF NOT EXISTS `real_estate` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `real_estate`;
 
 -- --------------------------------------------------------
 
@@ -34,6 +32,14 @@ CREATE TABLE `categories` (
   `name` enum('LAND','HOUSE') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `categories`
+--
+
+INSERT INTO `categories` (`category_id`, `name`) VALUES
+(1, 'LAND'),
+(2, 'HOUSE');
+
 -- --------------------------------------------------------
 
 --
@@ -45,6 +51,16 @@ CREATE TABLE `favourite_properties` (
   `user_id` int(11) NOT NULL,
   `property_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `favourite_properties`
+--
+
+INSERT INTO `favourite_properties` (`favourite_property_id`, `user_id`, `property_id`) VALUES
+(1, 1, 4),
+(2, 1, 5),
+(3, 2, 1),
+(4, 3, 6);
 
 -- --------------------------------------------------------
 
@@ -76,10 +92,21 @@ INSERT INTO `furnished_statuses` (`furnished_status_id`, `name`) VALUES
 CREATE TABLE `houses` (
   `house_id` int(11) NOT NULL,
   `property_id` int(11) NOT NULL,
+  `floors` int(11) NOT NULL,
   `bedrooms` int(11) NOT NULL,
   `toilets` int(11) NOT NULL,
   `furnished_status_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `houses`
+--
+
+INSERT INTO `houses` (`house_id`, `property_id`, `floors`, `bedrooms`, `toilets`, `furnished_status_id`) VALUES
+(1, 4, 3, 5, 5, 2),
+(2, 5, 3, 3, 3, 3),
+(3, 6, 1, 2, 2, 1),
+(4, 14, 2, 3, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -117,6 +144,18 @@ CREATE TABLE `house_characteristic_mappings` (
   `house_characteristic_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `house_characteristic_mappings`
+--
+
+INSERT INTO `house_characteristic_mappings` (`house_characteristic_mapping_id`, `house_id`, `house_characteristic_id`) VALUES
+(1, 1, 1),
+(2, 2, 1),
+(3, 2, 2),
+(4, 3, 3),
+(5, 4, 2),
+(6, 4, 3);
+
 -- --------------------------------------------------------
 
 --
@@ -128,6 +167,19 @@ CREATE TABLE `lands` (
   `property_id` int(11) NOT NULL,
   `land_type_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `lands`
+--
+
+INSERT INTO `lands` (`land_id`, `property_id`, `land_type_id`) VALUES
+(1, 1, 1),
+(2, 2, 4),
+(3, 3, 3),
+(4, 9, 3),
+(5, 10, 3),
+(6, 11, 3),
+(7, 12, 3);
 
 -- --------------------------------------------------------
 
@@ -163,6 +215,22 @@ CREATE TABLE `land_characteristic_mappings` (
   `land_id` int(11) NOT NULL,
   `land_characteristic_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `land_characteristic_mappings`
+--
+
+INSERT INTO `land_characteristic_mappings` (`land_characteristic_mapping_id`, `land_id`, `land_characteristic_id`) VALUES
+(1, 1, 1),
+(2, 1, 5),
+(3, 2, 4),
+(4, 3, 4),
+(5, 5, 5),
+(6, 5, 1),
+(7, 6, 1),
+(8, 6, 5),
+(9, 7, 5),
+(10, 7, 1);
 
 -- --------------------------------------------------------
 
@@ -204,7 +272,7 @@ CREATE TABLE `properties` (
   `longitude` double NOT NULL,
   `latitude` double NOT NULL,
   `property_legal_document_id` int(11) NOT NULL,
-  `direction` varchar(50) NOT NULL,
+  `direction` int(11) NOT NULL,
   `area` double NOT NULL,
   `length` double NOT NULL,
   `width` double NOT NULL,
@@ -213,6 +281,23 @@ CREATE TABLE `properties` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `properties`
+--
+
+INSERT INTO `properties` (`property_id`, `user_id`, `category_id`, `status`, `title`, `description`, `region`, `ward_name`, `street_name`, `longitude`, `latitude`, `property_legal_document_id`, `direction`, `area`, `length`, `width`, `images`, `price`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 'APPROVAL', 'Đất nền khu vực Liên Chiểu', 'Đất nền dự án có vị trí đắc địa, tiềm năng tăng giá cao', 'Đà Nẵng', 'Phường Hòa Thuận Đông', 'Đại lộ Lê Hồng Phong', 108.21, 16.035, 1, 3, 300, 30, 15, 'land_danang1.jpg,land_danang2.jpg', 6500000000.00, '2025-03-06 09:51:17', '2025-03-06 09:51:17'),
+(2, 2, 1, 'APPROVAL', 'Đất nông nghiệp tại Cẩm Lệ', 'Đất canh tác màu mỡ, thích hợp cho nông nghiệp sạch', 'Đà Nẵng', 'Phường Hòa Cường Nam', 'Đường Nguyễn Văn Linh', 108.185, 16.03, 2, 5, 4500, 110, 55, 'agri_land_danang1.jpg,agri_land_danang2.jpg', 3200000000.00, '2025-03-06 09:51:17', '2025-03-06 09:51:17'),
+(3, 1, 1, 'PENDING', 'Đất công nghiệp tại Sơn Trà', 'Đất công nghiệp có hạ tầng đầy đủ, gần bến cảng', 'Đà Nẵng', 'Phường Sơn Trà', 'Đường Lê Duẩn', 108.3, 16.07, 1, 2, 9000, 140, 90, 'industrial_land_danang.jpg', 23000000000.00, '2025-03-06 09:51:17', '2025-03-06 09:51:17'),
+(4, 2, 2, 'APPROVAL', 'Biệt thự ven biển Bãi Bụt', 'Biệt thự sang trọng với view biển, khuôn viên rộng, an ninh 24/7', 'Đà Nẵng', 'Phường Ngũ Hành Sơn', 'Đường Trần Phú', 108.315, 16.075, 1, 7, 360, 35, 20, 'villa_danang1.jpg,villa_danang2.jpg,villa_danang3.jpg', 57000000000.00, '2025-03-06 09:51:17', '2025-03-06 09:51:17'),
+(5, 1, 2, 'APPROVAL', 'Nhà phố Đà Nẵng', 'Nhà phố liền kề khu thương mại sầm uất, thuận tiện giao thông', 'Đà Nẵng', 'Phường Thanh Bình', 'Đường Lê Duẩn', 108.22, 16.055, 1, 4, 140, 20, 12, 'townhouse_danang1.jpg,townhouse_danang2.jpg', 16000000000.00, '2025-03-06 09:51:17', '2025-03-06 09:51:17'),
+(6, 3, 2, 'PENDING', 'Chung cư cao cấp Bạch Đằng', 'Chung cư hiện đại, view thành phố, đầy đủ tiện ích', 'Đà Nẵng', 'Phường Hòa Cường Bắc', 'Đường Bạch Đằng', 108.226, 16.067, 1, 6, 95, 14, 9, 'apartment_danang1.jpg,apartment_danang2.jpg', 8200000000.00, '2025-03-06 09:51:17', '2025-03-06 09:51:17'),
+(9, 1, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'land_new_1.jpg,land_new_2.jpg', 12500000000.00, '2025-03-07 02:54:30', '2025-03-07 02:54:30'),
+(10, 1, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'land_new_1.jpg,land_new_2.jpg', 12500000000.00, '2025-03-07 03:16:36', '2025-03-07 03:16:36'),
+(11, 1, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'land_new_1.jpg,land_new_2.jpg', 12500000000.00, '2025-03-07 03:25:03', '2025-03-07 03:25:03'),
+(12, 1, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'land_new_1.jpg,land_new_2.jpg', 12500000000.00, '2025-03-07 03:25:57', '2025-03-07 03:25:57'),
+(14, 2, 2, 'PENDING', 'Nhà phố trung tâm', 'Nhà phố 2 tầng, mặt tiền đường lớn, gần trường học và chợ', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 2, 100, 10, 10, 'house_new_1.jpg,house_new_2.jpg', 3500000000.00, '2025-03-07 03:52:55', '2025-03-07 03:52:55');
 
 -- --------------------------------------------------------
 
@@ -269,6 +354,13 @@ CREATE TABLE `tokens` (
   `expires_at` datetime NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `tokens`
+--
+
+INSERT INTO `tokens` (`token_id`, `user_id`, `token`, `expires_at`, `created_at`) VALUES
+(1, 3, 'f001af96-3f54-4244-a4f2-b234820d2461', '2025-03-14 09:40:31', '2025-03-07 02:40:31');
 
 -- --------------------------------------------------------
 
@@ -438,13 +530,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `favourite_properties`
 --
 ALTER TABLE `favourite_properties`
-  MODIFY `favourite_property_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `favourite_property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `furnished_statuses`
@@ -456,7 +548,7 @@ ALTER TABLE `furnished_statuses`
 -- AUTO_INCREMENT cho bảng `houses`
 --
 ALTER TABLE `houses`
-  MODIFY `house_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `house_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `house_characteristics`
@@ -468,13 +560,13 @@ ALTER TABLE `house_characteristics`
 -- AUTO_INCREMENT cho bảng `house_characteristic_mappings`
 --
 ALTER TABLE `house_characteristic_mappings`
-  MODIFY `house_characteristic_mapping_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `house_characteristic_mapping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `lands`
 --
 ALTER TABLE `lands`
-  MODIFY `land_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `land_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `land_characteristics`
@@ -486,7 +578,7 @@ ALTER TABLE `land_characteristics`
 -- AUTO_INCREMENT cho bảng `land_characteristic_mappings`
 --
 ALTER TABLE `land_characteristic_mappings`
-  MODIFY `land_characteristic_mapping_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `land_characteristic_mapping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT cho bảng `land_types`
@@ -498,7 +590,7 @@ ALTER TABLE `land_types`
 -- AUTO_INCREMENT cho bảng `properties`
 --
 ALTER TABLE `properties`
-  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT cho bảng `property_legal_documents`
@@ -516,7 +608,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT cho bảng `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `token_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `token_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `transactions_history`
@@ -528,7 +620,7 @@ ALTER TABLE `transactions_history`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -539,13 +631,13 @@ ALTER TABLE `users`
 --
 ALTER TABLE `favourite_properties`
   ADD CONSTRAINT `favourite_properties_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `favourite_properties_ibfk_2` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`);
+  ADD CONSTRAINT `favourite_properties_ibfk_2` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `houses`
 --
 ALTER TABLE `houses`
-  ADD CONSTRAINT `houses_ibfk_1` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`),
+  ADD CONSTRAINT `houses_ibfk_1` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `houses_ibfk_2` FOREIGN KEY (`furnished_status_id`) REFERENCES `furnished_statuses` (`furnished_status_id`);
 
 --
@@ -559,7 +651,7 @@ ALTER TABLE `house_characteristic_mappings`
 -- Các ràng buộc cho bảng `lands`
 --
 ALTER TABLE `lands`
-  ADD CONSTRAINT `lands_ibfk_1` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`),
+  ADD CONSTRAINT `lands_ibfk_1` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `lands_ibfk_2` FOREIGN KEY (`land_type_id`) REFERENCES `land_types` (`land_type_id`);
 
 --
