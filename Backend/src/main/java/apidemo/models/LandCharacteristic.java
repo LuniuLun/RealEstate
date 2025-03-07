@@ -12,7 +12,7 @@ public class LandCharacteristic {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "land_characteristic_id")
-  private Integer landCharacteristicId;
+  private Integer id;
 
   @Column(nullable = false, length = 50)
   private String name;
@@ -22,12 +22,12 @@ public class LandCharacteristic {
   private Set<LandCharacteristicMapping> landCharacteristicMappings;
 
   // Getters and Setters
-  public Integer getLandCharacteristicId() {
-    return landCharacteristicId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setLandCharacteristicId(Integer landCharacteristicId) {
-    this.landCharacteristicId = landCharacteristicId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public String getName() {

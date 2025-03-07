@@ -12,7 +12,7 @@ public class FavouriteProperty {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "favourite_property_id")
-  private Integer favouritePropertyId;
+  private Integer id;
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
@@ -24,12 +24,12 @@ public class FavouriteProperty {
   private Property property;
 
   // Getters and Setters
-  public Integer getFavouritePropertyId() {
-    return favouritePropertyId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setFavouritePropertyId(Integer favouritePropertyId) {
-    this.favouritePropertyId = favouritePropertyId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public User getUser() {

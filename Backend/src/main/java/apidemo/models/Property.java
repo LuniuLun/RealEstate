@@ -16,7 +16,7 @@ public class Property {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "property_id")
-  private Integer propertyId;
+  private Integer id;
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
@@ -106,12 +106,12 @@ public class Property {
   }
 
   // Getters and Setters
-  public Integer getPropertyId() {
-    return propertyId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setPropertyId(Integer propertyId) {
-    this.propertyId = propertyId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public User getUser() {

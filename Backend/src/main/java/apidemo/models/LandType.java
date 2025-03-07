@@ -13,7 +13,7 @@ public class LandType {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "land_type_id")
-  private Integer landTypeId;
+  private Integer id;
 
   @Column(nullable = false, length = 50)
   private String name;
@@ -23,12 +23,12 @@ public class LandType {
   private Set<Land> lands;
 
   // Getters and Setters
-  public Integer getLandTypeId() {
-    return landTypeId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setLandTypeId(Integer landTypeId) {
-    this.landTypeId = landTypeId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public String getName() {

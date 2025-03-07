@@ -29,7 +29,7 @@ public class TokenService {
   }
 
   public Token createTokenForUser(User user) {
-    tokenRepository.findByUserId(user.getUserId()).ifPresent(tokenRepository::delete);
+    tokenRepository.findByUserId(user.getId()).ifPresent(tokenRepository::delete);
 
     Token newToken = new Token();
     newToken.setUser(user);

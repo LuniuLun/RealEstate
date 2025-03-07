@@ -13,7 +13,7 @@ public class HouseCharacteristicMapping {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "house_characteristic_mapping_id")
-  private Integer houseCharacteristicMappingId;
+  private Integer id;
 
   @ManyToOne
   @JoinColumn(name = "house_id", nullable = false)
@@ -26,12 +26,12 @@ public class HouseCharacteristicMapping {
   private HouseCharacteristic houseCharacteristic;
 
   // Getters and Setters
-  public Integer getHouseCharacteristicMappingId() {
-    return houseCharacteristicMappingId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setHouseCharacteristicMappingId(Integer houseCharacteristicMappingId) {
-    this.houseCharacteristicMappingId = houseCharacteristicMappingId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public House getHouse() {

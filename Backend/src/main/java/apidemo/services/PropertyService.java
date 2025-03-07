@@ -102,12 +102,12 @@ public class PropertyService {
     return propertyRepository.findAll(spec, pageRequest).getContent();
   }
 
-  public List<Property> getPropertiesByUserId(int userId) {
-    return propertyRepository.findByUser_UserId(userId);
+  public List<Property> getPropertiesById(int userId) {
+    return propertyRepository.findByUser_id(userId);
   }
 
   public List<Property> getPropertiesByCategory(int categoryId) {
-    return propertyRepository.findByCategory_CategoryId(categoryId);
+    return propertyRepository.findByCategory_id(categoryId);
   }
 
   public List<Property> getPropertiesByStatus(String status) {
@@ -198,29 +198,29 @@ public class PropertyService {
 
   private void validatePropertyReferences(Property property) {
     // Check that category exists
-    if (property.getCategory() != null && property.getCategory().getCategoryId() != null) {
-      categoryService.getCategoryById(property.getCategory().getCategoryId())
+    if (property.getCategory() != null && property.getCategory().getId() != null) {
+      categoryService.getCategoryById(property.getCategory().getId())
           .orElseThrow(
-              () -> new RuntimeException("Category not found with id: " + property.getCategory().getCategoryId()));
+              () -> new RuntimeException("Category not found with id: " + property.getCategory().getId()));
     } else {
       throw new RuntimeException("Category is required for property");
     }
 
     // Check that user exists
-    if (property.getUser() != null && property.getUser().getUserId() != null) {
-      userService.getUserById(property.getUser().getUserId())
-          .orElseThrow(() -> new RuntimeException("User not found with id: " + property.getUser().getUserId()));
+    if (property.getUser() != null && property.getUser().getId() != null) {
+      userService.getUserById(property.getUser().getId())
+          .orElseThrow(() -> new RuntimeException("User not found with id: " + property.getUser().getId()));
     } else {
       throw new RuntimeException("User is required for property");
     }
 
     // Check that legal document exists
     if (property.getPropertyLegalDocument() != null
-        && property.getPropertyLegalDocument().getPropertyLegalDocumentId() != null) {
+        && property.getPropertyLegalDocument().getId() != null) {
       propertyLegalDocumentService
-          .getPropertyLegalDocumentById(property.getPropertyLegalDocument().getPropertyLegalDocumentId())
+          .getPropertyLegalDocumentById(property.getPropertyLegalDocument().getId())
           .orElseThrow(() -> new RuntimeException("Property legal document not found with id: " +
-              property.getPropertyLegalDocument().getPropertyLegalDocumentId()));
+              property.getPropertyLegalDocument().getId()));
     } else {
       throw new RuntimeException("Property legal document is required for property");
     }

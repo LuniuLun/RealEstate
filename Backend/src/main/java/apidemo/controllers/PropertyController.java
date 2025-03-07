@@ -19,11 +19,6 @@ public class PropertyController {
     this.propertyService = propertyService;
   }
 
-  @PostMapping("/estimate-price")
-  public double estimatePropertyPrice(@RequestBody Map<String, Double> propertyFeatures) {
-    return propertyService.getEstimatedPrice(propertyFeatures);
-  }
-
   @GetMapping
   public List<Property> getAllProperties(
       @RequestParam(required = false) Integer limit,
@@ -54,6 +49,11 @@ public class PropertyController {
     } catch (RuntimeException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     }
+  }
+
+  @PostMapping("/estimate-price")
+  public double estimatePropertyPrice(@RequestBody Map<String, Double> propertyFeatures) {
+    return propertyService.getEstimatedPrice(propertyFeatures);
   }
 
   @PutMapping("/{id}")

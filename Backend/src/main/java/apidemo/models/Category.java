@@ -11,7 +11,7 @@ public class Category {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "category_id")
-  private Integer categoryId;
+  private Integer id;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
@@ -26,12 +26,12 @@ public class Category {
   }
 
   // Getters and Setters
-  public Integer getCategoryId() {
-    return categoryId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setCategoryId(Integer categoryId) {
-    this.categoryId = categoryId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public CategoryName getName() {

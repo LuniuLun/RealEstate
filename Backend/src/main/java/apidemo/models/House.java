@@ -13,7 +13,7 @@ public class House {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "house_id")
-  private Integer houseId;
+  private Integer id;
 
   @OneToOne
   @JoinColumn(name = "property_id", nullable = false)
@@ -34,12 +34,12 @@ public class House {
   private Set<HouseCharacteristicMapping> houseCharacteristicMappings;
 
   // Getters and Setters
-  public Integer getHouseId() {
-    return houseId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setHouseId(Integer houseId) {
-    this.houseId = houseId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public Property getProperty() {

@@ -13,7 +13,7 @@ public class Land {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "land_id")
-  private Integer landId;
+  private Integer id;
 
   @OneToOne
   @JoinColumn(name = "property_id", nullable = false)
@@ -28,12 +28,12 @@ public class Land {
   private Set<LandCharacteristicMapping> landCharacteristicMappings;
 
   // Getters and Setters
-  public Integer getLandId() {
-    return landId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setLandId(Integer landId) {
-    this.landId = landId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public Property getProperty() {

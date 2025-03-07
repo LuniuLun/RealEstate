@@ -13,7 +13,7 @@ public class HouseCharacteristic {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "house_characteristic_id")
-  private Integer houseCharacteristicId;
+  private Integer id;
 
   @Column(nullable = false, length = 50)
   private String name;
@@ -23,12 +23,12 @@ public class HouseCharacteristic {
   private Set<HouseCharacteristicMapping> houseCharacteristicMappings;
 
   // Getters and Setters
-  public Integer getHouseCharacteristicId() {
-    return houseCharacteristicId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setHouseCharacteristicId(Integer houseCharacteristicId) {
-    this.houseCharacteristicId = houseCharacteristicId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public String getName() {

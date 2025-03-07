@@ -10,7 +10,7 @@ public class Token {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "token_id")
-  private Integer tokenId;
+  private Integer id;
 
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
@@ -25,12 +25,12 @@ public class Token {
   @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
   private LocalDateTime createdAt;
 
-  public Integer getTokenId() {
-    return tokenId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setTokenId(Integer tokenId) {
-    this.tokenId = tokenId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public User getUser() {

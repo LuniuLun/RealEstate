@@ -10,7 +10,7 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id")
-  private Integer userId;
+  private Integer id;
 
   @ManyToOne
   @JoinColumn(name = "role_id", nullable = false)
@@ -49,12 +49,12 @@ public class User {
   }
 
   // Getters and Setters
-  public Integer getUserId() {
-    return userId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setUserId(Integer userId) {
-    this.userId = userId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public Role getRole() {

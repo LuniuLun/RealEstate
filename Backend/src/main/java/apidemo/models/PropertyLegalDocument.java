@@ -11,7 +11,7 @@ public class PropertyLegalDocument {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "property_legal_document_id")
-  private Integer propertyLegalDocumentId;
+  private Integer id;
 
   @Column(nullable = false, length = 50)
   private String name;
@@ -21,12 +21,12 @@ public class PropertyLegalDocument {
   private Set<Property> properties;
 
   // Getters and Setters
-  public Integer getPropertyLegalDocumentId() {
-    return propertyLegalDocumentId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setPropertyLegalDocumentId(Integer propertyLegalDocumentId) {
-    this.propertyLegalDocumentId = propertyLegalDocumentId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public String getName() {

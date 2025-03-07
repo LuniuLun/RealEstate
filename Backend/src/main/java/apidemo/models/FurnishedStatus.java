@@ -12,7 +12,7 @@ public class FurnishedStatus {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "furnished_status_id")
-  private Integer furnishedStatusId;
+  private Integer id;
 
   @Column(nullable = false, length = 50)
   private String name;
@@ -22,12 +22,12 @@ public class FurnishedStatus {
   private Set<House> houses;
 
   // Getters and Setters
-  public Integer getFurnishedStatusId() {
-    return furnishedStatusId;
+  public Integer getId() {
+    return id;
   }
 
-  public void setFurnishedStatusId(Integer furnishedStatusId) {
-    this.furnishedStatusId = furnishedStatusId;
+  public void setId(Integer id) {
+    this.id = id;
   }
 
   public String getName() {
