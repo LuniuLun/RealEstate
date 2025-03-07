@@ -24,6 +24,9 @@ public class House {
   private Integer bedrooms;
 
   @Column(nullable = false)
+  private Integer floors;
+
+  @Column(nullable = false)
   private Integer toilets;
 
   @ManyToOne
@@ -64,6 +67,14 @@ public class House {
 
   public void setToilets(Integer toilets) {
     this.toilets = toilets;
+  }
+
+  public Integer getFloors() {
+    return toilets;
+  }
+
+  public void setFloors(Integer floors) {
+    this.floors = floors;
   }
 
   public FurnishedStatus getFurnishedStatus() {
