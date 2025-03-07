@@ -15,7 +15,7 @@ public class House {
   @Column(name = "house_id")
   private Integer houseId;
 
-  @OneToOne(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToOne
   @JoinColumn(name = "property_id", nullable = false)
   @JsonIgnore
   private Property property;

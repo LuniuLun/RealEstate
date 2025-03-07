@@ -86,7 +86,7 @@ public class Property {
   @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
   private Land land;
 
-  @OneToMany(mappedBy = "property")
+  @OneToMany(mappedBy = "property", cascade = CascadeType.REMOVE)
   @JsonIgnore
   private Set<FavouriteProperty> favouriteProperties;
 

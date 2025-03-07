@@ -18,7 +18,7 @@ public class FavouriteProperty {
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
-  @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+  @ManyToOne
   @JoinColumn(name = "property_id", nullable = false)
   @JsonIgnore
   private Property property;

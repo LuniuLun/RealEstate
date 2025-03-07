@@ -15,7 +15,7 @@ public class Land {
   @Column(name = "land_id")
   private Integer landId;
 
-  @OneToOne(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToOne
   @JoinColumn(name = "property_id", nullable = false)
   @JsonIgnore
   private Property property;
