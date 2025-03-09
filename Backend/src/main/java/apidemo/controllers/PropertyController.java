@@ -1,11 +1,13 @@
 package apidemo.controllers;
 
+import org.apache.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import apidemo.models.Property;
 import apidemo.services.PropertyService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,10 +38,15 @@ public class PropertyController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Property> getPropertyById(@PathVariable Integer id) {
-    return propertyService.getPropertyById(id)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+  public ResponseEntity<?> getPropertyById(@PathVariable Integer id) {
+    try {
+      Property property = propertyService.getPropertyById(id);
+      return ResponseEntity.ok(property);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
+    }
   }
 
   @PostMapping
