@@ -1,7 +1,6 @@
 
 package apidemo.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
@@ -22,7 +21,6 @@ public class HouseCharacteristicMapping {
 
   @ManyToOne
   @JoinColumn(name = "house_characteristic_id", nullable = false)
-  @JsonBackReference
   private HouseCharacteristic houseCharacteristic;
 
   // Getters and Setters
