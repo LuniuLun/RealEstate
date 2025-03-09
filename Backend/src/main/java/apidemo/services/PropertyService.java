@@ -13,6 +13,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -109,6 +110,11 @@ public class PropertyService {
     }
   }
 
+  public Property getPropertyById(int propertyId) {
+    return propertyRepository.findById(propertyId)
+        .orElseThrow(() -> new RuntimeException("Property does not exist"));
+  }
+
   public List<Property> getPropertiesById(int userId) {
     return propertyRepository.findByUser_id(userId);
   }
@@ -121,41 +127,18 @@ public class PropertyService {
     return propertyRepository.findByStatus(status);
   }
 
-  public Optional<Property> getPropertyById(int propertyId) {
-    return propertyRepository.findById(propertyId);
-  }
-
   @Transactional
   public Property createProperty(Property property) {
-    // Validate foreign keys exist
-    validatePropertyReferences(property);
+    validateAndPrepareProperty(property);
 
-    // Set default values if needed
-    if (property.getStatus() == null) {
-      property.setStatus(Property.PropertyStatus.PENDING);
-    }
-
-    // Delegate land characteristics handling
-    if (property.getLand() != null) {
-      property.setLand(landService.prepareLand(property.getLand(), property));
-    }
-
-    // Delegate house characteristics handling
-    if (property.getHouse() != null) {
-      property.setHouse(houseService.prepareHouse(property.getHouse(), property));
-    }
-
-    // Save property
     Property savedProperty = propertyRepository.save(property);
 
-    // Process land characteristics after saving
     if (property.getLand() != null) {
-      landService.processLandCharacteristics(savedProperty.getLand());
+      landService.processLandCharacteristics(property.getLand());
     }
 
-    // Process house characteristics after saving
     if (property.getHouse() != null) {
-      houseService.processHouseCharacteristics(savedProperty.getHouse());
+      houseService.processHouseCharacteristics(property.getHouse());
     }
 
     return savedProperty;
@@ -163,13 +146,52 @@ public class PropertyService {
 
   @Transactional
   public Property updateProperty(int propertyId, Property propertyDetails) {
-    Property property = propertyRepository.findById(propertyId)
-        .orElseThrow(() -> new RuntimeException("Property not found with id: " + propertyId));
-
-    // Validate foreign keys exist
+    Property property = getPropertyById(propertyId);
     validatePropertyReferences(propertyDetails);
+    validateProperty(propertyDetails);
+    updatePropertyFields(property, propertyDetails);
 
-    // Update fields
+    return propertyRepository.save(property);
+  }
+
+  @Transactional
+  public Property updatePropertyStatus(int propertyId, String status) {
+    Property property = getPropertyById(propertyId);
+
+    try {
+      property.setStatus(Property.PropertyStatus.valueOf(status));
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Invalid status value. Must be PENDING, APPROVAL, or CANCELED");
+    }
+
+    return propertyRepository.save(property);
+  }
+
+  @Transactional
+  public void deleteProperty(int propertyId) {
+    Property property = getPropertyById(propertyId);
+
+    propertyRepository.delete(property);
+  }
+
+  private void validateAndPrepareProperty(Property property) {
+    validatePropertyReferences(property);
+    validateProperty(property);
+
+    if (property.getStatus() == null) {
+      property.setStatus(Property.PropertyStatus.PENDING);
+    }
+
+    if (property.getLand() != null) {
+      property.setLand(landService.prepareLand(property.getLand(), property));
+    }
+
+    if (property.getHouse() != null) {
+      property.setHouse(houseService.prepareHouse(property.getHouse(), property));
+    }
+  }
+
+  private void updatePropertyFields(Property property, Property propertyDetails) {
     property.setTitle(propertyDetails.getTitle());
     property.setDescription(propertyDetails.getDescription());
     property.setRegion(propertyDetails.getRegion());
@@ -184,75 +206,59 @@ public class PropertyService {
     property.setImages(propertyDetails.getImages());
     property.setPrice(propertyDetails.getPrice());
     property.setStatus(propertyDetails.getStatus());
-
-    // Only update references if they're provided
-    if (propertyDetails.getCategory() != null) {
-      property.setCategory(propertyDetails.getCategory());
-    }
-
-    if (propertyDetails.getUser() != null) {
-      property.setUser(propertyDetails.getUser());
-    }
-
-    if (propertyDetails.getPropertyLegalDocument() != null) {
-      property.setPropertyLegalDocument(propertyDetails.getPropertyLegalDocument());
-    }
-
-    return propertyRepository.save(property);
-  }
-
-  @Transactional
-  public Property updatePropertyStatus(int propertyId, String status) {
-    Property property = propertyRepository.findById(propertyId)
-        .orElseThrow(() -> new RuntimeException("Property not found with id: " + propertyId));
-
-    try {
-      Property.PropertyStatus propertyStatus = Property.PropertyStatus.valueOf(status);
-      property.setStatus(propertyStatus);
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Invalid status value. Must be PENDING, APPROVAL, or CANCELED");
-    }
-
-    return propertyRepository.save(property);
-  }
-
-  @Transactional
-  public void deleteProperty(int propertyId) {
-    Property property = propertyRepository.findById(propertyId)
-        .orElseThrow(() -> new RuntimeException("Property not found with id: " + propertyId));
-
-    // This will cascade delete related entries in houses or lands tables
-    // due to the foreign key constraints
-    propertyRepository.delete(property);
+    property.setCategory(propertyDetails.getCategory());
+    property.setUser(propertyDetails.getUser());
+    property.setPropertyLegalDocument(propertyDetails.getPropertyLegalDocument());
   }
 
   private void validatePropertyReferences(Property property) {
-    // Check that category exists
     if (property.getCategory() != null && property.getCategory().getId() != null) {
       categoryService.getCategoryById(property.getCategory().getId())
-          .orElseThrow(
-              () -> new RuntimeException("Category not found with id: " + property.getCategory().getId()));
+          .orElseThrow(() -> new RuntimeException("Category does not exist"));
     } else {
       throw new RuntimeException("Category is required for property");
     }
 
-    // Check that user exists
     if (property.getUser() != null && property.getUser().getId() != null) {
-      userService.getUserById(property.getUser().getId())
-          .orElseThrow(() -> new RuntimeException("User not found with id: " + property.getUser().getId()));
+      userService.getUserById(property.getUser().getId());
     } else {
       throw new RuntimeException("User is required for property");
     }
 
-    // Check that legal document exists
-    if (property.getPropertyLegalDocument() != null
-        && property.getPropertyLegalDocument().getId() != null) {
-      propertyLegalDocumentService
-          .getPropertyLegalDocumentById(property.getPropertyLegalDocument().getId())
-          .orElseThrow(() -> new RuntimeException("Property legal document not found with id: " +
-              property.getPropertyLegalDocument().getId()));
+    if (property.getPropertyLegalDocument() != null && property.getPropertyLegalDocument().getId() != null) {
+      propertyLegalDocumentService.getPropertyLegalDocumentById(property.getPropertyLegalDocument().getId())
+          .orElseThrow(() -> new RuntimeException("Property legal document does not exist"));
     } else {
       throw new RuntimeException("Property legal document is required for property");
+    }
+  }
+
+  private void validateProperty(Property property) {
+    Map<String, Object> requiredFields = new HashMap<>();
+    requiredFields.put("Title", property.getTitle());
+    requiredFields.put("Description", property.getDescription());
+    requiredFields.put("Region", property.getRegion());
+    requiredFields.put("Ward name", property.getWardName());
+    requiredFields.put("Street name", property.getStreetName());
+    requiredFields.put("Longitude", property.getLongitude());
+    requiredFields.put("Latitude", property.getLatitude());
+    requiredFields.put("Direction", property.getDirection());
+    requiredFields.put("Area", property.getArea());
+    requiredFields.put("Length", property.getLength());
+    requiredFields.put("Width", property.getWidth());
+    requiredFields.put("Price", property.getPrice());
+    requiredFields.put("Category", property.getCategory());
+    requiredFields.put("User", property.getUser());
+    requiredFields.put("Property legal document", property.getPropertyLegalDocument());
+
+    requiredFields.forEach((fieldName, value) -> {
+      if (value == null || (value instanceof String && ((String) value).isEmpty())) {
+        throw new RuntimeException(fieldName + " is required for property");
+      }
+    });
+
+    if (property.getImages() == null || property.getImages().isEmpty()) {
+      throw new RuntimeException("At least one image is required for property");
     }
   }
 }
