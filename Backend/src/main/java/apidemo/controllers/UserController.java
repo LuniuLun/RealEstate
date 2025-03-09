@@ -1,5 +1,6 @@
 package apidemo.controllers;
 
+import org.apache.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,6 +9,7 @@ import apidemo.models.User;
 import apidemo.services.TokenService;
 import apidemo.services.UserService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,10 +41,15 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<User> getUserById(@PathVariable Integer id) {
-    return userService.getUserById(id)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+  public ResponseEntity<?> getUserById(@PathVariable Integer id) {
+    try {
+      User user = userService.getUserById(id);
+      return ResponseEntity.ok(user);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
+    }
   }
 
   @PostMapping

@@ -50,8 +50,9 @@ public class UserService {
     return userRepository.findAll(spec, pageRequest).getContent();
   }
 
-  public Optional<User> getUserById(Integer userId) {
-    return userRepository.findById(userId);
+  public User getUserById(Integer userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User does not exist"));
   }
 
   public User createUser(User user) {
@@ -94,7 +95,7 @@ public class UserService {
 
   public void deleteUser(Integer userId) {
     if (!userRepository.existsById(userId)) {
-      throw new RuntimeException("User not found with id: " + userId);
+      throw new RuntimeException("User does not exist");
     }
     userRepository.deleteById(userId);
   }
