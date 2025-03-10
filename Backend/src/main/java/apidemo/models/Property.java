@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -24,7 +23,6 @@ public class Property {
 
   @ManyToOne
   @JoinColumn(name = "category_id", nullable = false)
-  @JsonBackReference
   private Category category;
 
   @Enumerated(EnumType.STRING)
