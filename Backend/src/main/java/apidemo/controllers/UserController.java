@@ -27,17 +27,24 @@ public class UserController {
   }
 
   @GetMapping
-  public List<User> getAllUsers(
+  public ResponseEntity<?> getAllUsers(
       @RequestParam(required = false) Integer limit,
       @RequestParam(required = false) Integer page,
       @RequestParam(required = false) String sortBy,
       @RequestParam(required = false) String typeOfSort,
       @RequestParam(required = false) Map<String, String> filters) {
-    filters.remove("page");
-    filters.remove("limit");
-    filters.remove("sortBy");
-    filters.remove("typeOfSort");
-    return userService.getAllUsers(limit, page, sortBy, typeOfSort, filters);
+    try {
+      filters.remove("page");
+      filters.remove("limit");
+      filters.remove("sortBy");
+      filters.remove("typeOfSort");
+      List<User> users = userService.getAllUsers(limit, page, sortBy, typeOfSort, filters);
+      return ResponseEntity.ok(users);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
   }
 
   @GetMapping("/{id}")
@@ -53,30 +60,38 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<Object> createUser(@RequestBody User user) {
+  public ResponseEntity<?> createUser(@RequestBody User user) {
     try {
-      return ResponseEntity.ok(userService.createUser(user));
+      User createdUser = userService.createUser(user);
+      return ResponseEntity.ok(createdUser);
     } catch (RuntimeException e) {
-      return ResponseEntity.badRequest().body(e.getMessage());
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.badRequest().body(errorResponse);
     }
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
+  public ResponseEntity<?> updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
     try {
-      return ResponseEntity.ok(userService.updateUser(id, updatedUser));
+      User updated = userService.updateUser(id, updatedUser);
+      return ResponseEntity.ok(updated);
     } catch (RuntimeException e) {
-      return ResponseEntity.notFound().build();
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
     }
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+  public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
     try {
       userService.deleteUser(id);
       return ResponseEntity.noContent().build();
     } catch (RuntimeException e) {
-      return ResponseEntity.notFound().build();
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
     }
   }
 
@@ -91,22 +106,32 @@ public class UserController {
   }
 
   @PostMapping("/loginWithToken")
-  public ResponseEntity<Object> loginWithToken(@RequestParam String token) {
-    Optional<User> user = tokenService.loginWithToken(token);
-    if (user.isPresent()) {
-      return ResponseEntity.ok(user.get());
-    } else {
-      return ResponseEntity.status(401).body(Map.of("message", "Invalid or expired token"));
+  public ResponseEntity<?> loginWithToken(@RequestParam String token) {
+    try {
+      Optional<User> user = tokenService.loginWithToken(token);
+      if (user.isPresent()) {
+        return ResponseEntity.ok(user.get());
+      } else {
+        return ResponseEntity.status(401).body(Map.of("message", "Invalid or expired token"));
+      }
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
     }
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-    return ResponseEntity.badRequest().body(ex.getMessage());
+  public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("message", ex.getMessage());
+    return ResponseEntity.badRequest().body(errorResponse);
   }
 
   @ExceptionHandler(RuntimeException.class)
-  public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
-    return ResponseEntity.status(500).body(Map.of("message", ex.getMessage()));
+  public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("message", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
   }
 }
