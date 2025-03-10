@@ -22,19 +22,25 @@ public class PropertyController {
   }
 
   @GetMapping
-  public List<Property> getAllProperties(
+  public ResponseEntity<?> getAllProperties(
       @RequestParam(required = false) Integer limit,
       @RequestParam(required = false) Integer page,
       @RequestParam(required = false) String sortBy,
       @RequestParam(required = false) String typeOfSort,
       @RequestParam(required = false) Map<String, String> filters) {
+    try {
+      filters.remove("page");
+      filters.remove("limit");
+      filters.remove("sortBy");
+      filters.remove("typeOfSort");
 
-    filters.remove("page");
-    filters.remove("limit");
-    filters.remove("sortBy");
-    filters.remove("typeOfSort");
-
-    return propertyService.getAllProperties(limit, page, sortBy, typeOfSort, filters);
+      List<Property> properties = propertyService.getAllProperties(limit, page, sortBy, typeOfSort, filters);
+      return ResponseEntity.ok(properties);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
   }
 
   @GetMapping("/{id}")
@@ -50,45 +56,64 @@ public class PropertyController {
   }
 
   @PostMapping
-  public ResponseEntity<Object> createProperty(@RequestBody Property property) {
+  public ResponseEntity<?> createProperty(@RequestBody Property property) {
     try {
-      return ResponseEntity.ok(propertyService.createProperty(property));
+      Property createdProperty = propertyService.createProperty(property);
+      return ResponseEntity.ok(createdProperty);
     } catch (RuntimeException e) {
-      return ResponseEntity.badRequest().body(e.getMessage());
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.badRequest().body(errorResponse);
     }
   }
 
   @PostMapping("/estimate-price")
-  public double estimatePropertyPrice(@RequestBody Map<String, Double> propertyFeatures) {
-    return propertyService.getEstimatedPrice(propertyFeatures);
+  public ResponseEntity<?> estimatePropertyPrice(@RequestBody Map<String, Double> propertyFeatures) {
+    try {
+      double estimatedPrice = propertyService.getEstimatedPrice(propertyFeatures);
+      return ResponseEntity.ok(Map.of("estimatedPrice", estimatedPrice));
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.badRequest().body(errorResponse);
+    }
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Property> updateProperty(@PathVariable Integer id, @RequestBody Property updatedProperty) {
+  public ResponseEntity<?> updateProperty(@PathVariable Integer id, @RequestBody Property updatedProperty) {
     try {
-      return ResponseEntity.ok(propertyService.updateProperty(id, updatedProperty));
+      Property updated = propertyService.updateProperty(id, updatedProperty);
+      return ResponseEntity.ok(updated);
     } catch (RuntimeException e) {
-      return ResponseEntity.notFound().build();
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
     }
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteProperty(@PathVariable Integer id) {
+  public ResponseEntity<?> deleteProperty(@PathVariable Integer id) {
     try {
       propertyService.deleteProperty(id);
       return ResponseEntity.noContent().build();
     } catch (RuntimeException e) {
-      return ResponseEntity.notFound().build();
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
     }
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-    return ResponseEntity.badRequest().body(ex.getMessage());
+  public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("message", ex.getMessage());
+    return ResponseEntity.badRequest().body(errorResponse);
   }
 
   @ExceptionHandler(RuntimeException.class)
-  public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
-    return ResponseEntity.status(500).body(Map.of("message", ex.getMessage()));
+  public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("message", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
   }
 }
