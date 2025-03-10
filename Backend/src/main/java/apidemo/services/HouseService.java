@@ -105,4 +105,35 @@ public class HouseService {
 
     return mappings;
   }
+
+  /**
+   * Updates an existing house entity with new house data
+   */
+  public void updateHouse(House existingHouse, House newHouse) {
+    existingHouse.setBedrooms(newHouse.getBedrooms());
+    existingHouse.setFloors(newHouse.getFloors());
+    existingHouse.setFurnishedStatus(newHouse.getFurnishedStatus());
+    existingHouse.setToilets(newHouse.getToilets());
+
+    if (newHouse.getHouseCharacteristicMappings() != null) {
+      // Clear existing mappings
+      houseCharacteristicMappingRepository.deleteAll(existingHouse.getHouseCharacteristicMappings());
+
+      // Create and save new mappings
+      Set<HouseCharacteristicMapping> newMappings = new HashSet<>();
+      for (HouseCharacteristicMapping mapping : newHouse.getHouseCharacteristicMappings()) {
+        HouseCharacteristic characteristic = houseCharacteristicRepository
+            .findById(mapping.getHouseCharacteristic().getId())
+            .orElseThrow(() -> new RuntimeException(
+                "House characteristic not found with id: " + mapping.getHouseCharacteristic().getId()));
+
+        HouseCharacteristicMapping newMapping = new HouseCharacteristicMapping();
+        newMapping.setHouse(existingHouse);
+        newMapping.setHouseCharacteristic(characteristic);
+
+        newMappings.add(houseCharacteristicMappingRepository.save(newMapping));
+      }
+      existingHouse.setHouseCharacteristicMappings(newMappings);
+    }
+  }
 }
