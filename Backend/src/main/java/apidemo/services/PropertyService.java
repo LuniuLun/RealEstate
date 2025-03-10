@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class PropertyService {
@@ -146,10 +145,19 @@ public class PropertyService {
 
   @Transactional
   public Property updateProperty(int propertyId, Property propertyDetails) {
+    System.out.println("propertyId: " + propertyId);
     Property property = getPropertyById(propertyId);
     validatePropertyReferences(propertyDetails);
     validateProperty(propertyDetails);
     updatePropertyFields(property, propertyDetails);
+
+    if (property.getLand() != null) {
+      landService.updateLand(property.getLand(), propertyDetails.getLand());
+    }
+
+    if (property.getHouse() != null) {
+      houseService.updateHouse(property.getHouse(), propertyDetails.getHouse());
+    }
 
     return propertyRepository.save(property);
   }
