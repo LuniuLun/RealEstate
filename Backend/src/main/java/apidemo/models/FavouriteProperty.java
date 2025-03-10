@@ -1,8 +1,6 @@
 
 package apidemo.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -20,7 +18,6 @@ public class FavouriteProperty {
 
   @ManyToOne
   @JoinColumn(name = "property_id", nullable = false)
-  @JsonIgnore
   private Property property;
 
   // Getters and Setters
