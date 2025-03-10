@@ -104,4 +104,32 @@ public class LandService {
 
     return mappings;
   }
+
+  /**
+   * Updates an existing land entity with new land data
+   */
+  public void updateLand(Land existingLand, Land newLand) {
+    existingLand.setLandType(newLand.getLandType());
+
+    if (newLand.getLandCharacteristicMappings() != null) {
+      // Clear existing mappings
+      landCharacteristicMappingRepository.deleteAll(existingLand.getLandCharacteristicMappings());
+
+      // Create and save new mappings
+      Set<LandCharacteristicMapping> newMappings = new HashSet<>();
+      for (LandCharacteristicMapping mapping : newLand.getLandCharacteristicMappings()) {
+        LandCharacteristic characteristic = landCharacteristicRepository
+            .findById(mapping.getLandCharacteristic().getId())
+            .orElseThrow(() -> new RuntimeException(
+                "Land characteristic not found with id: " + mapping.getLandCharacteristic().getId()));
+
+        LandCharacteristicMapping newMapping = new LandCharacteristicMapping();
+        newMapping.setLand(existingLand);
+        newMapping.setLandCharacteristic(characteristic);
+
+        newMappings.add(landCharacteristicMappingRepository.save(newMapping));
+      }
+      existingLand.setLandCharacteristicMappings(newMappings);
+    }
+  }
 }
