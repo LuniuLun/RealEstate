@@ -44,8 +44,8 @@ public class PropertyService {
     this.propertyMLService = new PropertyMLService();
   }
 
-  public double getEstimatedPrice(Map<String, Double> propertyFeatures) {
-    return propertyMLService.estimatePropertyPrice(propertyFeatures);
+  public double getEstimatedPrice(Property property) {
+    return propertyMLService.estimatePropertyPrice(property);
   }
 
   public List<Property> getAllProperties(Integer limit, Integer page, String sortBy, String typeOfSort,

@@ -1,5 +1,6 @@
 package apidemo.services;
 
+import apidemo.models.Property;
 import apidemo.utils.*;
 import org.jpmml.evaluator.*;
 
@@ -33,7 +34,8 @@ public class PropertyMLService {
     }
   }
 
-  public double estimatePropertyPrice(Map<String, Double> propertyFeatures) {
+  public double estimatePropertyPrice(Property property) {
+    Map<String, Double> propertyFeatures = PropertyFieldConverter.convertToMLModelFormat(property);
     validateInputFeatures(propertyFeatures);
 
     Map<String, Double> features = new HashMap<>(propertyFeatures);

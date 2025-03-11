@@ -68,9 +68,9 @@ public class PropertyController {
   }
 
   @PostMapping("/estimate-price")
-  public ResponseEntity<?> estimatePropertyPrice(@RequestBody Map<String, Double> propertyFeatures) {
+  public ResponseEntity<?> estimatePropertyPrice(@RequestBody Property property) {
     try {
-      double estimatedPrice = propertyService.getEstimatedPrice(propertyFeatures);
+      double estimatedPrice = propertyService.getEstimatedPrice(property);
       return ResponseEntity.ok(Map.of("estimatedPrice", estimatedPrice));
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
