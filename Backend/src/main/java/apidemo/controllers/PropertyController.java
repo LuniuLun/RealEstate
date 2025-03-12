@@ -2,9 +2,12 @@ package apidemo.controllers;
 
 import org.apache.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import apidemo.models.Property;
+import apidemo.models.User;
 import apidemo.services.PropertyService;
 
 import java.util.HashMap;
@@ -29,10 +32,12 @@ public class PropertyController {
       @RequestParam(required = false) String typeOfSort,
       @RequestParam(required = false) Map<String, String> filters) {
     try {
-      filters.remove("page");
-      filters.remove("limit");
-      filters.remove("sortBy");
-      filters.remove("typeOfSort");
+      if (filters != null) {
+        filters.remove("page");
+        filters.remove("limit");
+        filters.remove("sortBy");
+        filters.remove("typeOfSort");
+      }
 
       List<Property> properties = propertyService.getAllProperties(limit, page, sortBy, typeOfSort, filters);
       return ResponseEntity.ok(properties);
@@ -58,6 +63,9 @@ public class PropertyController {
   @PostMapping
   public ResponseEntity<?> createProperty(@RequestBody Property property) {
     try {
+      User currentUser = getCurrentUser();
+      property.setUser(currentUser);
+
       Property createdProperty = propertyService.createProperty(property);
       return ResponseEntity.ok(createdProperty);
     } catch (RuntimeException e) {
@@ -82,6 +90,19 @@ public class PropertyController {
   @PutMapping("/{id}")
   public ResponseEntity<?> updateProperty(@PathVariable Integer id, @RequestBody Property updatedProperty) {
     try {
+      User currentUser = getCurrentUser();
+      Property existingProperty = propertyService.getPropertyById(id);
+
+      // Check if user is authorized to update the property
+      if (!existingProperty.getUser().getId().equals(currentUser.getId())) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "You are not authorized to update this property");
+        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+      }
+
+      // Set the user for the updated property
+      updatedProperty.setUser(currentUser);
+
       Property updated = propertyService.updateProperty(id, updatedProperty);
       return ResponseEntity.ok(updated);
     } catch (RuntimeException e) {
@@ -94,6 +115,17 @@ public class PropertyController {
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteProperty(@PathVariable Integer id) {
     try {
+      User currentUser = getCurrentUser();
+
+      Property existingProperty = propertyService.getPropertyById(id);
+
+      // Check if user is authorized to delete the property
+      if (!existingProperty.getUser().getId().equals(currentUser.getId())) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "You are not authorized to delete this property");
+        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+      }
+
       propertyService.deleteProperty(id);
       return ResponseEntity.noContent().build();
     } catch (RuntimeException e) {
@@ -115,5 +147,14 @@ public class PropertyController {
     Map<String, String> errorResponse = new HashMap<>();
     errorResponse.put("message", ex.getMessage());
     return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
+  }
+
+  // Helper method to get current authenticated user
+  private User getCurrentUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || !authentication.isAuthenticated()) {
+      throw new RuntimeException("Not authenticated");
+    }
+    return (User) authentication.getPrincipal();
   }
 }
