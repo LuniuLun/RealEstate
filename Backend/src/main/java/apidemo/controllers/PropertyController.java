@@ -5,9 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import apidemo.models.Property;
 import apidemo.models.User;
+import apidemo.services.FirebaseFileService;
 import apidemo.services.PropertyService;
 
 import java.util.HashMap;
@@ -18,10 +22,12 @@ import java.util.Map;
 @RequestMapping("/api/v1/properties")
 public class PropertyController {
 
+  private final FirebaseFileService storageService;
   private final PropertyService propertyService;
 
-  public PropertyController(PropertyService propertyService) {
+  public PropertyController(PropertyService propertyService, FirebaseFileService storageService) {
     this.propertyService = propertyService;
+    this.storageService = storageService;
   }
 
   @GetMapping
@@ -61,14 +67,27 @@ public class PropertyController {
   }
 
   @PostMapping
-  public ResponseEntity<?> createProperty(@RequestBody Property property) {
+  public ResponseEntity<?> createProperty(
+      @RequestParam("files") MultipartFile[] files,
+      @RequestParam("propertyData") String propertyDataJson) {
     try {
+      ObjectMapper mapper = new ObjectMapper();
+      Property property = mapper.readValue(propertyDataJson, Property.class);
+
+      List<String> uploadedUrls = storageService.storeMultiFile(files);
+
+      if (!uploadedUrls.isEmpty()) {
+        String imageUrlsString = String.join(",", uploadedUrls);
+        property.setImages(imageUrlsString);
+      }
+
       User currentUser = getCurrentUser();
       property.setUser(currentUser);
 
       Property createdProperty = propertyService.createProperty(property);
+
       return ResponseEntity.ok(createdProperty);
-    } catch (RuntimeException e) {
+    } catch (Exception e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
       return ResponseEntity.badRequest().body(errorResponse);
@@ -88,8 +107,16 @@ public class PropertyController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> updateProperty(@PathVariable Integer id, @RequestBody Property updatedProperty) {
+  public ResponseEntity<?> updateProperty(
+      @PathVariable Integer id,
+      @RequestParam(value = "files", required = false) MultipartFile[] files,
+      @RequestParam("propertyData") String propertyDataJson) {
     try {
+      // Parse property data from JSON
+      ObjectMapper mapper = new ObjectMapper();
+      Property updatedProperty = mapper.readValue(propertyDataJson, Property.class);
+
+      // Get current user and existing property
       User currentUser = getCurrentUser();
       Property existingProperty = propertyService.getPropertyById(id);
 
@@ -100,15 +127,25 @@ public class PropertyController {
         return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
       }
 
-      // Set the user for the updated property
-      updatedProperty.setUser(currentUser);
+      // Handle images
+      List<String> finalImagesList = storageService.updateMultiFile(existingProperty.getImages(),
+          updatedProperty.getImages(), files);
 
+      // Set the final list of images
+      String imageUrlsString = String.join(",", finalImagesList);
+      updatedProperty.setImages(imageUrlsString);
+
+      // Update the property
       Property updated = propertyService.updateProperty(id, updatedProperty);
       return ResponseEntity.ok(updated);
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
       return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
+    } catch (Exception e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.badRequest().body(errorResponse);
     }
   }
 
