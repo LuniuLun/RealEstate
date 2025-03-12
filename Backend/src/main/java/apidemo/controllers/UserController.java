@@ -2,28 +2,25 @@ package apidemo.controllers;
 
 import org.apache.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import apidemo.models.Token;
 import apidemo.models.User;
-import apidemo.services.TokenService;
 import apidemo.services.UserService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
 
   private final UserService userService;
-  private final TokenService tokenService;
 
-  public UserController(UserService userService, TokenService tokenService) {
+  public UserController(UserService userService) {
     this.userService = userService;
-    this.tokenService = tokenService;
   }
 
   @GetMapping
@@ -34,10 +31,14 @@ public class UserController {
       @RequestParam(required = false) String typeOfSort,
       @RequestParam(required = false) Map<String, String> filters) {
     try {
-      filters.remove("page");
-      filters.remove("limit");
-      filters.remove("sortBy");
-      filters.remove("typeOfSort");
+      // Ensure filters is not null before removing keys
+      if (filters != null) {
+        filters.remove("page");
+        filters.remove("limit");
+        filters.remove("sortBy");
+        filters.remove("typeOfSort");
+      }
+
       List<User> users = userService.getAllUsers(limit, page, sortBy, typeOfSort, filters);
       return ResponseEntity.ok(users);
     } catch (RuntimeException e) {
@@ -59,6 +60,18 @@ public class UserController {
     }
   }
 
+  @GetMapping("/me")
+  public ResponseEntity<?> getCurrentUserProfile() {
+    try {
+      User currentUser = getCurrentUser();
+      return ResponseEntity.ok(currentUser);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(errorResponse);
+    }
+  }
+
   @PostMapping
   public ResponseEntity<?> createUser(@RequestBody User user) {
     try {
@@ -74,6 +87,16 @@ public class UserController {
   @PutMapping("/{id}")
   public ResponseEntity<?> updateUser(@PathVariable Integer id, @RequestBody User updatedUser) {
     try {
+      User currentUser = getCurrentUser();
+
+      // Only allow users to update their own profile (or admin users if you have that
+      // role)
+      if (!currentUser.getId().equals(id)) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "You are not authorized to update this user");
+        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+      }
+
       User updated = userService.updateUser(id, updatedUser);
       return ResponseEntity.ok(updated);
     } catch (RuntimeException e) {
@@ -86,6 +109,16 @@ public class UserController {
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
     try {
+      User currentUser = getCurrentUser();
+
+      // Only allow users to delete their own account (or admin users if you have that
+      // role)
+      if (!currentUser.getId().equals(id)) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "You are not authorized to delete this user");
+        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+      }
+
       userService.deleteUser(id);
       return ResponseEntity.noContent().build();
     } catch (RuntimeException e) {
@@ -95,31 +128,38 @@ public class UserController {
     }
   }
 
-  @PostMapping("/login")
-  public ResponseEntity<Object> login(@RequestParam String username, @RequestParam String password) {
-    Optional<Token> response = userService.login(username, password);
-    if (response.isPresent()) {
-      return ResponseEntity.ok(response.get());
-    } else {
-      return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password"));
-    }
-  }
+  // @PutMapping("/{id}/change-password")
+  // public ResponseEntity<?> changePassword(
+  // @PathVariable Integer id,
+  // @RequestBody Map<String, String> passwordRequest) {
+  // try {
+  // User currentUser = getCurrentUser();
 
-  @PostMapping("/loginWithToken")
-  public ResponseEntity<?> loginWithToken(@RequestParam String token) {
-    try {
-      Optional<User> user = tokenService.loginWithToken(token);
-      if (user.isPresent()) {
-        return ResponseEntity.ok(user.get());
-      } else {
-        return ResponseEntity.status(401).body(Map.of("message", "Invalid or expired token"));
-      }
-    } catch (RuntimeException e) {
-      Map<String, String> errorResponse = new HashMap<>();
-      errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
-    }
-  }
+  // // Only allow users to change their own password
+  // if (!currentUser.getId().equals(id)) {
+  // Map<String, String> errorResponse = new HashMap<>();
+  // errorResponse.put("message", "You are not authorized to change this user's
+  // password");
+  // return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+  // }
+
+  // String oldPassword = passwordRequest.get("oldPassword");
+  // String newPassword = passwordRequest.get("newPassword");
+
+  // if (oldPassword == null || newPassword == null) {
+  // Map<String, String> errorResponse = new HashMap<>();
+  // errorResponse.put("message", "Old password and new password are required");
+  // return ResponseEntity.badRequest().body(errorResponse);
+  // }
+
+  // User updated = userService.changePassword(id, oldPassword, newPassword);
+  // return ResponseEntity.ok(updated);
+  // } catch (RuntimeException e) {
+  // Map<String, String> errorResponse = new HashMap<>();
+  // errorResponse.put("message", e.getMessage());
+  // return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(errorResponse);
+  // }
+  // }
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex) {
@@ -133,5 +173,14 @@ public class UserController {
     Map<String, String> errorResponse = new HashMap<>();
     errorResponse.put("message", ex.getMessage());
     return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
+  }
+
+  // Helper method to get current authenticated user
+  private User getCurrentUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || !authentication.isAuthenticated()) {
+      throw new RuntimeException("Not authenticated");
+    }
+    return (User) authentication.getPrincipal();
   }
 }
