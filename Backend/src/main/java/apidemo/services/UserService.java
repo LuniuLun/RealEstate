@@ -3,10 +3,10 @@ package apidemo.services;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import apidemo.models.Role;
-import apidemo.models.Token;
 import apidemo.models.User;
 import apidemo.repositories.RoleRepository;
 import apidemo.repositories.UserRepository;
@@ -15,20 +15,20 @@ import apidemo.utils.Filter;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class UserService {
 
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
-  private final TokenService tokenService;
   private final Filter filter = new Filter();
+  private final PasswordEncoder passwordEncoder;
 
-  public UserService(UserRepository userRepository, RoleRepository roleRepository, TokenService tokenService) {
+  public UserService(UserRepository userRepository, RoleRepository roleRepository,
+      PasswordEncoder passwordEncoder) {
     this.roleRepository = roleRepository;
     this.userRepository = userRepository;
-    this.tokenService = tokenService;
+    this.passwordEncoder = passwordEncoder;
   }
 
   public List<User> getAllUsers(Integer limit, Integer page, String sortBy, String typeOfSort,
@@ -55,6 +55,11 @@ public class UserService {
         .orElseThrow(() -> new RuntimeException("User does not exist"));
   }
 
+  public User getUserByUsername(String username) {
+    return userRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("User does not exist"));
+  }
+
   public User createUser(User user) {
     if (userRepository.findByUsername(user.getUsername()).isPresent()) {
       throw new RuntimeException("Username " + user.getUsername() + " is already taken.");
@@ -68,6 +73,7 @@ public class UserService {
     Role role = roleRepository.findById(user.getRole().getId())
         .orElseThrow(() -> new RuntimeException("Role not found with id: " + user.getRole().getId()));
 
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
     user.setRole(role);
     user.setCreatedAt(LocalDateTime.now());
     user.setUpdatedAt(LocalDateTime.now());
@@ -99,27 +105,4 @@ public class UserService {
     }
     userRepository.deleteById(userId);
   }
-
-  public Optional<Token> login(String username, String password) {
-    try {
-      Optional<User> user = userRepository.findByUsername(username);
-      if (user.isPresent() && user.get().getPassword().equals(password)) {
-        User currentUser = user.get();
-
-        // Check and get valid token
-        Optional<Token> validToken = tokenService.getValidTokenForUser(currentUser.getId());
-        if (validToken.isPresent()) {
-          return validToken;
-        }
-
-        // Create new token if there is no valid token
-        Token newToken = tokenService.createTokenForUser(currentUser);
-        return Optional.of(newToken);
-      }
-    } catch (Exception e) {
-      throw new RuntimeException("An error occurred during login: " + e.getMessage(), e);
-    }
-    return Optional.empty();
-  }
-
 }
