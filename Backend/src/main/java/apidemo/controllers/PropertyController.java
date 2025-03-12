@@ -112,6 +112,29 @@ public class PropertyController {
     }
   }
 
+  @PutMapping("/{id}/status")
+  public ResponseEntity<?> updateArticleStatus(
+      @PathVariable Integer id,
+      @RequestParam String status) {
+    try {
+      User currentUser = getCurrentUser();
+
+      // Check if user is an admin
+      if (!currentUser.getRole().getName().toString().equals("ADMIN")) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Only administrators can update article status");
+        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+      }
+
+      Property updatedProperty = propertyService.updatePropertyStatus(id, status);
+      return ResponseEntity.ok(updatedProperty);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(errorResponse);
+    }
+  }
+
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteProperty(@PathVariable Integer id) {
     try {
