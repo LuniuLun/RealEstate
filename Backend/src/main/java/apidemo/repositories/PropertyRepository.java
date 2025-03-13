@@ -13,4 +13,6 @@ public interface PropertyRepository extends JpaRepository<Property, Integer>, Jp
   List<Property> findByCategory_id(int id);
 
   List<Property> findByStatus(String status);
+
+  long countByUser_id(int id);
 }
