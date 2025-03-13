@@ -1,6 +1,6 @@
 package apidemo.controllers;
 
-import org.apache.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,7 +50,7 @@ public class PropertyController {
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
   }
 
@@ -62,7 +62,7 @@ public class PropertyController {
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
   }
 
@@ -124,7 +124,7 @@ public class PropertyController {
       if (!existingProperty.getUser().getId().equals(currentUser.getId())) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "You are not authorized to update this property");
-        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
 
       // Handle images
@@ -141,7 +141,7 @@ public class PropertyController {
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     } catch (Exception e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
@@ -160,7 +160,7 @@ public class PropertyController {
       if (!currentUser.getRole().getName().toString().equals("ADMIN")) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "Only administrators can update article status");
-        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
 
       Property updatedProperty = propertyService.updatePropertyStatus(id, status);
@@ -168,7 +168,7 @@ public class PropertyController {
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(errorResponse);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
   }
 
@@ -183,7 +183,7 @@ public class PropertyController {
       if (!existingProperty.getUser().getId().equals(currentUser.getId())) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "You are not authorized to delete this property");
-        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
 
       propertyService.deleteProperty(id);
@@ -191,7 +191,7 @@ public class PropertyController {
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
   }
 
@@ -206,7 +206,7 @@ public class PropertyController {
   public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
     Map<String, String> errorResponse = new HashMap<>();
     errorResponse.put("message", ex.getMessage());
-    return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
   }
 
   // Helper method to get current authenticated user

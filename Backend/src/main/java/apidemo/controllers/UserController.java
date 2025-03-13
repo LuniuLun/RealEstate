@@ -1,6 +1,6 @@
 package apidemo.controllers;
 
-import org.apache.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,7 +44,7 @@ public class UserController {
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
   }
 
@@ -56,7 +56,7 @@ public class UserController {
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
   }
 
@@ -68,7 +68,7 @@ public class UserController {
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(errorResponse);
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
   }
 
@@ -94,7 +94,7 @@ public class UserController {
       if (!currentUser.getId().equals(id)) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "You are not authorized to update this user");
-        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
 
       User updated = userService.updateUser(id, updatedUser);
@@ -102,7 +102,7 @@ public class UserController {
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
   }
 
@@ -116,7 +116,7 @@ public class UserController {
       if (!currentUser.getId().equals(id)) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "You are not authorized to update this user");
-        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
 
       User upgradedUser = userService.upgradeUser(id);
@@ -124,7 +124,7 @@ public class UserController {
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
   }
 
@@ -138,7 +138,7 @@ public class UserController {
       if (!currentUser.getId().equals(id)) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "You are not authorized to delete this user");
-        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
 
       userService.deleteUser(id);
@@ -146,7 +146,7 @@ public class UserController {
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
   }
 
@@ -162,7 +162,7 @@ public class UserController {
   // Map<String, String> errorResponse = new HashMap<>();
   // errorResponse.put("message", "You are not authorized to change this user's
   // password");
-  // return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+  // return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
   // }
 
   // String oldPassword = passwordRequest.get("oldPassword");
@@ -179,7 +179,7 @@ public class UserController {
   // } catch (RuntimeException e) {
   // Map<String, String> errorResponse = new HashMap<>();
   // errorResponse.put("message", e.getMessage());
-  // return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(errorResponse);
+  // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
   // }
   // }
 
@@ -194,7 +194,7 @@ public class UserController {
   public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
     Map<String, String> errorResponse = new HashMap<>();
     errorResponse.put("message", ex.getMessage());
-    return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(errorResponse);
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
   }
 
   // Helper method to get current authenticated user
