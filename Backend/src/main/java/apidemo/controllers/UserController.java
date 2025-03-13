@@ -106,6 +106,28 @@ public class UserController {
     }
   }
 
+  @PutMapping("/upgrade/{id}")
+  public ResponseEntity<?> upgradeUser(@PathVariable Integer id) {
+    try {
+      User currentUser = getCurrentUser();
+
+      // Only allow users to update their own profile (or admin users if you have that
+      // role)
+      if (!currentUser.getId().equals(id)) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "You are not authorized to update this user");
+        return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body(errorResponse);
+      }
+
+      User upgradedUser = userService.upgradeUser(id);
+      return ResponseEntity.ok(upgradedUser);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(errorResponse);
+    }
+  }
+
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
     try {

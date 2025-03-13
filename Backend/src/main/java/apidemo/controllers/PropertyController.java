@@ -68,13 +68,13 @@ public class PropertyController {
 
   @PostMapping
   public ResponseEntity<?> createProperty(
-      @RequestParam("files") MultipartFile[] files,
+      @RequestParam("images") MultipartFile[] images,
       @RequestParam("propertyData") String propertyDataJson) {
     try {
       ObjectMapper mapper = new ObjectMapper();
       Property property = mapper.readValue(propertyDataJson, Property.class);
 
-      List<String> uploadedUrls = storageService.storeMultiFile(files);
+      List<String> uploadedUrls = storageService.storeMultiFile(images);
 
       if (!uploadedUrls.isEmpty()) {
         String imageUrlsString = String.join(",", uploadedUrls);
@@ -109,7 +109,7 @@ public class PropertyController {
   @PutMapping("/{id}")
   public ResponseEntity<?> updateProperty(
       @PathVariable Integer id,
-      @RequestParam(value = "files", required = false) MultipartFile[] files,
+      @RequestParam(value = "images", required = false) MultipartFile[] images,
       @RequestParam("propertyData") String propertyDataJson) {
     try {
       // Parse property data from JSON
@@ -129,7 +129,7 @@ public class PropertyController {
 
       // Handle images
       List<String> finalImagesList = storageService.updateMultiFile(existingProperty.getImages(),
-          updatedProperty.getImages(), files);
+          updatedProperty.getImages(), images);
 
       // Set the final list of images
       String imageUrlsString = String.join(",", finalImagesList);
