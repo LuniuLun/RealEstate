@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import apidemo.models.Property;
+import apidemo.models.Role.RoleName;
+import apidemo.models.User;
 import apidemo.repositories.PropertyRepository;
 import apidemo.utils.Filter;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -129,7 +131,17 @@ public class PropertyService {
   @Transactional
   public Property createProperty(Property property) {
     validateAndPrepareProperty(property);
+    User user = userService.getUserById(property.getUser().getId());
 
+    long userPostCount = propertyRepository.countByUser_id(user.getId());
+
+    if (user.getRole().getName() == RoleName.CUSTOMER && userPostCount >= 3) {
+      throw new IllegalStateException("Customers can only post up to 3 properties.");
+    }
+
+    if (user.getRole().getName() == RoleName.BROKER && userPostCount >= 30) {
+      throw new IllegalStateException("Brokers can only post up to 30 properties per month.");
+    }
     Property savedProperty = propertyRepository.save(property);
 
     if (property.getLand() != null) {
