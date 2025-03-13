@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import apidemo.models.Property;
+import apidemo.models.Role.RoleName;
 import apidemo.models.User;
 import apidemo.services.FirebaseFileService;
 import apidemo.services.PropertyService;
@@ -97,6 +98,14 @@ public class PropertyController {
   @PostMapping("/estimate-price")
   public ResponseEntity<?> estimatePropertyPrice(@RequestBody Property property) {
     try {
+      User currentUser = getCurrentUser();
+
+      if (currentUser.getRole().getName() == RoleName.CUSTOMER) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Upgrade your account before using this feature");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+      }
+
       double estimatedPrice = propertyService.getEstimatedPrice(property);
       return ResponseEntity.ok(Map.of("estimatedPrice", estimatedPrice));
     } catch (RuntimeException e) {
@@ -157,7 +166,7 @@ public class PropertyController {
       User currentUser = getCurrentUser();
 
       // Check if user is an admin
-      if (!currentUser.getRole().getName().toString().equals("ADMIN")) {
+      if (currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "Only administrators can update article status");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
