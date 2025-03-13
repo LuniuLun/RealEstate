@@ -34,16 +34,9 @@ public class HouseService {
    * up relationships
    */
   public House prepareHouse(House house, Property property) {
-    // Extract house characteristics IDs
     List<Integer> houseCharacteristicIds = extractHouseCharacteristicIds(house);
-
-    // Clear mappings to avoid save errors
     house.setHouseCharacteristicMappings(null);
-
-    // Set property relationship
     house.setProperty(property);
-
-    // Store IDs for later processing
     houseCharacteristicsCache.put(house, houseCharacteristicIds);
 
     return house;
@@ -55,11 +48,9 @@ public class HouseService {
   public void processHouseCharacteristics(House savedHouse) {
     List<Integer> characteristicIds = houseCharacteristicsCache.get(savedHouse);
     if (characteristicIds != null && !characteristicIds.isEmpty()) {
-      // Create and save mappings
       Set<HouseCharacteristicMapping> mappings = createHouseCharacteristicMappings(savedHouse, characteristicIds);
       savedHouse.setHouseCharacteristicMappings(mappings);
 
-      // Clean up cache
       houseCharacteristicsCache.remove(savedHouse);
     }
   }

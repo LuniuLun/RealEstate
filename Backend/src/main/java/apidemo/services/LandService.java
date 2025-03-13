@@ -34,16 +34,9 @@ public class LandService {
    * up relationships
    */
   public Land prepareLand(Land land, Property property) {
-    // Extract land characteristics IDs
     List<Integer> landCharacteristicIds = extractLandCharacteristicIds(land);
-
-    // Clear mappings to avoid save errors
     land.setLandCharacteristicMappings(null);
-
-    // Set property relationship
     land.setProperty(property);
-
-    // Store IDs for later processing
     landCharacteristicsCache.put(land, landCharacteristicIds);
 
     return land;
@@ -55,11 +48,9 @@ public class LandService {
   public void processLandCharacteristics(Land savedLand) {
     List<Integer> characteristicIds = landCharacteristicsCache.get(savedLand);
     if (characteristicIds != null && !characteristicIds.isEmpty()) {
-      // Create and save mappings
       Set<LandCharacteristicMapping> mappings = createLandCharacteristicMappings(savedLand, characteristicIds);
       savedLand.setLandCharacteristicMappings(mappings);
 
-      // Clean up cache
       landCharacteristicsCache.remove(savedLand);
     }
   }

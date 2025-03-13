@@ -60,10 +60,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
       }
     } catch (JWTVerificationException e) {
-      // Log the exception
       logger.error("JWT token validation failed: {}" + e.getMessage());
     } catch (Exception e) {
-      // Log the exception
       logger.error("Error processing JWT token: {}" + e.getMessage());
     }
 
