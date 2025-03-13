@@ -81,6 +81,23 @@ public class UserService {
     return userRepository.save(user);
   }
 
+  public User upgradeUser(Integer userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User does not exist"));
+
+    if (user.getRole().getName() == Role.RoleName.BROKER) {
+      throw new RuntimeException("Your account has been upgraded");
+    }
+
+    Role brokerRole = roleRepository.findById(2)
+        .orElseThrow(() -> new RuntimeException("Role BROKER not found"));
+
+    user.setRole(brokerRole);
+    user.setUpdatedAt(LocalDateTime.now());
+
+    return userRepository.save(user);
+  }
+
   public User updateUser(Integer userId, User updatedUser) {
     return userRepository.findById(userId).map(existingUser -> {
       existingUser.setUsername(updatedUser.getUsername());
@@ -92,11 +109,11 @@ public class UserService {
       existingUser.setUpdatedAt(LocalDateTime.now());
 
       Role role = roleRepository.findById(existingUser.getRole().getId())
-          .orElseThrow(() -> new RuntimeException("Role not found with id: " + existingUser.getRole().getId()));
+          .orElseThrow(() -> new RuntimeException("Role does not exist"));
       existingUser.setRole(role);
 
       return userRepository.save(existingUser);
-    }).orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+    }).orElseThrow(() -> new RuntimeException("User does not exist"));
   }
 
   public void deleteUser(Integer userId) {
