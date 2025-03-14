@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 07, 2025 lúc 05:33 AM
+-- Thời gian đã tạo: Th3 14, 2025 lúc 03:20 AM
 -- Phiên bản máy phục vụ: 10.4.28-MariaDB
 -- Phiên bản PHP: 8.1.17
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `real_estate`
 --
+CREATE DATABASE IF NOT EXISTS `real_estate` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `real_estate`;
 
 -- --------------------------------------------------------
 
@@ -179,7 +181,14 @@ INSERT INTO `lands` (`land_id`, `property_id`, `land_type_id`) VALUES
 (4, 9, 3),
 (5, 10, 3),
 (6, 11, 3),
-(7, 12, 3);
+(7, 12, 3),
+(9, 16, 3),
+(10, 17, 3),
+(11, 18, 3),
+(12, 19, 3),
+(13, 20, 3),
+(14, 21, 3),
+(15, 22, 3);
 
 -- --------------------------------------------------------
 
@@ -230,7 +239,21 @@ INSERT INTO `land_characteristic_mappings` (`land_characteristic_mapping_id`, `l
 (7, 6, 1),
 (8, 6, 5),
 (9, 7, 5),
-(10, 7, 1);
+(10, 7, 1),
+(17, 9, 3),
+(18, 9, 5),
+(19, 10, 1),
+(20, 10, 5),
+(21, 11, 5),
+(22, 11, 1),
+(23, 12, 5),
+(24, 12, 1),
+(25, 13, 1),
+(26, 13, 5),
+(29, 14, 1),
+(30, 14, 5),
+(31, 15, 5),
+(32, 15, 1);
 
 -- --------------------------------------------------------
 
@@ -297,7 +320,14 @@ INSERT INTO `properties` (`property_id`, `user_id`, `category_id`, `status`, `ti
 (10, 1, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'land_new_1.jpg,land_new_2.jpg', 12500000000.00, '2025-03-07 03:16:36', '2025-03-07 03:16:36'),
 (11, 1, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'land_new_1.jpg,land_new_2.jpg', 12500000000.00, '2025-03-07 03:25:03', '2025-03-07 03:25:03'),
 (12, 1, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'land_new_1.jpg,land_new_2.jpg', 12500000000.00, '2025-03-07 03:25:57', '2025-03-07 03:25:57'),
-(14, 2, 2, 'PENDING', 'Nhà phố trung tâm', 'Nhà phố 2 tầng, mặt tiền đường lớn, gần trường học và chợ', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 2, 100, 10, 10, 'house_new_1.jpg,house_new_2.jpg', 3500000000.00, '2025-03-07 03:52:55', '2025-03-07 03:52:55');
+(14, 2, 2, 'PENDING', 'Nhà phố trung tâm', 'Nhà phố 2 tầng, mặt tiền đường lớn, gần trường học và chợ', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 2, 100, 10, 10, 'house_new_1.jpg,house_new_2.jpg', 3500000000.00, '2025-03-07 03:52:55', '2025-03-07 03:52:55'),
+(16, 1, 1, 'APPROVAL', 'Đất nền khu công nghiệp123123123123', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'land_new_1.jpg,land_new_2.jpg', 12500000000.00, '2025-03-09 01:35:29', '2025-03-12 07:33:59'),
+(17, 1, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'land_new_1.jpg,land_new_2.jpg', 12500000000.00, '2025-03-10 11:28:45', '2025-03-10 11:28:45'),
+(18, 1, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'land_new_1.jpg,land_new_2.jpg', 12500000000.00, '2025-03-10 11:59:24', '2025-03-10 11:59:24'),
+(19, 1, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'land_new_1.jpg,land_new_2.jpg', 12500000000.00, '2025-03-10 11:59:44', '2025-03-10 11:59:44'),
+(20, 5, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'https://firebasestorage.googleapis.com/v0/b/rare-animals.appspot.com/o/RealEstate%2F20697b83-6270-4fc5-a2fc-2cef7ee26f2b.png?alt=media&token=20697b83-6270-4fc5-a2fc-2cef7ee26f2b.png,https://firebasestorage.googleapis.com/v0/b/rare-animals.appspot.com/o/RealEstate%2F0b62c308-8a63-49dc-be5d-626bf595ba72.jpeg?alt=media&token=0b62c308-8a63-49dc-be5d-626bf595ba72.jpeg', 12500000000.00, '2025-03-12 08:10:33', '2025-03-12 08:10:33'),
+(21, 5, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'https://firebasestorage.googleapis.com/v0/b/rare-animals.appspot.com/o/RealEstate%2F963e4274-a0ea-4e79-af99-dc088bc98022.jpg?alt=media&token=963e4274-a0ea-4e79-af99-dc088bc98022.jpg,https://firebasestorage.googleapis.com/v0/b/rare-animals.appspot.com/o/RealEstate%2F4a989a87-4a8d-4fb0-bc2b-17fd76ac4bac.jpg?alt=media&token=4a989a87-4a8d-4fb0-bc2b-17fd76ac4bac.jpg,https://firebasestorage.googleapis.com/v0/b/rare-animals.appspot.com/o/RealEstate%2F73e3553c-7958-40f3-8e4c-b869a689c288.png?alt=media&token=73e3553c-7958-40f3-8e4c-b869a689c288.png', 12500000000.00, '2025-03-12 08:12:10', '2025-03-12 08:47:51'),
+(22, 5, 1, 'PENDING', 'Đất nền khu công nghiệp', 'Đất nền mặt tiền đường, phù hợp xây dựng nhà xưởng', 'Đà Nẵng', 'Phường Hòa Khánh Bắc', 'Đường Nguyễn Tất Thành', 108.175, 16.065, 1, 1, 1200, 40, 30, 'https://firebasestorage.googleapis.com/v0/b/rare-animals.appspot.com/o/RealEstate%2Fe523d34a-e725-403a-adfa-ae31f9e2639f.png?alt=media&token=e523d34a-e725-403a-adfa-ae31f9e2639f.png,https://firebasestorage.googleapis.com/v0/b/rare-animals.appspot.com/o/RealEstate%2F55dd66cb-79f8-4d01-8e78-168e0eed4c7a.jpeg?alt=media&token=55dd66cb-79f8-4d01-8e78-168e0eed4c7a.jpeg', 12500000000.00, '2025-03-13 03:40:56', '2025-03-13 03:40:56');
 
 -- --------------------------------------------------------
 
@@ -360,7 +390,15 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`token_id`, `user_id`, `token`, `expires_at`, `created_at`) VALUES
-(1, 3, 'f001af96-3f54-4244-a4f2-b234820d2461', '2025-03-14 09:40:31', '2025-03-07 02:40:31');
+(1, 3, 'f001af96-3f54-4244-a4f2-b234820d2461', '2025-03-14 09:40:31', '2025-03-07 02:40:31'),
+(2, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYW5lX2RvZTEiLCJ1c2VySWQiOjUsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc0MTc0Njc1NywiZXhwIjoxNzQxODMzMTU3fQ.l4c6W-LGCBQl-nqCiApv7aEx8SFhbqzXsma5-_rKHzQ', '2025-03-13 09:32:37', '2025-03-12 02:32:37'),
+(3, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYW5lX2RvZTEiLCJ1c2VySWQiOjUsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc0MTc0Njc2OCwiZXhwIjoxNzQxODMzMTY4fQ.ixQMKrYFydcpxWKfbKYkYNTASUX1I86M0lGpR7gvpKs', '2025-03-13 09:32:48', '2025-03-12 02:32:48'),
+(4, 6, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYW5lX2RvZTIiLCJ1c2VySWQiOjYsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc0MTc0ODgyOSwiZXhwIjoxNzQxODM1MjI5fQ.dOzLdAUjJV21swnBsznEsXGrNPCcSvxJlAZ18_2sLiE', '2025-03-13 10:07:09', '2025-03-12 03:07:09'),
+(5, 6, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqYW5lX2RvZTIiLCJ1c2VySWQiOjYsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc0MTc1MjM2MiwiZXhwIjoxNzQyMzU3MTYyfQ.Bj__m1ZElRvLIhPqC46zmOTdsEY25h3WmycNKh6MYcg', '2025-03-19 11:06:02', '2025-03-12 04:06:02'),
+(6, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbjAxIiwidXNlcklkIjo1LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDE3NjQ4MjMsImV4cCI6MTc0MjM2OTYyM30.BEgHHkLm-Yk30guSc8YdmZj8AlwvDefWDgwEjXMfVfI', '2025-03-19 14:33:43', '2025-03-12 07:33:43'),
+(7, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbjAxIiwidXNlcklkIjo1LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDE3NzIyOTEsImV4cCI6MTc0MjM3NzA5MX0.p54zxvWNDhIs6Oebzcy4dXZbAphPt5QbPJUKyV0ApwM', '2025-03-19 16:38:11', '2025-03-12 09:38:11'),
+(8, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbjAxIiwidXNlcklkIjo1LCJyb2xlIjoiQlJPS0VSIiwiaWF0IjoxNzQxODMzMDAwLCJleHAiOjE3NDI0Mzc4MDB9.hhJam2RuLMolIR3mkNfX-Vog7859UyKfhB7_cknroKc', '2025-03-20 09:30:00', '2025-03-13 02:30:00'),
+(9, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbjEiLCJ1c2VySWQiOjEsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0MTkxODcxNywiZXhwIjoxNzQyNTIzNTE3fQ.3X2I5lm_FuyO_ToAYu5dvf0UCWNOuEdxeK8Ao1Xeaic', '2025-03-21 09:18:37', '2025-03-14 02:18:37');
 
 -- --------------------------------------------------------
 
@@ -376,6 +414,17 @@ CREATE TABLE `transactions_history` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `transactions_history`
+--
+
+INSERT INTO `transactions_history` (`transaction_id`, `user_id`, `transaction_type`, `amount`, `updated_at`, `created_at`) VALUES
+(16, 1, 'UPGRADE', 1000000.00, '2025-03-13 04:11:15', '2025-03-13 04:11:15'),
+(17, 2, 'UPGRADE', 2000000.00, '2025-03-13 04:11:15', '2025-03-13 04:11:15'),
+(18, 3, 'UPGRADE', 3000000.00, '2025-03-13 04:11:15', '2025-03-13 04:11:15'),
+(19, 6, 'UPGRADE', 4000000.00, '2025-03-13 04:11:15', '2025-03-13 04:11:15'),
+(20, 5, 'UPGRADE', 5000000.00, '2025-03-13 04:11:15', '2025-03-13 04:11:15');
 
 -- --------------------------------------------------------
 
@@ -400,9 +449,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `role_id`, `username`, `email`, `password`, `phone`, `address`, `created_at`, `updated_at`) VALUES
-(1, 1, 'user1', 'user1@example.com', 'hashed_password_1', '0123456789', '123 Main St', '2025-02-27 07:52:47', '2025-02-27 07:52:47'),
-(2, 2, 'broker1', 'broker1@example.com', 'hashed_password_2', '0987654321', '456 Elm St', '2025-02-27 07:52:47', '2025-02-27 07:52:47'),
-(3, 3, 'admin1', 'admin1@example.com', 'hashed_password_3', '0112233445', '789 Oak St', '2025-02-27 07:52:47', '2025-02-27 07:52:47');
+(1, 1, 'admin1', 'admin1@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '0123456789', '123 Main St', '2025-02-27 07:52:47', '2025-03-14 02:17:54'),
+(2, 2, 'broker1', 'broker1@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '0987654321', '456 Elm St', '2025-02-27 07:52:47', '2025-03-14 02:13:32'),
+(3, 3, 'user01', 'user01@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '0112233445', '789 Oak St', '2025-02-27 07:52:47', '2025-03-14 02:17:39'),
+(5, 3, 'user02', 'user02@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '093454856978', '456 Another St, Hanoi, Vietnam', '2025-03-12 02:32:04', '2025-03-14 02:16:54'),
+(6, 3, 'jane_doe2', 'jane.do2@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '093454456978', '456 Another St, Hanoi, Vietnam', '2025-03-12 03:06:41', '2025-03-14 02:13:24'),
+(7, 3, 'jane_doe1', 'jane.do1@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '093224856978', '456 Another St, Hanoi, Vietnam', '2025-03-14 02:13:08', '2025-03-14 02:13:08');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -536,7 +588,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT cho bảng `favourite_properties`
 --
 ALTER TABLE `favourite_properties`
-  MODIFY `favourite_property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `favourite_property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `furnished_statuses`
@@ -566,7 +618,7 @@ ALTER TABLE `house_characteristic_mappings`
 -- AUTO_INCREMENT cho bảng `lands`
 --
 ALTER TABLE `lands`
-  MODIFY `land_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `land_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT cho bảng `land_characteristics`
@@ -578,7 +630,7 @@ ALTER TABLE `land_characteristics`
 -- AUTO_INCREMENT cho bảng `land_characteristic_mappings`
 --
 ALTER TABLE `land_characteristic_mappings`
-  MODIFY `land_characteristic_mapping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `land_characteristic_mapping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT cho bảng `land_types`
@@ -590,7 +642,7 @@ ALTER TABLE `land_types`
 -- AUTO_INCREMENT cho bảng `properties`
 --
 ALTER TABLE `properties`
-  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT cho bảng `property_legal_documents`
@@ -608,19 +660,19 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT cho bảng `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `token_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `token_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT cho bảng `transactions_history`
 --
 ALTER TABLE `transactions_history`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
