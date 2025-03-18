@@ -1,8 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
-import DefaultLayout from '@layout'
+import ProtectedRoute from './routes/ProtectedRoute'
 import { authStore } from '@stores'
-import { Dashboard, Home, Users } from '@pages'
-import ProtectedRoute from '@routes/ProtectedRoute'
+import Home from '@pages/Home/Home'
+import Dashboard from '@pages/Dashboard'
+import Users from '@pages/Users'
+import { AđminLayout, DefaultLayout } from '@layout'
 
 function App() {
   const { user } = authStore()
@@ -11,9 +13,11 @@ function App() {
     <Routes>
       <Route path='/' element={<DefaultLayout />}>
         <Route index element={<Home />} />
-        <Route
-          element={<ProtectedRoute isAllowed={!!user} userRoles={user?.roles} requiredRole='ADMIN' redirectPath='/' />}
-        >
+      </Route>
+      <Route
+        element={<ProtectedRoute isAllowed={!!user} userRoles={user?.roles} requiredRole='admin' redirectPath='/' />}
+      >
+        <Route element={<AđminLayout />}>
           <Route path='dashboard' element={<Dashboard />} />
           <Route path='users' element={<Users />} />
         </Route>
