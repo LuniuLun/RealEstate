@@ -28,6 +28,6 @@ export interface IToken {
 
 export interface TransformedUser extends Pick<IUser, 'id'>, TableRow {
   name: React.ReactNode
-  createdDate: string
+  createdAt: string
   role: React.ReactNode
 }
