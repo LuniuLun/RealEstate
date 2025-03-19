@@ -23,7 +23,7 @@ const BaseHeader = () => {
       </Flex>
       <Flex>
         <NavItem title='Trang chủ' to='/' isActive={false} />
-        <NavItem title='Bài đăng' to='/listings' isActive={false} />
+        <NavItem title='Bài đăng' to='/property-listings' isActive={false} />
       </Flex>
       <Flex alignItems='center' gap={5}>
         {user ? (
