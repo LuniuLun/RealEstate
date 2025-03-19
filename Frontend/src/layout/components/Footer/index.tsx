@@ -1,6 +1,7 @@
 import { FacebookIcon, InstagramIcon, LinkedInIcon, LogoIcon, TwitterIcon } from '@assets/icons'
-import { Box, Container, Flex, Text, Link, VStack, HStack } from '@chakra-ui/react'
+import { Box, Container, Flex, Text, VStack, HStack } from '@chakra-ui/react'
 import { Logo } from '@components'
+import { Link } from 'react-router-dom'
 import colors from '@styles/variables/colors'
 import React from 'react'
 
@@ -16,7 +17,7 @@ const Footer = () => {
           <Flex flexDirection={{ base: 'column', md: 'row' }} gap={8}>
             <VStack align='start'>
               <Text fontWeight='bold'>Liên hệ tôi</Text>
-              <Link color={colors.brand.blackTextSecondary}>nguyenducvan@gmail.com</Link>
+              <Text color={colors.brand.blackTextSecondary}>nguyenducvan@gmail.com</Text>
               <Text color={colors.brand.blackTextSecondary}>0373 115 431</Text>
             </VStack>
 
@@ -28,18 +29,10 @@ const Footer = () => {
           </Flex>
 
           <HStack spacing={4}>
-            <Link href='#' isExternal>
-              {React.cloneElement(<FacebookIcon />)}
-            </Link>
-            <Link href='#' isExternal>
-              {React.cloneElement(<InstagramIcon />)}
-            </Link>
-            <Link href='#' isExternal>
-              {React.cloneElement(<TwitterIcon />)}
-            </Link>
-            <Link href='#' isExternal>
-              {React.cloneElement(<LinkedInIcon />)}
-            </Link>
+            <Link to='#'>{React.cloneElement(<FacebookIcon />)}</Link>
+            <Link to='#'>{React.cloneElement(<InstagramIcon />)}</Link>
+            <Link to='#'>{React.cloneElement(<TwitterIcon />)}</Link>
+            <Link to='#'>{React.cloneElement(<LinkedInIcon />)}</Link>
           </HStack>
         </Flex>
       </Container>
