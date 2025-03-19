@@ -69,7 +69,7 @@ export const FILTER_OPTION = {
     { value: 7, label: 'Tây Bắc' },
     { value: 8, label: 'Tây Nam' }
   ],
-  features: [
+  landFeatures: [
     { value: 1, label: 'Mặt tiền' },
     { value: 2, label: 'Nở hậu' },
     { value: 3, label: 'Một phần thổ cư' },

@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { Button, Popover, PopoverTrigger, PopoverContent, PopoverBody, Text, Flex } from '@chakra-ui/react'
 import CheckboxGroup from '@components/CheckboxGroup'
 import { SelectOption } from '@components/CustomSelect'
+import { CategoryName } from '@type/models'
 
 interface FilterPopoverProps {
   options: SelectOption<number>[]
   selectedValues: string[]
   filterType: string
-  onValueChange: (value: string, filterType: string) => void
+  onValueChange: (value: string, filterType: CategoryName) => void
   title?: string
 }
 

@@ -11,8 +11,8 @@ import {
 } from '@chakra-ui/react'
 
 interface RangeValues {
-  min: string
-  max: string
+  min: number
+  max: number
 }
 
 interface RangeFilterProps {
@@ -43,14 +43,14 @@ const RangeFilter = ({ label, unit, values, onRangeChange }: RangeFilterProps) =
             <Input
               placeholder={`Min ${unit}`}
               value={values.min}
-              onChange={(e) => onRangeChange({ ...values, min: e.target.value })}
+              onChange={(e) => onRangeChange({ ...values, min: Number(e.target.value) })}
               size='sm'
             />
             <Text>-</Text>
             <Input
               placeholder={`Max ${unit}`}
               value={values.max}
-              onChange={(e) => onRangeChange({ ...values, max: e.target.value })}
+              onChange={(e) => onRangeChange({ ...values, max: Number(e.target.value) })}
               size='sm'
             />
           </Flex>
