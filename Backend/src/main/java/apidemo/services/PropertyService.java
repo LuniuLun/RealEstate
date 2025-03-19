@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import apidemo.models.Property;
+import apidemo.models.Property.PropertyStatus;
 import apidemo.models.Role.RoleName;
 import apidemo.models.User;
 import apidemo.repositories.PropertyRepository;
@@ -124,7 +125,7 @@ public class PropertyService {
     return propertyRepository.findByCategory_id(categoryId);
   }
 
-  public List<Property> getPropertiesByStatus(String status) {
+  public List<Property> getPropertiesByStatus(PropertyStatus status) {
     return propertyRepository.findByStatus(status);
   }
 
@@ -280,5 +281,32 @@ public class PropertyService {
     if (property.getImages() == null || property.getImages().isEmpty()) {
       throw new RuntimeException("At least one image is required for property");
     }
+  }
+
+  /**
+   * Lấy số lượng bài viết có trạng thái
+   */
+  public long getCountPendingProperties() {
+    return propertyRepository.countByStatus(PropertyStatus.PENDING);
+  }
+
+  public long getCountApprovedProperties() {
+    return propertyRepository.countByStatus(PropertyStatus.APPROVAL);
+  }
+
+  public long getCountCanceledProperties() {
+    return propertyRepository.countByStatus(PropertyStatus.CANCELED);
+  }
+
+  public long getCountPropertiesByStatus(PropertyStatus status) {
+    return propertyRepository.countByStatus(status);
+  }
+
+  public long getCountPropertiesByStatusAndCategory(PropertyStatus status, int categoryId) {
+    return propertyRepository.countByStatusAndCategory_id(status, categoryId);
+  }
+
+  public long getCountPropertiesByStatusAndUser(PropertyStatus status, int userId) {
+    return propertyRepository.countByStatusAndUser_id(status, userId);
   }
 }
