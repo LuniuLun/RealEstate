@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import apidemo.models.Property;
+import apidemo.models.Property.PropertyStatus;
 import apidemo.models.Role.RoleName;
 import apidemo.models.User;
 import apidemo.services.FirebaseFileService;
@@ -64,6 +65,112 @@ public class PropertyController {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+  }
+
+  /**
+   * API endpoint để lấy số lượng bài viết theo từng trạng thái
+   * 
+   * @return Map chứa số lượng bài viết theo các trạng thái
+   */
+  @GetMapping("/counts")
+  public ResponseEntity<?> getPropertyCounts() {
+    try {
+      Map<String, Long> counts = new HashMap<>();
+      counts.put("pending", propertyService.getCountPropertiesByStatus(PropertyStatus.PENDING));
+      counts.put("approved", propertyService.getCountPropertiesByStatus(PropertyStatus.APPROVAL));
+      counts.put("canceled", propertyService.getCountPropertiesByStatus(PropertyStatus.CANCELED));
+
+      return ResponseEntity.ok(counts);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+  }
+
+  /**
+   * API endpoint để lấy số lượng bài viết theo trạng thái cụ thể
+   * 
+   * @param status Trạng thái cần đếm (PENDING, APPROVAL, CANCELED)
+   * @return Số lượng bài viết
+   */
+  @GetMapping("/counts/{status}")
+  public ResponseEntity<?> getPropertyCountByStatusFromCounts(@PathVariable String status) {
+    try {
+      Property.PropertyStatus propertyStatus = Property.PropertyStatus.valueOf(status.toUpperCase());
+      long count = propertyService.getCountPropertiesByStatus(propertyStatus);
+
+      Map<String, Long> result = new HashMap<>();
+      result.put("count", count);
+
+      return ResponseEntity.ok(result);
+    } catch (IllegalArgumentException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", "Invalid status value. Must be PENDING, APPROVAL, or CANCELED");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+  }
+
+  /**
+   * API endpoint để lấy số lượng bài viết theo trạng thái và danh mục
+   * 
+   * @param status     Trạng thái cần đếm (PENDING, APPROVAL, CANCELED)
+   * @param categoryId ID của danh mục
+   * @return Số lượng bài viết
+   */
+  @GetMapping("/count/{status}/category/{categoryId}")
+  public ResponseEntity<?> getPropertyCountByStatusAndCategory(
+      @PathVariable String status,
+      @PathVariable Integer categoryId) {
+    try {
+      Property.PropertyStatus propertyStatus = Property.PropertyStatus.valueOf(status.toUpperCase());
+      long count = propertyService.getCountPropertiesByStatusAndCategory(propertyStatus, categoryId);
+
+      Map<String, Long> result = new HashMap<>();
+      result.put("count", count);
+
+      return ResponseEntity.ok(result);
+    } catch (IllegalArgumentException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", "Invalid status value. Must be PENDING, APPROVAL, or CANCELED");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+  }
+
+  /**
+   * API endpoint để lấy số lượng bài viết theo trạng thái của người dùng hiện tại
+   * 
+   * @param status Trạng thái cần đếm (PENDING, APPROVAL, CANCELED)
+   * @return Số lượng bài viết
+   */
+  @GetMapping("/count/{status}/my")
+  public ResponseEntity<?> getMyPropertyCountByStatus(@PathVariable String status) {
+    try {
+      User currentUser = getCurrentUser();
+      Property.PropertyStatus propertyStatus = Property.PropertyStatus.valueOf(status.toUpperCase());
+      long count = propertyService.getCountPropertiesByStatusAndUser(propertyStatus, currentUser.getId());
+
+      Map<String, Long> result = new HashMap<>();
+      result.put("count", count);
+
+      return ResponseEntity.ok(result);
+    } catch (IllegalArgumentException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", "Invalid status value. Must be PENDING, APPROVAL, or CANCELED");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
   }
 
