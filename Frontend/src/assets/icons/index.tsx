@@ -238,7 +238,7 @@ export const FacebookIcon = ({ width = '10', height = '16', fill = '#fff' }: Ico
       fill={fill}
     />
     <a href='https://www.figma.com/design/spEQx2OoHncst71gKBatDM?node-id=2-484'>
-      <rect fill='black' fill-opacity='0' x='0.154875' y='-1.125' width='9.375' height='17.25' />
+      <rect fill='black' fillOpacity='0' x='0.154875' y='-1.125' width='9.375' height='17.25' />
     </a>
   </svg>
 )
@@ -250,7 +250,7 @@ export const InstagramIcon = ({ width = '14', height = '14', fill = '#fff' }: Ic
       fill={fill}
     />
     <a href='https://www.figma.com/design/spEQx2OoHncst71gKBatDM?node-id=2-484'>
-      <rect fill='black' fill-opacity='0' x='-0.282375' y='-1.125' width='13.125' height='17.25' />
+      <rect fill='black' fillOpacity='0' x='-0.282375' y='-1.125' width='13.125' height='17.25' />
     </a>
   </svg>
 )
@@ -262,7 +262,7 @@ export const LinkedInIcon = ({ width = '14', height = '14', fill = '#fff' }: Ico
       fill={fill}
     />
     <a href='https://www.figma.com/design/spEQx2OoHncst71gKBatDM?node-id=2-484'>
-      <rect fill='black' fill-opacity='0' x='0.178312' y='-1.125' width='13.125' height='17.25' />
+      <rect fill='black' fillOpacity='0' x='0.178312' y='-1.125' width='13.125' height='17.25' />
     </a>
   </svg>
 )
@@ -274,7 +274,7 @@ export const TwitterIcon = ({ width = '16', height = '13', fill = '#fff' }: Icon
       fill={fill}
     />
     <a href='https://www.figma.com/design/spEQx2OoHncst71gKBatDM?node-id=2-484'>
-      <rect fill='black' fill-opacity='0' x='-0.744' y='-1.125' width='15' height='17.25' />
+      <rect fill='black' fillOpacity='0' x='-0.744' y='-1.125' width='15' height='17.25' />
     </a>
   </svg>
 )
