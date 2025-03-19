@@ -4,6 +4,7 @@ import { authStore } from '@stores'
 import Home from '@pages/Home/Home'
 import Dashboard from '@pages/Dashboard'
 import Users from '@pages/Users'
+import ListingProperty from '@pages/ListingProperty'
 import { AđminLayout, DefaultLayout } from '@layout'
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
     <Routes>
       <Route path='/' element={<DefaultLayout />}>
         <Route index element={<Home />} />
+        <Route path='listing-property' element={<ListingProperty />} />
       </Route>
       <Route
         element={<ProtectedRoute isAllowed={!!user} userRoles={user?.roles} requiredRole='admin' redirectPath='/' />}
