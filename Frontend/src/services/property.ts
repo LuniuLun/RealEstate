@@ -1,26 +1,44 @@
 import { IApiResponse } from '@type/apiResponse'
 import MESSAGE from '@constants/message'
 import { IProperty } from '@type/models'
-import { IFilterOptions } from '@type/filterOptions'
 import { authStore } from '@stores'
+import { FilterCriteria } from '@stores/Filter'
 
 const baseUrl = `${import.meta.env.VITE_APP_BASE_URL}${import.meta.env.VITE_APP_PROPERTY_ENDPOINT}`
 
+export interface EnhancedFilterOptions {
+  page?: string
+  limit?: string
+  property?: string
+  value?: string
+  sortBy?: string
+  typeOfSort?: 'asc' | 'desc'
+  filterCriteria?: FilterCriteria
+}
+
 export const fetchProperties = async (
-  params: IFilterOptions = {
+  params: EnhancedFilterOptions = {
     page: '1',
     limit: '12',
     typeOfSort: 'desc'
   }
 ): Promise<IApiResponse<IProperty[]>> => {
   try {
-    const { property = '', value = '', sortBy = '', typeOfSort = 'desc', limit = '12', page = '1' } = params
+    const {
+      property = '',
+      value = '',
+      sortBy = '',
+      typeOfSort = 'desc',
+      limit = '12',
+      page = '1',
+      filterCriteria
+    } = params
 
     const calledUrl = new URL(baseUrl)
     calledUrl.searchParams.append('page', page)
     calledUrl.searchParams.append('limit', limit)
 
-    // Add property and value if provided
+    // Add basic property and value if provided
     if (property && value) {
       calledUrl.searchParams.append(property, value)
     }
@@ -32,6 +50,71 @@ export const fetchProperties = async (
     } else {
       calledUrl.searchParams.append('sortBy', 'createdAt')
       calledUrl.searchParams.append('typeOfSort', 'desc')
+    }
+
+    // Add complex filter criteria if provided
+    if (filterCriteria) {
+      // Price range
+      if (filterCriteria.minPrice && filterCriteria.minPrice > 0) {
+        calledUrl.searchParams.append('minPrice', filterCriteria.minPrice.toString())
+      }
+      if (filterCriteria.maxPrice && filterCriteria.maxPrice > 0) {
+        calledUrl.searchParams.append('maxPrice', filterCriteria.maxPrice.toString())
+      }
+
+      // Area range
+      if (filterCriteria.minArea && filterCriteria.minArea > 0) {
+        calledUrl.searchParams.append('minArea', filterCriteria.minArea.toString())
+      }
+      if (filterCriteria.maxArea && filterCriteria.maxArea > 0) {
+        calledUrl.searchParams.append('maxArea', filterCriteria.maxArea.toString())
+      }
+
+      // Bedrooms
+      if (filterCriteria.bedrooms !== undefined) {
+        calledUrl.searchParams.append('bedrooms', filterCriteria.bedrooms.toString())
+      }
+
+      // Direction
+      if (filterCriteria.direction !== undefined) {
+        calledUrl.searchParams.append('direction', filterCriteria.direction.toString())
+      }
+
+      // Property type
+      if (filterCriteria.category !== undefined) {
+        calledUrl.searchParams.append('category', filterCriteria.category.toString())
+      }
+
+      // Furnished status
+      if (filterCriteria.furnishedStatus !== undefined) {
+        calledUrl.searchParams.append('furnishedStatus', filterCriteria.furnishedStatus.toString())
+      }
+
+      // Land type
+      if (filterCriteria.landType !== undefined) {
+        calledUrl.searchParams.append('landType', filterCriteria.landType.toString())
+      }
+
+      // House features (Array)
+      if (filterCriteria.houseFeatures?.length) {
+        calledUrl.searchParams.append('houseFeatures', filterCriteria.houseFeatures.join(','))
+      }
+
+      // Land features (Array)
+      if (filterCriteria.landFeatures?.length) {
+        calledUrl.searchParams.append('landFeatures', filterCriteria.landFeatures.join(','))
+      }
+
+      // Location filters
+      if (filterCriteria.location?.province) {
+        calledUrl.searchParams.append('province', filterCriteria.location.province)
+      }
+      if (filterCriteria.location?.district) {
+        calledUrl.searchParams.append('district', filterCriteria.location.district)
+      }
+      if (filterCriteria.location?.ward) {
+        calledUrl.searchParams.append('ward', filterCriteria.location.ward)
+      }
     }
 
     // If user is not admin, only show APPROVAL status properties
@@ -64,94 +147,10 @@ export const fetchProperties = async (
   }
 }
 
-// Function to get property counts by status
+// Keep existing functions unchanged
 export const fetchPropertyCounts = async (): Promise<IApiResponse<Record<string, number>>> => {
   try {
     const response = await fetch(`${baseUrl}/counts`)
-
-    if (!response.ok) {
-      return {
-        status: 'error',
-        message: MESSAGE.property.GET_FAILED
-      }
-    }
-
-    const data = await response.json()
-
-    return {
-      status: 'success',
-      message: MESSAGE.property.GET_SUCCESS,
-      data
-    }
-  } catch (error: unknown) {
-    return {
-      status: 'error',
-      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
-    }
-  }
-}
-
-// Function to get property count by specific status
-export const fetchPropertyCountByStatus = async (status: string): Promise<IApiResponse<{ count: number }>> => {
-  try {
-    const response = await fetch(`${baseUrl}/count/${status}`)
-
-    if (!response.ok) {
-      return {
-        status: 'error',
-        message: MESSAGE.property.GET_FAILED
-      }
-    }
-
-    const data = await response.json()
-
-    return {
-      status: 'success',
-      message: MESSAGE.property.GET_SUCCESS,
-      data
-    }
-  } catch (error: unknown) {
-    return {
-      status: 'error',
-      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
-    }
-  }
-}
-
-// Function to get property count by status and category
-export const fetchPropertyCountByStatusAndCategory = async (
-  status: string,
-  categoryId: number
-): Promise<IApiResponse<{ count: number }>> => {
-  try {
-    const response = await fetch(`${baseUrl}/count/${status}/category/${categoryId}`)
-
-    if (!response.ok) {
-      return {
-        status: 'error',
-        message: MESSAGE.property.GET_FAILED
-      }
-    }
-
-    const data = await response.json()
-
-    return {
-      status: 'success',
-      message: MESSAGE.property.GET_SUCCESS,
-      data
-    }
-  } catch (error: unknown) {
-    return {
-      status: 'error',
-      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
-    }
-  }
-}
-
-// Function to get current user's property count by status
-export const fetchMyPropertyCountByStatus = async (status: string): Promise<IApiResponse<{ count: number }>> => {
-  try {
-    const response = await fetch(`${baseUrl}/count/${status}/my`)
 
     if (!response.ok) {
       return {
