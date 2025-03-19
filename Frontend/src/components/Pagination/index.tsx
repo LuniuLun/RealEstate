@@ -66,18 +66,16 @@ const Pagination = ({ totalItems, itemsPerPageOptions, fetchNextPage, hasNextPag
       <Skeleton isLoaded={isLoaded} startColor='gray.100' endColor='gray.300' minH='25px'>
         <Flex align='center' gap='26px'>
           <Flex align='center' gap='26px'>
-            <Text whiteSpace='nowrap'>Items per page:</Text>
+            <Text whiteSpace='nowrap'>Số lượng trên 1 trang:</Text>
             <CustomSelect
               placeholder={itemsPerPage.toString()}
-              border='bottom'
               fontSize='xs'
               onChange={handleItemsPerPageChange}
               options={selectOptions}
               aria-label='items-per-page'
             />
           </Flex>
-
-          <Text>{`${currentPage * itemsPerPage + 1} - ${Math.min((currentPage + 1) * itemsPerPage, totalItems)} of ${totalItems}`}</Text>
+          <Text>{`${currentPage * itemsPerPage + 1} - ${Math.min((currentPage + 1) * itemsPerPage, totalItems)} trong ${totalItems}`}</Text>
         </Flex>
       </Skeleton>
       <Skeleton isLoaded={isLoaded} startColor='gray.100' endColor='gray.300' minH='25px'>
