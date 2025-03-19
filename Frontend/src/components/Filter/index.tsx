@@ -2,17 +2,18 @@ import React, { ReactNode, useState, useCallback, memo, useMemo } from 'react'
 import { Box, Flex } from '@chakra-ui/react'
 import { CustomSelect, TextField } from '@components'
 import { FilterIcon, SearchIcon } from '@assets/icons'
-import { SORT_OPTION } from '@constants/option'
 import { debounce } from '@utils'
 import { filterStore } from '@stores'
 import colors from '@styles/variables/colors'
+import { SelectOption } from '@components/CustomSelect'
 
 interface FilterProps {
   children?: ReactNode
   isLoaded?: boolean
+  sortOptions: SelectOption<string | number>[]
 }
 
-const Filter = ({ isLoaded = true, children }: FilterProps) => {
+const Filter = ({ isLoaded = true, sortOptions, children }: FilterProps) => {
   const { searchQuery, sortBy, setSearchQuery, setSortBy } = filterStore()
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery)
 
@@ -58,7 +59,7 @@ const Filter = ({ isLoaded = true, children }: FilterProps) => {
       <Flex gap={8} alignItems='center' w={{ base: '100%', md: 'unset' }}>
         {children}
         <CustomSelect
-          options={SORT_OPTION}
+          options={sortOptions}
           placeholder='Sắp xếp theo'
           value={sortBy}
           onChange={handleSortChange}

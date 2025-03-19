@@ -4,7 +4,7 @@ import BaseHeader from '../Base'
 import ThumnailImage from '@assets/images/just-home-thumnail.png'
 import { CustomSelect, Filter, FilterPopover, RangeFilter } from '@components'
 import colors from '@styles/variables/colors'
-import { FILTER_OPTION } from '@constants/option'
+import { FILTER_OPTION, SORT_USER_OPTION } from '@constants/option'
 
 interface RangeValues {
   min: string
@@ -61,7 +61,7 @@ const ClientHeader: React.FC = () => {
         <Heading variant='primary' color={colors.brand.white}>
           Đặt niềm tin vào chúng tôi
         </Heading>
-        <Filter />
+        <Filter sortOptions={SORT_USER_OPTION} />
         <Flex gap={2} mt={4} flexWrap='wrap' justifyContent='center'>
           <CustomSelect {...selectConfig} options={FILTER_OPTION.location} placeholder='Đà Nẵng' />
 
