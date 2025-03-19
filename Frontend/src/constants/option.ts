@@ -3,12 +3,12 @@ import { SelectOption } from '@components/CustomSelect'
 export const SORT_USER_OPTION: SelectOption<string>[] = [
   { value: 'firstName', label: 'Name' },
   { value: 'role', label: 'Role' },
-  { value: 'createdDate', label: 'Created date' }
+  { value: 'createdAt', label: 'Created date' }
 ]
 
 export const SORT_PROPERTY_OPTION: SelectOption<string>[] = [
   { value: 'address', label: 'Địa chỉ' },
-  { value: 'createdDate', label: 'Ngày tạo' }
+  { value: 'createdAt', label: 'Ngày tạo' }
 ]
 
 export const ROLE_OPTION: SelectOption<string>[] = [
@@ -45,7 +45,7 @@ export const NAV_ITEMS = [
   { path: '/', id: 'setting', title: 'Setting' }
 ]
 
-export const ITEM_PER_PAGE = [5, 10, 15, 20, 50]
+export const ITEM_PER_PAGE = [5, 10, 12, 20, 50]
 
 export const FILTER_OPTION = {
   location: [{ value: '43', label: 'Đà Nẵng' }],
@@ -60,14 +60,14 @@ export const FILTER_OPTION = {
     { value: 4, label: 'Đất nông nghiệp' }
   ],
   direction: [
-    { value: 0, label: 'Bắc' },
-    { value: 1, label: 'Nam' },
-    { value: 2, label: 'Đông' },
-    { value: 3, label: 'Tây' },
-    { value: 4, label: 'Đông Bắc' },
-    { value: 5, label: 'Đông Nam' },
-    { value: 6, label: 'Tây Bắc' },
-    { value: 7, label: 'Tây Nam' }
+    { value: 1, label: 'Bắc' },
+    { value: 2, label: 'Nam' },
+    { value: 3, label: 'Đông' },
+    { value: 4, label: 'Tây' },
+    { value: 5, label: 'Đông Bắc' },
+    { value: 6, label: 'Đông Nam' },
+    { value: 7, label: 'Tây Bắc' },
+    { value: 8, label: 'Tây Nam' }
   ],
   features: [
     { value: 1, label: 'Mặt tiền' },
@@ -107,5 +107,11 @@ export const FILTER_OPTION = {
     { value: 5, label: 'Nhà chưa hoàn thiện' },
     { value: 6, label: 'Nhà bị hư hỏng' },
     { value: 7, label: 'Đất phi dân cư' }
+  ],
+  furnishedStatus: [
+    { value: 1, label: 'Nội thất cao cấp' },
+    { value: 2, label: 'Đầy đủ nội thất' },
+    { value: 3, label: 'Hoàn thiện cơ bản' },
+    { value: 4, label: 'Bàn giao thô' }
   ]
 }
