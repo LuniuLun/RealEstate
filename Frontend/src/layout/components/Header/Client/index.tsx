@@ -1,22 +1,14 @@
-import { useState } from 'react'
 import { Flex, Heading, Stack } from '@chakra-ui/react'
 import BaseHeader from '../Base'
 import ThumnailImage from '@assets/images/just-home-thumnail.png'
 import { CustomSelect, Filter, FilterPopover, RangeFilter } from '@components'
 import colors from '@styles/variables/colors'
 import { FILTER_OPTION, SORT_USER_OPTION } from '@constants/option'
-
-interface RangeValues {
-  min: string
-  max: string
-}
+import { filterStore } from '@stores'
+import { CategoryName } from '@type/models'
 
 const ClientHeader: React.FC = () => {
-  const [priceRange, setPriceRange] = useState<RangeValues>({ min: '', max: '' })
-  const [areaRange, setAreaRange] = useState<RangeValues>({ min: '', max: '' })
-  const [selectedCategory, setSelectedCategory] = useState<number>(1)
-  const [selectedLandFeatures, setSelectedLandFeatures] = useState<string[]>([])
-  const [selectedHouseFeatures, setSelectedHouseFeatures] = useState<string[]>([])
+  const { filterCriteria, setFilterCriteria } = filterStore()
 
   const selectConfig = {
     width: 'unset',
@@ -32,19 +24,28 @@ const ClientHeader: React.FC = () => {
   }
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCategory(Number.parseInt(e.target.value))
-    setPriceRange({ min: '', max: '' })
-    setAreaRange({ min: '', max: '' })
-    setSelectedLandFeatures([])
-    setSelectedHouseFeatures([])
+    setFilterCriteria({
+      category: Number.parseInt(e.target.value),
+      minPrice: 0,
+      maxPrice: 0,
+      minArea: 0,
+      maxArea: 0,
+      houseFeatures: [],
+      landFeatures: []
+    })
   }
 
-  const handleFilterValueChange = (value: string, filterType: string) => {
-    if (filterType === 'land') {
-      setSelectedLandFeatures((prev) => (prev.includes(value) ? prev.filter((id) => id !== value) : [...prev, value]))
-    } else if (filterType === 'house') {
-      setSelectedHouseFeatures((prev) => (prev.includes(value) ? prev.filter((id) => id !== value) : [...prev, value]))
-    }
+  const handleFilterValueChange = (value: string, filterType: CategoryName) => {
+    const numericValue = Number.parseInt(value)
+    setFilterCriteria({
+      [filterType === CategoryName.LAND ? 'landFeatures' : 'houseFeatures']: filterCriteria[
+        filterType === CategoryName.LAND ? 'landFeatures' : 'houseFeatures'
+      ]?.includes(numericValue)
+        ? filterCriteria[filterType === CategoryName.LAND ? 'landFeatures' : 'houseFeatures']?.filter(
+            (id) => id !== numericValue
+          )
+        : [...(filterCriteria[filterType === CategoryName.LAND ? 'landFeatures' : 'houseFeatures'] || []), numericValue]
+    })
   }
 
   return (
@@ -68,22 +69,40 @@ const ClientHeader: React.FC = () => {
           <CustomSelect
             {...selectConfig}
             options={FILTER_OPTION.category}
-            placeholder={FILTER_OPTION.category[selectedCategory - 1]?.label || 'Chọn loại'}
-            value={selectedCategory.toString()}
+            placeholder={
+              FILTER_OPTION.category.find((option) => option.value === filterCriteria.category)?.label || 'Chọn loại'
+            }
+            value={filterCriteria.category?.toString() || ''}
             onChange={handleCategoryChange}
           />
 
-          <RangeFilter {...selectConfig} label='Giá' unit='đ' values={priceRange} onRangeChange={setPriceRange} />
+          <RangeFilter
+            {...selectConfig}
+            label='Giá'
+            unit='đ'
+            values={{ min: filterCriteria.minPrice, max: filterCriteria.maxPrice }}
+            onRangeChange={(values) => setFilterCriteria({ minPrice: values.min, maxPrice: values.max })}
+          />
 
-          <RangeFilter {...selectConfig} label='Diện tích' unit='m²' values={areaRange} onRangeChange={setAreaRange} />
+          <RangeFilter
+            {...selectConfig}
+            label='Diện tích'
+            unit='m²'
+            values={{ min: filterCriteria.minArea, max: filterCriteria.maxArea }}
+            onRangeChange={(values) => setFilterCriteria({ minArea: values.min, maxArea: values.max })}
+          />
 
           <CustomSelect {...selectConfig} options={FILTER_OPTION.direction} placeholder='Hướng' />
 
-          {selectedCategory === 1 ? (
+          {filterCriteria.category === 1 ? (
             <>
               <FilterPopover
-                options={FILTER_OPTION.features}
-                selectedValues={selectedLandFeatures}
+                options={FILTER_OPTION.landFeatures}
+                selectedValues={
+                  filterCriteria.landFeatures?.map(
+                    (id) => FILTER_OPTION.landFeatures.find((opt) => opt.value === id)?.label || ''
+                  ) || []
+                }
                 filterType='land'
                 title='Đặc điểm đất'
                 onValueChange={handleFilterValueChange}
@@ -95,11 +114,13 @@ const ClientHeader: React.FC = () => {
             <>
               <CustomSelect {...selectConfig} options={FILTER_OPTION.bedrooms} placeholder='Số phòng ngủ' />
 
-              <CustomSelect {...selectConfig} options={FILTER_OPTION.bathrooms} placeholder='Số nhà vệ sinh' />
-
               <FilterPopover
                 options={FILTER_OPTION.houseFeatures}
-                selectedValues={selectedHouseFeatures}
+                selectedValues={
+                  filterCriteria.houseFeatures?.map(
+                    (id) => FILTER_OPTION.houseFeatures.find((opt) => opt.value === id)?.label || ''
+                  ) || []
+                }
                 filterType='house'
                 title='Đặc điểm nhà'
                 onValueChange={handleFilterValueChange}

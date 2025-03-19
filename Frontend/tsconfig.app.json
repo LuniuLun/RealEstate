@@ -35,7 +35,7 @@
       "@layout/*": ["src/layout/*"],
       "@layout": ["src/layout/index"],
       "@type/*": ["src/types/*"],
-      "@types/models": ["src/types/models/index"],
+      "@type/models": ["src/types/models/index"],
       "@hooks": ["src/hooks/index"],
       "@hooks/*": ["src/hooks/*"],
       "@constants/*": ["src/constants/*"],
