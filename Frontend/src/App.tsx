@@ -14,7 +14,7 @@ function App() {
     <Routes>
       <Route path='/' element={<DefaultLayout />}>
         <Route index element={<Home />} />
-        <Route path='listing-property' element={<ListingProperty />} />
+        <Route path='property-listings' element={<ListingProperty />} />
       </Route>
       <Route
         element={<ProtectedRoute isAllowed={!!user} userRoles={user?.roles} requiredRole='admin' redirectPath='/' />}
