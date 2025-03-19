@@ -1,9 +1,14 @@
 import { SelectOption } from '@components/CustomSelect'
 
-export const SORT_OPTION: SelectOption<string>[] = [
+export const SORT_USER_OPTION: SelectOption<string>[] = [
   { value: 'firstName', label: 'Name' },
   { value: 'role', label: 'Role' },
   { value: 'createdDate', label: 'Created date' }
+]
+
+export const SORT_PROPERTY_OPTION: SelectOption<string>[] = [
+  { value: 'address', label: 'Địa chỉ' },
+  { value: 'createdDate', label: 'Ngày tạo' }
 ]
 
 export const ROLE_OPTION: SelectOption<string>[] = [
