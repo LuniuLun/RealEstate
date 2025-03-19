@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Stack, Flex, Spinner, Text, Center } from '@chakra-ui/react'
 import { InfoGroup, PropertyCard, Pagination } from '@components'
 import { filterStore } from '@stores'
-import { ITEM_PER_PAGE } from '@constants/option'
+import { FILTER_OPTION, ITEM_PER_PAGE } from '@constants/option'
 import { useGetProperty, useCustomToast } from '@hooks'
 import { useShallow } from 'zustand/shallow'
 
@@ -32,7 +32,7 @@ const ListingProperty = () => {
   return (
     <Stack my={10} mb={20}>
       <Stack justifyContent='center' alignItems='center' gap={6}>
-        <InfoGroup heading='Mua Bán Nhà Đất Chính Chủ, Giá Rẻ' description='Tháng 3/2025' size='lg' />
+        <InfoGroup heading='Mua Bán Nhà Đất Chính Chủ, Giá Rẻ' description='' size='lg' />
 
         {isLoading ? (
           <Center p={10}>
@@ -45,10 +45,16 @@ const ListingProperty = () => {
                 key={property.id}
                 imageUrl={property.images.split(',')[0]}
                 title={property.title}
-                description={`${property.house?.bedrooms || 0} PN • Hướng ${property.direction} • ${property.description}`}
-                price={`${property.price.toLocaleString()} tỷ`}
-                areaInfo={`${Math.round(property.price / property.area).toLocaleString()} tr/m² • ${property.area} m²`}
-                location={`${property.wardName}, ${property.region}`}
+                description={`${property.house?.bedrooms ? `${property.house.bedrooms} PN • ` : ''}Hướng ${FILTER_OPTION.direction[property.direction]?.label} • ${
+                  property.land?.landType?.id !== undefined
+                    ? FILTER_OPTION.landType[property.land.landType.id]?.label
+                    : property.house?.furnishedStatus?.id !== undefined
+                      ? FILTER_OPTION.furnishedStatus[property.house.furnishedStatus.id]?.label
+                      : ''
+                }`}
+                price={`${(property.price / 1_000_000_000).toLocaleString()} tỷ`}
+                areaInfo={`${Math.round(property.price / property.area / 1_000_000).toLocaleString()} tr/m² • ${property.area} m²`}
+                location={`${property.wardName}`}
                 time={new Date(property.createdAt).toLocaleDateString('vi-VN')}
               />
             ))}
