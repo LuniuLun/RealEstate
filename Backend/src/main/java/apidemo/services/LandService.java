@@ -74,17 +74,12 @@ public class LandService {
 
     // "landCharacteristics"
     Optional.ofNullable(filters.get("landCharacteristics"))
-        .map(value -> {
-          // Remove brackets and split by comma
-          value = value.replace("[", "").replace("]", "");
-          String[] ids = value.split(",\\s*");
-          return Arrays.stream(ids)
-              .map(String::trim)
-              .map(Integer::parseInt)
-              .collect(Collectors.toList());
-        })
+        .map(value -> Arrays.stream(value.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .map(Integer::parseInt)
+            .collect(Collectors.toList()))
         .ifPresent(characteristicIds -> characteristicIds.forEach(characteristicId -> {
-          // Your existing code for joins
           Join<Land, LandCharacteristicMapping> characteristicMappingJoin = landJoin.join("landCharacteristicMappings",
               JoinType.INNER);
           Join<LandCharacteristicMapping, LandCharacteristic> characteristicJoin = characteristicMappingJoin

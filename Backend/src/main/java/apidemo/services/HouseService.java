@@ -96,7 +96,7 @@ public class HouseService {
 
     // houseCharacteristics
     Optional.ofNullable(filters.get("houseCharacteristics"))
-        .map(value -> Arrays.stream(value.replace("[", "").replace("]", "").split(",\\s*"))
+        .map(value -> Arrays.stream(value.split(","))
             .map(String::trim)
             .filter(s -> !s.isEmpty())
             .map(Integer::parseInt)
@@ -108,6 +108,7 @@ public class HouseService {
               .join("houseCharacteristic", JoinType.INNER);
           predicates.add(criteriaBuilder.equal(characteristicJoin.get("id"), characteristicId));
         }));
+
   }
 
   /**
