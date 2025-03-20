@@ -1,18 +1,18 @@
 import { useState } from 'react'
 import { Button, Popover, PopoverTrigger, PopoverContent, PopoverBody, Text, Flex } from '@chakra-ui/react'
 import CheckboxGroup from '@components/CheckboxGroup'
-import { SelectOption } from '@components/CustomSelect'
+import { ISelectOption } from '@components/CustomSelect'
 import { CategoryName } from '@type/models'
 
-interface FilterPopoverProps {
-  options: SelectOption<number>[]
+interface ICheckboxPopoverProps {
+  options: ISelectOption<number>[]
   selectedValues: string[]
   filterType: string
   onValueChange: (value: string, filterType: CategoryName) => void
   title?: string
 }
 
-const FilterPopover = ({ options, selectedValues, filterType, onValueChange, title }: FilterPopoverProps) => {
+const CheckboxPopover = ({ options, selectedValues, filterType, onValueChange, title }: ICheckboxPopoverProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const getDisplayText = (): string => {
@@ -62,4 +62,4 @@ const FilterPopover = ({ options, selectedValues, filterType, onValueChange, tit
   )
 }
 
-export default FilterPopover
+export default CheckboxPopover
