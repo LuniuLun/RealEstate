@@ -45,11 +45,11 @@ const ListingProperty = () => {
                 key={property.id}
                 imageUrl={property.images.split(',')[0]}
                 title={property.title}
-                description={`${property.house?.bedrooms ? `${property.house.bedrooms} PN • ` : ''}Hướng ${FILTER_OPTION.direction[property.direction]?.label} • ${
+                description={`${property.house?.bedrooms ? `${property.house.bedrooms} PN • ` : ''}Hướng ${FILTER_OPTION.direction[property.direction - 1]?.label} • ${
                   property.land?.landType?.id !== undefined
-                    ? FILTER_OPTION.landType[property.land.landType.id]?.label
+                    ? FILTER_OPTION.landType[property.land.landType.id - 1]?.label
                     : property.house?.furnishedStatus?.id !== undefined
-                      ? FILTER_OPTION.furnishedStatus[property.house.furnishedStatus.id]?.label
+                      ? FILTER_OPTION.furnishedStatus[property.house.furnishedStatus.id - 1]?.label
                       : ''
                 }`}
                 price={`${(property.price / 1_000_000_000).toLocaleString()} tỷ`}
