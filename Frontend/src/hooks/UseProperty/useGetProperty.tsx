@@ -1,7 +1,7 @@
-import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { fetchProperties, fetchPropertyCountsByCategoryAndStatus } from '@services/property'
-import { IProperty, PropertyStatus } from '@type/models'
+import { fetchProperties } from '@services/property'
+import { IProperty } from '@type/models'
 import { filterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
 
@@ -10,10 +10,13 @@ interface UseGetPropertyReturn {
   propertiesQuery: ReturnType<typeof useInfiniteQuery>
   totalProperties: number
   infinitePropertyQueryKey: (string | number | object)[]
-  totalPropertiesQueryKey: (string | number | object)[]
   reCallQuery: () => void
   isLoading: boolean
   isError: boolean
+}
+
+interface PropertyResponse {
+  data: { properties: IProperty[]; total: number }
 }
 
 const useGetProperty = (): UseGetPropertyReturn => {
@@ -30,27 +33,10 @@ const useGetProperty = (): UseGetPropertyReturn => {
 
   const infinitePropertyQueryKey = ['properties', itemsPerPage, searchQuery, sortBy, JSON.stringify(filterCriteria)]
 
-  const totalPropertiesQueryKey = [
-    'propertiesCount',
-    searchQuery,
-    JSON.stringify({
-      minPrice: filterCriteria.minPrice,
-      maxPrice: filterCriteria.maxPrice,
-      minArea: filterCriteria.minArea,
-      maxArea: filterCriteria.maxArea,
-      bedrooms: filterCriteria.bedrooms,
-      direction: filterCriteria.direction,
-      category: filterCriteria.category,
-      furnishedStatus: filterCriteria.furnishedStatus,
-      landType: filterCriteria.landType,
-      location: filterCriteria.location
-    })
-  ]
-
   const propertiesQuery = useInfiniteQuery({
     queryKey: infinitePropertyQueryKey,
     queryFn: async ({ pageParam = 1 }) => {
-      return await fetchProperties({
+      return (await fetchProperties({
         page: pageParam.toString(),
         limit: itemsPerPage.toString(),
         property: searchQuery ? 'title' : '',
@@ -58,44 +44,38 @@ const useGetProperty = (): UseGetPropertyReturn => {
         sortBy,
         typeOfSort: 'desc',
         filterCriteria
-      })
+      })) as unknown as PropertyResponse
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) => {
-      if (!lastPage.data || lastPage.data.length === 0) return undefined
-      return lastPageParam + 1
+      if (!lastPage.data.properties || lastPage.data.properties.length === 0) return undefined
+      const totalPages = Math.ceil(lastPage.data.total / itemsPerPage)
+      return lastPageParam < totalPages ? lastPageParam + 1 : undefined
     },
     refetchOnWindowFocus: false
   })
 
-  const totalPropertiesQuery = useQuery({
-    queryKey: totalPropertiesQueryKey,
-    queryFn: () => fetchPropertyCountsByCategoryAndStatus(PropertyStatus.APPROVAL, filterCriteria.category || 1),
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false
-  })
-
-  const totalProperties = useMemo(() => {
-    return totalPropertiesQuery?.data?.data?.count || 0
-  }, [totalPropertiesQuery.data])
-
-  // Flatten property data
   const properties = useMemo(() => {
     if (!propertiesQuery.data) return []
 
     return propertiesQuery.data.pages.flatMap((page) => {
       if (!page.data) return []
-      return page.data
+
+      return page.data.properties
     })
   }, [propertiesQuery.data])
 
+  const totalProperties = useMemo(() => {
+    if (!propertiesQuery.data || propertiesQuery.data.pages.length === 0) return 0
+    return propertiesQuery.data.pages[0].data.total || 0
+  }, [propertiesQuery.data])
+
   const reCallQuery = () => {
-    queryClient.invalidateQueries({ queryKey: totalPropertiesQueryKey })
     queryClient.invalidateQueries({ queryKey: infinitePropertyQueryKey })
   }
 
-  const isLoading = propertiesQuery.isLoading || totalPropertiesQuery.isLoading
-  const isError = propertiesQuery.isError || totalPropertiesQuery.isError
+  const isLoading = propertiesQuery.isLoading
+  const isError = propertiesQuery.isError
 
   return {
     properties,
@@ -103,7 +83,6 @@ const useGetProperty = (): UseGetPropertyReturn => {
     totalProperties,
     reCallQuery,
     infinitePropertyQueryKey,
-    totalPropertiesQueryKey,
     isLoading,
     isError
   }
