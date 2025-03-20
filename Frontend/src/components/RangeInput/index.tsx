@@ -11,19 +11,9 @@ interface IRangeInputProps {
 const RangeInput = ({ min, max, unit, onChange }: IRangeInputProps) => {
   return (
     <Flex gap={2} alignItems='center'>
-      <Input
-        placeholder={`Min ${unit === Unit.BILLION ? 'Tỷ' : 'm²'}`}
-        value={min}
-        onChange={(e) => onChange('min', e.target.value)}
-        size='sm'
-      />
+      <Input placeholder={'Thấp nhất'} value={min} onChange={(e) => onChange('min', e.target.value)} size='sm' />
       <Text>-</Text>
-      <Input
-        placeholder={`Max ${unit === Unit.BILLION ? 'Tỷ' : 'm²'}`}
-        value={max}
-        onChange={(e) => onChange('max', e.target.value)}
-        size='sm'
-      />
+      <Input placeholder={'Cao nhất'} value={max} onChange={(e) => onChange('max', e.target.value)} size='sm' />
       <Text>{unit === Unit.BILLION ? 'Tỷ' : 'm²'}</Text>
     </Flex>
   )
