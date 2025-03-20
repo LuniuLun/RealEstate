@@ -14,7 +14,9 @@ const Logo = ({ src, icon, width = '24px', height = '36px' }: ILogoProps) => {
     <Link to={src}>
       <Flex alignItems='center' gap={3}>
         <Box borderRadius='50%'>{React.cloneElement(icon, { width, height })}</Box>
-        <Heading variant='primary'>JustHome</Heading>
+        <Heading variant='primary' color={icon.props.fill}>
+          JustHome
+        </Heading>
       </Flex>
     </Link>
   )
