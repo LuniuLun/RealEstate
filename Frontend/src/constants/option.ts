@@ -51,7 +51,8 @@ export const FILTER_OPTION = {
   location: [{ value: '43', label: 'Đà Nẵng' }],
   category: [
     { value: 1, label: 'Đất' },
-    { value: 2, label: 'Nhà' }
+    { value: 2, label: 'Nhà' },
+    { value: -1, label: 'Tất cả' }
   ],
   landType: [
     { value: 1, label: 'Đất thổ cư' },
@@ -69,7 +70,7 @@ export const FILTER_OPTION = {
     { value: 7, label: 'Tây Bắc' },
     { value: 8, label: 'Tây Nam' }
   ],
-  landFeatures: [
+  landCharacteristics: [
     { value: 1, label: 'Mặt tiền' },
     { value: 2, label: 'Nở hậu' },
     { value: 3, label: 'Một phần thổ cư' },
@@ -78,28 +79,28 @@ export const FILTER_OPTION = {
     { value: 6, label: 'Toàn bộ thổ cư' }
   ],
   bedrooms: [
-    { value: 1, label: '1 PN' },
-    { value: 2, label: '2 PN' },
-    { value: 3, label: '3 PN' },
-    { value: 4, label: '4 PN' },
-    { value: 5, label: '5 PN' },
-    { value: 6, label: '6 PN' },
-    { value: 7, label: '7 PN' },
-    { value: 8, label: '8 PN' },
-    { value: 9, label: '9 PN' },
-    { value: 10, label: '10 PN' },
+    { value: 1, label: '1 phòng ngủ' },
+    { value: 2, label: '2 phòng ngủ' },
+    { value: 3, label: '3 phòng ngủ' },
+    { value: 4, label: '4 phòng ngủ' },
+    { value: 5, label: '5 phòng ngủ' },
+    { value: 6, label: '6 phòng ngủ' },
+    { value: 7, label: '7 phòng ngủ' },
+    { value: 8, label: '8 phòng ngủ' },
+    { value: 9, label: '9 phòng ngủ' },
+    { value: 10, label: '10 phòng ngủ' },
     { value: 11, label: 'Nhiều hơn 10 PN' }
   ],
-  bathrooms: [
+  toilets: [
     { value: 1, label: '1 phòng vệ sinh' },
     { value: 2, label: '2 phòng vệ sinh' },
     { value: 3, label: '3 phòng vệ sinh' },
     { value: 4, label: '4 phòng vệ sinh' },
     { value: 5, label: '5 phòng vệ sinh' },
     { value: 6, label: '6 phòng vệ sinh' },
-    { value: 7, label: 'Nhiều hơn 6 phòng vệ sinh' }
+    { value: 7, label: 'Nhiều hơn 6 PVS' }
   ],
-  houseFeatures: [
+  houseCharacteristics: [
     { value: 1, label: 'Hẻm xe hơi' },
     { value: 2, label: 'Nhà mở rộng' },
     { value: 3, label: 'Nhà bị thu hẹp' },
