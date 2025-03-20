@@ -3,10 +3,12 @@ import { LogoIcon, NotificationIcon, UserIcon } from '@assets/icons'
 import { Logo, NavItem, UserCard } from '@components'
 import { authStore } from '@stores'
 import colors from '@styles/variables/colors'
+import { useNavigate } from 'react-router-dom'
 
 const BaseHeader = () => {
   // const { toggleSidebar } = useSidebar()
-  const { user, login, logout } = authStore()
+  const { user, logout } = authStore()
+  const navigate = useNavigate()
 
   return (
     <Flex
@@ -41,7 +43,7 @@ const BaseHeader = () => {
             </Box>
           </Flex>
         ) : (
-          <Button onClick={login} colorScheme='brand' variant='tertiary'>
+          <Button onClick={() => navigate('/login')} colorScheme='brand' variant='tertiary'>
             Đăng nhập
           </Button>
         )}
