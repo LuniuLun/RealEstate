@@ -1,7 +1,7 @@
 import { Flex, Heading, Stack } from '@chakra-ui/react'
 import BaseHeader from '../Base'
 import ThumnailImage from '@assets/images/just-home-thumnail.png'
-import { CustomSelect, Filter, FilterPopover, RangeFilter } from '@components'
+import { CustomSelect, Filter, CheckboxPopover, RangeFilter } from '@components'
 import colors from '@styles/variables/colors'
 import { FILTER_OPTION, SORT_USER_OPTION } from '@constants/option'
 import { filterStore } from '@stores'
@@ -96,7 +96,7 @@ const ClientHeader: React.FC = () => {
 
           {filterCriteria.category === 1 ? (
             <>
-              <FilterPopover
+              <CheckboxPopover
                 options={FILTER_OPTION.landFeatures}
                 selectedValues={
                   filterCriteria.landFeatures?.map(
@@ -114,7 +114,7 @@ const ClientHeader: React.FC = () => {
             <>
               <CustomSelect {...selectConfig} options={FILTER_OPTION.bedrooms} placeholder='Số phòng ngủ' />
 
-              <FilterPopover
+              <CheckboxPopover
                 options={FILTER_OPTION.houseFeatures}
                 selectedValues={
                   filterCriteria.houseFeatures?.map(

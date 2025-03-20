@@ -4,13 +4,13 @@ import { TBorderDirection } from '@type/variant'
 import colors from '@styles/variables/colors'
 import React, { forwardRef } from 'react'
 
-export interface SelectOption<T> {
+export interface ISelectOption<T> {
   value: T
   label: string
 }
 
 interface ICustomSelectProps<T> extends SelectProps {
-  options: SelectOption<T>[]
+  options: ISelectOption<T>[]
   border?: TBorderDirection
   value?: string | number
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void

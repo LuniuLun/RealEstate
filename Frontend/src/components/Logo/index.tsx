@@ -2,14 +2,14 @@ import { Box, Flex, Heading } from '@chakra-ui/react'
 import React, { memo } from 'react'
 import { Link } from 'react-router-dom'
 
-interface LogoProps {
+interface ILogoProps {
   icon: React.ReactElement
   src: string
   width?: string
   height?: string
 }
 
-const Logo = ({ src, icon, width = '24px', height = '36px' }: LogoProps) => {
+const Logo = ({ src, icon, width = '24px', height = '36px' }: ILogoProps) => {
   return (
     <Link to={src}>
       <Flex alignItems='center' gap={3}>

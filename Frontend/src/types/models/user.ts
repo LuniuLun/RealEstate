@@ -1,4 +1,4 @@
-import { TableRow } from '@components/CustomTable'
+import { ITableRow } from '@components/CustomTable'
 import { RoleName } from './enums'
 
 export interface IRole {
@@ -26,7 +26,7 @@ export interface IToken {
   createdAt: string
 }
 
-export interface TransformedUser extends Pick<IUser, 'id'>, TableRow {
+export interface TransformedUser extends Pick<IUser, 'id'>, ITableRow {
   name: React.ReactNode
   createdAt: string
   role: React.ReactNode

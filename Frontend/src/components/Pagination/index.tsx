@@ -6,14 +6,14 @@ import colors from '@styles/variables/colors'
 import { filterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
 
-export interface PaginationProps {
+export interface IPaginationProps {
   totalItems: number
   itemsPerPageOptions: number[]
   fetchNextPage: () => void
   hasNextPage: boolean
   isLoaded?: boolean
 }
-const Pagination = ({ totalItems, itemsPerPageOptions, fetchNextPage, hasNextPage, isLoaded }: PaginationProps) => {
+const Pagination = ({ totalItems, itemsPerPageOptions, fetchNextPage, hasNextPage, isLoaded }: IPaginationProps) => {
   const { itemsPerPage, currentPage } = filterStore(
     useShallow((state) => ({
       itemsPerPage: state.itemsPerPage,
@@ -36,7 +36,7 @@ const Pagination = ({ totalItems, itemsPerPageOptions, fetchNextPage, hasNextPag
 
   const totalPages = Math.ceil(totalItems / itemsPerPage)
 
-  const selectOptions = itemsPerPageOptions.map((option) => ({
+  const ISelectOptions = itemsPerPageOptions.map((option) => ({
     value: option,
     label: option.toString()
   }))
@@ -71,7 +71,7 @@ const Pagination = ({ totalItems, itemsPerPageOptions, fetchNextPage, hasNextPag
               placeholder={itemsPerPage.toString()}
               fontSize='xs'
               onChange={handleItemsPerPageChange}
-              options={selectOptions}
+              options={ISelectOptions}
               aria-label='items-per-page'
             />
           </Flex>

@@ -3,13 +3,13 @@ import { Flex, Text, Box } from '@chakra-ui/react'
 import colors from '@styles/variables/colors'
 import { Link, LinkProps } from 'react-router-dom'
 
-interface NavItemProps extends LinkProps {
+interface INavItemProps extends LinkProps {
   icon?: React.ReactElement
   title: string
   isActive: boolean
 }
 
-const NavItem = ({ icon, title, isActive, to, onClick }: NavItemProps) => {
+const NavItem = ({ icon, title, isActive, to, onClick }: INavItemProps) => {
   return (
     <Link to={to} onClick={onClick}>
       <Flex

@@ -3,23 +3,23 @@ import { Alert, AlertTitle, AlertDescription, Button, Image, Flex } from '@chakr
 import errorImage from '@assets/images/error-message.png'
 import colors from '@styles/variables/colors'
 
-interface ErrorBoundaryProps {
+interface IErrorBoundaryProps {
   children: React.ReactNode
   fallback?: React.ReactNode
 }
 
-interface ErrorBoundaryState {
+interface IErrorBoundaryState {
   hasError: boolean
   error: Error | null
 }
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
+class ErrorBoundary extends React.Component<IErrorBoundaryProps, IErrorBoundaryState> {
+  constructor(props: IErrorBoundaryProps) {
     super(props)
     this.state = { hasError: false, error: null }
   }
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+  static getDerivedStateFromError(error: Error): IErrorBoundaryState {
     return { hasError: true, error }
   }
 

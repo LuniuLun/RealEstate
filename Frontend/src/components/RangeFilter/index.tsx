@@ -1,30 +1,21 @@
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  Input,
-  Flex,
-  Text,
-  Button,
-  useDisclosure
-} from '@chakra-ui/react'
+import { Popover, PopoverTrigger, PopoverContent, PopoverBody, Button, useDisclosure, Flex } from '@chakra-ui/react'
+import RangeInput from '@components/RangeInput'
 import { Unit } from '@type/models'
 import { useState } from 'react'
 
-interface RangeValues {
+interface IRangeValues {
   min: number
   max: number
 }
 
-interface RangeFilterProps {
+interface IRangeIFilterProps {
   label: string
   unit: Unit
-  values: RangeValues
-  onRangeChange: (values: RangeValues) => void
+  values: IRangeValues
+  onRangeChange: (values: IRangeValues) => void
 }
 
-const RangeFilter = ({ label, unit, values, onRangeChange }: RangeFilterProps) => {
+const RangeFilter = ({ label, unit, values, onRangeChange }: IRangeIFilterProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [tempValues, setTempValues] = useState(values)
 
@@ -51,22 +42,12 @@ const RangeFilter = ({ label, unit, values, onRangeChange }: RangeFilterProps) =
       </PopoverTrigger>
       <PopoverContent bg='white' borderRadius='md' boxShadow='lg' width='250px'>
         <PopoverBody>
-          <Flex gap={2} alignItems='center'>
-            <Input
-              placeholder={`Min ${unit === Unit.BILLION ? 'Tỷ' : 'm²'}`}
-              value={tempValues.min || ''}
-              onChange={(e) => handleChange('min', e.target.value)}
-              size='sm'
-            />
-            <Text>-</Text>
-            <Input
-              placeholder={`Max ${unit === Unit.BILLION ? 'Tỷ' : 'm²'}`}
-              value={tempValues.max || ''}
-              onChange={(e) => handleChange('max', e.target.value)}
-              size='sm'
-            />
-            <Text>{unit === Unit.BILLION ? 'Tỷ' : 'm²'}</Text>
-          </Flex>
+          <RangeInput
+            min={tempValues.min.toString()}
+            max={tempValues.max.toString()}
+            unit={unit}
+            onChange={handleChange}
+          />
           <Flex justifyContent='flex-end' mt={2}>
             <Button size='sm' colorScheme='blue' onClick={handleApply}>
               Áp dụng

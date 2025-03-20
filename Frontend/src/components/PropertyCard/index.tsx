@@ -4,7 +4,7 @@ import defaultImage from '@assets/images/default-image.jpg'
 import colors from '@styles/variables/colors'
 import { useState } from 'react'
 
-interface PropertyCardProps {
+interface IPropertyCardProps {
   imageUrl: string
   title: string
   description: string
@@ -14,7 +14,7 @@ interface PropertyCardProps {
   time: string
 }
 
-const PropertyCard = ({ imageUrl, title, description, price, areaInfo, location, time }: PropertyCardProps) => {
+const PropertyCard = ({ imageUrl, title, description, price, areaInfo, location, time }: IPropertyCardProps) => {
   const [bgSrc, setBgSrc] = useState(imageUrl || defaultImage)
 
   return (

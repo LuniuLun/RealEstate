@@ -5,15 +5,15 @@ import { FilterIcon, SearchIcon } from '@assets/icons'
 import { debounce } from '@utils'
 import { filterStore } from '@stores'
 import colors from '@styles/variables/colors'
-import { SelectOption } from '@components/CustomSelect'
+import { ISelectOption } from '@components/CustomSelect'
 
-interface FilterProps {
+interface IFilterProps {
   children?: ReactNode
   isLoaded?: boolean
-  sortOptions: SelectOption<string | number>[]
+  sortOptions: ISelectOption<string | number>[]
 }
 
-const Filter = ({ isLoaded = true, sortOptions, children }: FilterProps) => {
+const Filter = ({ isLoaded = true, sortOptions, children }: IFilterProps) => {
   const { searchQuery, sortBy, setSearchQuery, setSortBy } = filterStore()
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery)
 
@@ -76,7 +76,7 @@ const Filter = ({ isLoaded = true, sortOptions, children }: FilterProps) => {
   )
 }
 
-const areEqual = (prevProps: FilterProps, nextProps: FilterProps) => {
+const areEqual = (prevProps: IFilterProps, nextProps: IFilterProps) => {
   if (prevProps.isLoaded !== nextProps.isLoaded) {
     return false
   }
