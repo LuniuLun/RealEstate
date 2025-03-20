@@ -44,3 +44,9 @@ export interface IFavouriteProperty {
   user: IUser
   property: IProperty
 }
+
+export interface IPropertyStatistic {
+  approved: number
+  canceled: number
+  pending: number
+}
