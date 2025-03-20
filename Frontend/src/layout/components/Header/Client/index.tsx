@@ -30,20 +30,22 @@ const ClientHeader = () => {
     })
   }
 
-  const handleFilterValueChange = (value: string, filterType: CategoryName) => {
+  const handleFilterFeatureChange = (value: string, filterType: CategoryName) => {
     const numericValue = Number.parseInt(value)
+    const currentFeatures =
+      filterType === CategoryName.LAND
+        ? filterCriteria.landCharacteristics || []
+        : filterCriteria.houseCharacteristics || []
+
+    const newFeatures = currentFeatures.includes(numericValue)
+      ? currentFeatures.filter((id) => id !== numericValue)
+      : [...currentFeatures, numericValue]
+
     setFilterCriteria({
-      [filterType === CategoryName.LAND ? 'landFeatures' : 'houseFeatures']: filterCriteria[
-        filterType === CategoryName.LAND ? 'landFeatures' : 'houseFeatures'
-      ]?.includes(numericValue)
-        ? filterCriteria[filterType === CategoryName.LAND ? 'landFeatures' : 'houseFeatures']?.filter(
-            (id) => id !== numericValue
-          )
-        : [...(filterCriteria[filterType === CategoryName.LAND ? 'landFeatures' : 'houseFeatures'] || []), numericValue]
+      [filterType === CategoryName.LAND ? 'landCharacteristics' : 'houseCharacteristics']: newFeatures
     })
   }
 
-  // New handlers for remaining filters
   const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterCriteria({
       location: {
@@ -131,15 +133,12 @@ const ClientHeader = () => {
           {filterCriteria.category === 1 ? (
             <>
               <CheckboxPopover
-                options={FILTER_OPTION.landFeatures}
-                selectedValues={
-                  filterCriteria.landFeatures?.map(
-                    (id) => FILTER_OPTION.landFeatures.find((opt) => opt.value === id)?.label || ''
-                  ) || []
-                }
-                filterType='land'
+                {...selectConfig}
+                options={FILTER_OPTION.landCharacteristics}
+                selectedValues={filterCriteria.landCharacteristics?.map((id) => id.toString()) || []}
+                filterType={CategoryName.LAND}
                 title='Đặc điểm đất'
-                onValueChange={handleFilterValueChange}
+                onValueChange={handleFilterFeatureChange}
               />
 
               <CustomSelect
@@ -150,7 +149,7 @@ const ClientHeader = () => {
                 onChange={handleLandTypeChange}
               />
             </>
-          ) : (
+          ) : filterCriteria.category === 2 ? (
             <>
               <CustomSelect
                 {...selectConfig}
@@ -160,18 +159,28 @@ const ClientHeader = () => {
                 onChange={handleBedroomsChange}
               />
 
+              <CustomSelect
+                {...selectConfig}
+                options={FILTER_OPTION.toilets}
+                placeholder='Số phòng vệ sinh'
+                value={filterCriteria.toilets?.toString() || ''}
+                onChange={handleBedroomsChange}
+              />
+
               <CheckboxPopover
-                options={FILTER_OPTION.houseFeatures}
+                options={FILTER_OPTION.houseCharacteristics}
                 selectedValues={
-                  filterCriteria.houseFeatures?.map(
-                    (id) => FILTER_OPTION.houseFeatures.find((opt) => opt.value === id)?.label || ''
+                  filterCriteria.houseCharacteristics?.map(
+                    (id) => FILTER_OPTION.houseCharacteristics.find((opt) => opt.value === id)?.label || ''
                   ) || []
                 }
-                filterType='house'
+                filterType={CategoryName.HOUSE}
                 title='Đặc điểm nhà'
-                onValueChange={handleFilterValueChange}
+                onValueChange={handleFilterFeatureChange}
               />
             </>
+          ) : (
+            <></>
           )}
         </Flex>
       </Stack>
