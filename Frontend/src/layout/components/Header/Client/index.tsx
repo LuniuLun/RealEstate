@@ -5,7 +5,7 @@ import { CustomSelect, Filter, FilterPopover, RangeFilter } from '@components'
 import colors from '@styles/variables/colors'
 import { FILTER_OPTION, SORT_USER_OPTION } from '@constants/option'
 import { filterStore } from '@stores'
-import { CategoryName } from '@type/models'
+import { CategoryName, Unit } from '@type/models'
 
 const ClientHeader: React.FC = () => {
   const { filterCriteria, setFilterCriteria } = filterStore()
@@ -79,15 +79,15 @@ const ClientHeader: React.FC = () => {
           <RangeFilter
             {...selectConfig}
             label='Giá'
-            unit='đ'
-            values={{ min: filterCriteria.minPrice, max: filterCriteria.maxPrice }}
+            unit={Unit.BILLION}
+            values={{ min: filterCriteria?.minPrice, max: filterCriteria.maxPrice }}
             onRangeChange={(values) => setFilterCriteria({ minPrice: values.min, maxPrice: values.max })}
           />
 
           <RangeFilter
             {...selectConfig}
             label='Diện tích'
-            unit='m²'
+            unit={Unit.SQUARE_METERS}
             values={{ min: filterCriteria.minArea, max: filterCriteria.maxArea }}
             onRangeChange={(values) => setFilterCriteria({ minArea: values.min, maxArea: values.max })}
           />

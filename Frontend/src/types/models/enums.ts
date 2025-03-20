@@ -18,3 +18,8 @@ export enum RoleName {
 export enum TransactionType {
   UPGRADE = 'UPGRADE'
 }
+
+export enum Unit {
+  BILLION = 'BILLION',
+  SQUARE_METERS = 'SQUARE_METERS'
+}

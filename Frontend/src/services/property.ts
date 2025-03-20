@@ -1,6 +1,6 @@
 import { IApiResponse } from '@type/apiResponse'
 import MESSAGE from '@constants/message'
-import { IProperty } from '@type/models'
+import { IProperty, PropertyStatus } from '@type/models'
 import { authStore } from '@stores'
 import { FilterCriteria } from '@stores/Filter'
 
@@ -56,10 +56,10 @@ export const fetchProperties = async (
     if (filterCriteria) {
       // Price range
       if (filterCriteria.minPrice && filterCriteria.minPrice > 0) {
-        calledUrl.searchParams.append('minPrice', filterCriteria.minPrice.toString())
+        calledUrl.searchParams.append('minPrice', (filterCriteria.minPrice * 1_000_000_000).toString())
       }
       if (filterCriteria.maxPrice && filterCriteria.maxPrice > 0) {
-        calledUrl.searchParams.append('maxPrice', filterCriteria.maxPrice.toString())
+        calledUrl.searchParams.append('maxPrice', (filterCriteria.maxPrice * 1_000_000_000).toString())
       }
 
       // Area range
@@ -77,6 +77,7 @@ export const fetchProperties = async (
 
       // Direction
       if (filterCriteria.direction !== undefined) {
+        console.log(filterCriteria.category)
         calledUrl.searchParams.append('direction', filterCriteria.direction.toString())
       }
 
@@ -173,6 +174,36 @@ export const fetchPropertyCounts = async (): Promise<IApiResponse<Record<string,
     }
   }
 }
+
+export const fetchPropertyCountsByCategoryAndStatus = async (
+  status: PropertyStatus,
+  categoryId: number
+): Promise<IApiResponse<Record<string, number>>> => {
+  try {
+    const response = await fetch(`${baseUrl}/count/${status}/category/${categoryId}`)
+
+    if (!response.ok) {
+      return {
+        status: 'error',
+        message: MESSAGE.property.GET_FAILED
+      }
+    }
+
+    const data = await response.json()
+
+    return {
+      status: 'success',
+      message: MESSAGE.property.GET_SUCCESS,
+      data
+    }
+  } catch (error: unknown) {
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
+    }
+  }
+}
+
 export const addProperty = async (newProperty: IProperty): Promise<IApiResponse<IProperty>> => {
   try {
     const response = await fetch(baseUrl, {
