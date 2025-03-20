@@ -1,10 +1,11 @@
 import { useMemo } from 'react'
-import { Stack, Flex, Spinner, Text, Center } from '@chakra-ui/react'
-import { InfoGroup, PropertyCard, Pagination } from '@components'
+import { Stack, Flex, Spinner, Text, Center, Heading } from '@chakra-ui/react'
+import { PropertyCard, Pagination } from '@components'
 import { filterStore } from '@stores'
 import { FILTER_OPTION, ITEM_PER_PAGE } from '@constants/option'
 import { useGetProperty, useCustomToast } from '@hooks'
 import { useShallow } from 'zustand/shallow'
+import colors from '@styles/variables/colors'
 
 const ListingProperty = () => {
   const { showToast } = useCustomToast()
@@ -32,7 +33,9 @@ const ListingProperty = () => {
   return (
     <Stack my={10} mb={20}>
       <Stack justifyContent='center' alignItems='center' gap={6}>
-        <InfoGroup heading='Mua Bán Nhà Đất Chính Chủ, Giá Rẻ' description='' size='lg' />
+        <Heading size='2xl' color={colors.brand.yellowHeading}>
+          Mua Bán Nhà Đất Chính Chủ, Giá Rẻ
+        </Heading>
 
         {isLoading ? (
           <Center p={10}>
