@@ -77,7 +77,6 @@ export const fetchProperties = async (
 
       // Direction
       if (filterCriteria.direction !== undefined) {
-        console.log(filterCriteria.category)
         calledUrl.searchParams.append('direction', filterCriteria.direction.toString())
       }
 
