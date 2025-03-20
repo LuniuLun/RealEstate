@@ -53,7 +53,7 @@ public class PropertyService {
     return propertyMLService.estimatePropertyPrice(property);
   }
 
-  public List<Property> getAllProperties(Integer limit, Integer page, String sortBy, String typeOfSort,
+  public Map<String, Object> getAllProperties(Integer limit, Integer page, String sortBy, String typeOfSort,
       Map<String, String> filters) {
     if (page != null && page < 1) {
       throw new IllegalArgumentException("Page index must be greater than zero");
@@ -62,7 +62,15 @@ public class PropertyService {
     Pageable pageRequest = filter.createPageRequest(limit, page, sortBy, typeOfSort);
     Specification<Property> spec = buildPropertySpecification(filters);
 
-    return propertyRepository.findAll(spec, pageRequest).getContent();
+    long total = propertyRepository.count(spec);
+
+    List<Property> properties = propertyRepository.findAll(spec, pageRequest).getContent();
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("properties", properties);
+    response.put("total", total);
+
+    return response;
   }
 
   public Specification<Property> buildPropertySpecification(Map<String, String> filters) {

@@ -47,8 +47,8 @@ public class PropertyController {
         filters.remove("typeOfSort");
       }
 
-      List<Property> properties = propertyService.getAllProperties(limit, page, sortBy, typeOfSort, filters);
-      return ResponseEntity.ok(properties);
+      Map<String, Object> result = propertyService.getAllProperties(limit, page, sortBy, typeOfSort, filters);
+      return ResponseEntity.ok(result);
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
