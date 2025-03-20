@@ -1,6 +1,6 @@
 import { IApiResponse } from '@type/apiResponse'
 import MESSAGE from '@constants/message'
-import { IProperty, PropertyStatus } from '@type/models'
+import { IProperty, IPropertyStatistic, PropertyStatus } from '@type/models'
 import { authStore } from '@stores'
 import { FilterCriteria } from '@stores/Filter'
 
@@ -81,7 +81,7 @@ export const fetchProperties = async (
       }
 
       // Property type
-      if (filterCriteria.category !== undefined) {
+      if (filterCriteria.category !== undefined && filterCriteria.category > 0) {
         calledUrl.searchParams.append('category', filterCriteria.category.toString())
       }
 
@@ -96,13 +96,13 @@ export const fetchProperties = async (
       }
 
       // House features (Array)
-      if (filterCriteria.houseFeatures?.length) {
-        calledUrl.searchParams.append('houseFeatures', filterCriteria.houseFeatures.join(','))
+      if (filterCriteria.houseCharacteristics?.length) {
+        calledUrl.searchParams.append('houseCharacteristics', filterCriteria.houseCharacteristics.join(','))
       }
 
       // Land features (Array)
-      if (filterCriteria.landFeatures?.length) {
-        calledUrl.searchParams.append('landFeatures', filterCriteria.landFeatures.join(','))
+      if (filterCriteria.landCharacteristics?.length) {
+        calledUrl.searchParams.append('landCharacteristics', filterCriteria.landCharacteristics.join(','))
       }
 
       // Location filters
@@ -122,6 +122,7 @@ export const fetchProperties = async (
     if (!user || !user.roles.includes('admin')) {
       calledUrl.searchParams.append('status', 'APPROVAL')
     }
+    console.log(calledUrl.toString())
 
     const response = await fetch(calledUrl.toString())
 
@@ -148,7 +149,7 @@ export const fetchProperties = async (
 }
 
 // Keep existing functions unchanged
-export const fetchPropertyCounts = async (): Promise<IApiResponse<Record<string, number>>> => {
+export const fetchPropertyCounts = async (): Promise<IApiResponse<IPropertyStatistic>> => {
   try {
     const response = await fetch(`${baseUrl}/counts`)
 

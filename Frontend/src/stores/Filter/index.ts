@@ -7,12 +7,13 @@ export interface FilterCriteria {
   minArea: number
   maxArea: number
   bedrooms?: number
+  toilets?: number
   direction?: number
   category?: number
   furnishedStatus?: number
   landType?: number
-  houseFeatures?: number[]
-  landFeatures?: number[]
+  houseCharacteristics?: number[]
+  landCharacteristics?: number[]
   location?: {
     province?: string
     district?: string
@@ -41,12 +42,13 @@ const initialFilterCriteria: FilterCriteria = {
   minArea: 0,
   maxArea: 0,
   bedrooms: undefined,
+  toilets: undefined,
   direction: undefined,
   category: 1,
   furnishedStatus: undefined,
   landType: undefined,
-  houseFeatures: [],
-  landFeatures: [],
+  houseCharacteristics: [],
+  landCharacteristics: [],
   location: {
     province: undefined,
     district: undefined,
@@ -97,8 +99,8 @@ const filterStore = create<FilterState>()(
             location: criteria.location
               ? { ...state.filterCriteria.location, ...criteria.location }
               : state.filterCriteria.location,
-            houseFeatures: criteria.houseFeatures ?? state.filterCriteria.houseFeatures,
-            landFeatures: criteria.landFeatures ?? state.filterCriteria.landFeatures
+            houseCharacteristics: criteria.houseCharacteristics ?? state.filterCriteria.houseCharacteristics,
+            landCharacteristics: criteria.landCharacteristics ?? state.filterCriteria.landCharacteristics
           }
           return {
             filterCriteria: newFilterCriteria,
