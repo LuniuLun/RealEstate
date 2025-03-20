@@ -1,11 +1,15 @@
 package apidemo.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,11 @@ import apidemo.models.HouseCharacteristicMapping;
 import apidemo.models.Property;
 import apidemo.repositories.HouseCharacteristicMappingRepository;
 import apidemo.repositories.HouseCharacteristicRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 @Service
 public class HouseService {
@@ -70,6 +79,35 @@ public class HouseService {
     }
 
     return houseCharacteristicIds;
+  }
+
+  public void houseFilters(List<Predicate> predicates, Map<String, String> filters,
+      CriteriaBuilder criteriaBuilder, Root<Property> root) {
+    Join<Property, House> houseJoin = root.join("house", JoinType.INNER);
+
+    Stream.of("bedrooms", "toilets", "floors", "furnishedStatus").forEach(key -> Optional.ofNullable(filters.get(key))
+        .map(String::trim)
+        .filter(s -> !s.isEmpty())
+        .map(Integer::parseInt)
+        .ifPresent(value -> predicates.add(
+            "furnishedStatus".equals(key)
+                ? criteriaBuilder.equal(houseJoin.get("furnishedStatus").get("id"), value)
+                : criteriaBuilder.equal(houseJoin.get(key), value))));
+
+    // houseCharacteristics
+    Optional.ofNullable(filters.get("houseCharacteristics"))
+        .map(value -> Arrays.stream(value.replace("[", "").replace("]", "").split(",\\s*"))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .map(Integer::parseInt)
+            .collect(Collectors.toList()))
+        .ifPresent(characteristicIds -> characteristicIds.forEach(characteristicId -> {
+          Join<House, HouseCharacteristicMapping> characteristicMappingJoin = houseJoin
+              .join("houseCharacteristicMappings", JoinType.INNER);
+          Join<HouseCharacteristicMapping, HouseCharacteristic> characteristicJoin = characteristicMappingJoin
+              .join("houseCharacteristic", JoinType.INNER);
+          predicates.add(criteriaBuilder.equal(characteristicJoin.get("id"), characteristicId));
+        }));
   }
 
   /**
