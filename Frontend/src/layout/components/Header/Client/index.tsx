@@ -1,14 +1,14 @@
 import { Flex, Heading, Stack } from '@chakra-ui/react'
 import BaseHeader from '../Base'
 import ThumnailImage from '@assets/images/just-home-thumnail.png'
-import { CustomSelect, Filter, CheckboxPopover, RangeFilter } from '@components'
+import { CheckboxPopover, CustomSelect, Filter, RangeFilter } from '@components'
 import colors from '@styles/variables/colors'
 import { FILTER_OPTION, SORT_USER_OPTION } from '@constants/option'
 import { filterStore } from '@stores'
 import { CategoryName, Unit } from '@type/models'
 
-const ClientHeader: React.FC = () => {
-  const { filterCriteria, setFilterCriteria } = filterStore()
+const ClientHeader = () => {
+  const { filterCriteria, setFilterCriteria, resetFilters } = filterStore()
 
   const selectConfig = {
     width: 'unset',
@@ -24,14 +24,9 @@ const ClientHeader: React.FC = () => {
   }
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    resetFilters()
     setFilterCriteria({
-      category: Number.parseInt(e.target.value),
-      minPrice: 0,
-      maxPrice: 0,
-      minArea: 0,
-      maxArea: 0,
-      houseFeatures: [],
-      landFeatures: []
+      category: Number.parseInt(e.target.value)
     })
   }
 
@@ -45,6 +40,33 @@ const ClientHeader: React.FC = () => {
             (id) => id !== numericValue
           )
         : [...(filterCriteria[filterType === CategoryName.LAND ? 'landFeatures' : 'houseFeatures'] || []), numericValue]
+    })
+  }
+
+  // New handlers for remaining filters
+  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterCriteria({
+      location: {
+        province: e.target.value
+      }
+    })
+  }
+
+  const handleDirectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterCriteria({
+      direction: Number.parseInt(e.target.value)
+    })
+  }
+
+  const handleLandTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterCriteria({
+      landType: Number.parseInt(e.target.value)
+    })
+  }
+
+  const handleBedroomsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterCriteria({
+      bedrooms: Number.parseInt(e.target.value)
     })
   }
 
@@ -64,7 +86,13 @@ const ClientHeader: React.FC = () => {
         </Heading>
         <Filter sortOptions={SORT_USER_OPTION} />
         <Flex gap={2} mt={4} flexWrap='wrap' justifyContent='center'>
-          <CustomSelect {...selectConfig} options={FILTER_OPTION.location} placeholder='Đà Nẵng' />
+          <CustomSelect
+            {...selectConfig}
+            options={FILTER_OPTION.location}
+            placeholder='Đà Nẵng'
+            value={filterCriteria.location?.province || ''}
+            onChange={handleLocationChange}
+          />
 
           <CustomSelect
             {...selectConfig}
@@ -92,7 +120,13 @@ const ClientHeader: React.FC = () => {
             onRangeChange={(values) => setFilterCriteria({ minArea: values.min, maxArea: values.max })}
           />
 
-          <CustomSelect {...selectConfig} options={FILTER_OPTION.direction} placeholder='Hướng' />
+          <CustomSelect
+            {...selectConfig}
+            options={FILTER_OPTION.direction}
+            placeholder='Hướng'
+            value={filterCriteria.direction?.toString() || ''}
+            onChange={handleDirectionChange}
+          />
 
           {filterCriteria.category === 1 ? (
             <>
@@ -108,11 +142,23 @@ const ClientHeader: React.FC = () => {
                 onValueChange={handleFilterValueChange}
               />
 
-              <CustomSelect {...selectConfig} options={FILTER_OPTION.landType} placeholder='Loại đất' />
+              <CustomSelect
+                {...selectConfig}
+                options={FILTER_OPTION.landType}
+                placeholder='Loại đất'
+                value={filterCriteria.landType?.toString() || ''}
+                onChange={handleLandTypeChange}
+              />
             </>
           ) : (
             <>
-              <CustomSelect {...selectConfig} options={FILTER_OPTION.bedrooms} placeholder='Số phòng ngủ' />
+              <CustomSelect
+                {...selectConfig}
+                options={FILTER_OPTION.bedrooms}
+                placeholder='Số phòng ngủ'
+                value={filterCriteria.bedrooms?.toString() || ''}
+                onChange={handleBedroomsChange}
+              />
 
               <CheckboxPopover
                 options={FILTER_OPTION.houseFeatures}
