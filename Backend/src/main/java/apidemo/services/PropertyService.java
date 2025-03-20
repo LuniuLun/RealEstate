@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class PropertyService {
@@ -53,62 +55,93 @@ public class PropertyService {
 
   public List<Property> getAllProperties(Integer limit, Integer page, String sortBy, String typeOfSort,
       Map<String, String> filters) {
-    // Validate page number
     if (page != null && page < 1) {
       throw new IllegalArgumentException("Page index must be greater than zero");
     }
 
-    // Configure pagination and sorting
     Pageable pageRequest = filter.createPageRequest(limit, page, sortBy, typeOfSort);
-
-    // Build specification with filters
     Specification<Property> spec = buildPropertySpecification(filters);
 
-    // Execute query
     return propertyRepository.findAll(spec, pageRequest).getContent();
   }
 
-  /**
-   * Builds a specification for Property filtering
-   */
-  private Specification<Property> buildPropertySpecification(Map<String, String> filters) {
-    return (root, query, criteriaBuilder) -> {
+  public Specification<Property> buildPropertySpecification(Map<String, String> filters) {
+    return (root, query, cb) -> {
       List<Predicate> predicates = new ArrayList<>();
 
-      // Apply text filters
-      filters.forEach((key, value) -> {
-        if (value != null && !value.isEmpty() &&
-            !key.equals("minPrice") && !key.equals("maxPrice") &&
-            !key.equals("minArea") && !key.equals("maxArea")) {
-          predicates.add(criteriaBuilder.like(root.get(key).as(String.class), "%" + value + "%"));
+      applyCommonFilters(predicates, filters, cb, root);
+
+      String category = filters.get("category");
+      if (category != null) {
+        switch (category) {
+          case "1" -> landService.landFilters(predicates, filters, cb, root);
+          case "2" -> houseService.houseFilters(predicates, filters, cb, root);
         }
-      });
+      }
 
-      // Apply range filters
-      applyRangeFilter(predicates, filters, "price", "minPrice", "maxPrice", criteriaBuilder, root);
-      applyRangeFilter(predicates, filters, "area", "minArea", "maxArea", criteriaBuilder, root);
-
-      return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+      return predicates.isEmpty() ? null : cb.and(predicates.toArray(new Predicate[0]));
     };
   }
 
-  /**
-   * Applies a numeric range filter for a given field
-   */
+  private void applyCommonFilters(List<Predicate> predicates, Map<String, String> filters,
+      CriteriaBuilder cb, Root<Property> root) {
+    applyStringFilter(predicates, filters, "status",
+        value -> cb.equal(root.get("status"), PropertyStatus.valueOf(value)), false);
+
+    applyIntFilter(predicates, filters, "category", value -> cb.equal(root.get("category").get("id"), value));
+
+    applyIntFilter(predicates, filters, "direction", value -> cb.equal(root.get("direction"), value));
+
+    applyStringFilter(predicates, filters, "region", value -> cb.like(root.get("region"), "%" + value + "%"), true);
+
+    applyStringFilter(predicates, filters, "wardName", value -> cb.like(root.get("wardName"), "%" + value + "%"), true);
+
+    applyStringFilter(predicates, filters, "streetName", value -> cb.like(root.get("streetName"), "%" + value + "%"),
+        true);
+
+    applyStringFilter(predicates, filters, "searchText", value -> cb.or(
+        cb.like(root.get("title"), "%" + value + "%"),
+        cb.like(root.get("description"), "%" + value + "%")), true);
+
+    applyRangeFilter(predicates, filters, "price", "minPrice", "maxPrice", cb, root);
+    applyRangeFilter(predicates, filters, "area", "minArea", "maxArea", cb, root);
+  }
+
+  private <T> void applyStringFilter(List<Predicate> predicates, Map<String, String> filters,
+      String key, Function<String, Predicate> predicateBuilder,
+      boolean skipEmpty) {
+    Optional.ofNullable(filters.get(key))
+        .filter(v -> !skipEmpty || !v.isEmpty())
+        .ifPresent(value -> predicates.add(predicateBuilder.apply(value)));
+  }
+
+  private void applyIntFilter(List<Predicate> predicates, Map<String, String> filters,
+      String key, Function<Integer, Predicate> predicateBuilder) {
+    Optional.ofNullable(filters.get(key))
+        .map(Integer::parseInt)
+        .ifPresent(value -> predicates.add(predicateBuilder.apply(value)));
+  }
+
   private void applyRangeFilter(List<Predicate> predicates, Map<String, String> filters,
       String fieldName, String minKey, String maxKey,
-      CriteriaBuilder criteriaBuilder, Root<Property> root) {
-    String minValue = filters.get(minKey);
-    String maxValue = filters.get(maxKey);
+      CriteriaBuilder cb, Root<Property> root) {
+    Double minValue = parseDoubleOrNull(filters.get(minKey));
+    Double maxValue = parseDoubleOrNull(filters.get(maxKey));
 
-    if (minValue != null && !minValue.isEmpty() && maxValue != null && !maxValue.isEmpty()) {
-      try {
-        double min = Double.parseDouble(minValue);
-        double max = Double.parseDouble(maxValue);
-        predicates.add(criteriaBuilder.between(root.get(fieldName), min, max));
-      } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("Invalid " + fieldName + " range values");
-      }
+    if (minValue != null && maxValue != null) {
+      predicates.add(cb.between(root.get(fieldName), minValue, maxValue));
+    } else if (minValue != null) {
+      predicates.add(cb.greaterThanOrEqualTo(root.get(fieldName), minValue));
+    } else if (maxValue != null) {
+      predicates.add(cb.lessThanOrEqualTo(root.get(fieldName), maxValue));
+    }
+  }
+
+  private Double parseDoubleOrNull(String value) {
+    try {
+      return value != null ? Double.parseDouble(value) : null;
+    } catch (NumberFormatException e) {
+      return null;
     }
   }
 
