@@ -27,7 +27,9 @@ const Register = () => {
 
       <Box flex={2} p={10} display='flex' justifyContent='center' alignItems='center'>
         <Stack w='60%' gap={5}>
-          <Heading fontSize='2xl'>Đăng ký JustHome</Heading>
+          <Heading fontSize='2xl' color={colors.brand.blackTextPrimary}>
+            Đăng ký JustHome
+          </Heading>
 
           <Button
             variant='primary'
@@ -36,32 +38,37 @@ const Register = () => {
             w='300px'
             height={10}
             justifyContent='flex-start'
+            borderRadius='sm'
           >
-            <Box m={1} borderRadius='lg' overflow='hidden'>
+            <Box m='2px' borderRadius='md' overflow='hidden'>
               <GoogleIcon />
             </Box>
             Đăng nhập bằng Google
           </Button>
 
-          <Divider my={5} border='1px solid #D9D9D9' />
+          <Flex align='center' gap={4}>
+            <Divider my={5} border='1px solid #D9D9D9' />
+            <Text color={colors.brand.yellowHeading}>Hoặc</Text>
+            <Divider my={5} border='1px solid #D9D9D9' />
+          </Flex>
 
           <Stack gap={4}>
             <Flex gap={2}>
-              <TextField placeholder='Họ và tên' variant='outline' borderRadius='md' />
-              <TextField placeholder='Số điện thoại' variant='outline' borderRadius='md' />
+              <TextField placeholder='Họ và tên' variant='outline' borderRadius='md' py={5} />
+              <TextField placeholder='Số điện thoại' variant='outline' borderRadius='md' py={5} />
             </Flex>
-            <TextField placeholder='Email' variant='outline' borderRadius='md' />
-            <TextField placeholder='Mật khẩu' variant='outline' borderRadius='md' />
-            <TextField placeholder='Nhập lại mật khẩu' variant='outline' borderRadius='md' />
+            <TextField placeholder='Email' variant='outline' borderRadius='md' py={5} />
+            <TextField placeholder='Mật khẩu' variant='outline' borderRadius='md' py={5} />
+            <TextField placeholder='Nhập lại mật khẩu' variant='outline' borderRadius='md' py={5} />
           </Stack>
 
-          <Checkbox mt={3}>
+          <Checkbox mt={3} alignItems='unset' sx={{ '& span:first-of-type': { marginTop: '4px' } }}>
             Bằng việc tạo tài khoản, bạn đồng ý với{' '}
-            <Text as='span' color={colors.brand.primary}>
+            <Text as='span' color={colors.brand.yellowHeading}>
               Điều khoản dịch vụ{' '}
             </Text>
             và{' '}
-            <Text as='span' color={colors.brand.primary}>
+            <Text as='span' color={colors.brand.yellowHeading}>
               Chính sách bảo mật
             </Text>
             .
@@ -74,7 +81,7 @@ const Register = () => {
           <Text mt={3}>
             Đã có tài khoản?{' '}
             <Link to='/login'>
-              <Text as='span' color={colors.brand.primary}>
+              <Text as='span' color={colors.brand.yellowHeading}>
                 Đăng nhập
               </Text>
             </Link>
