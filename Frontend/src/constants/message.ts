@@ -9,7 +9,9 @@ const MESSAGE = {
     GET_SUCCESS: 'Lấy danh sách người dùng thành công',
     GET_FAILED: 'Không thể tải danh sách người dùng',
     FILTER_SUCCESS: 'Lọc người dùng thành công',
-    FILTER_FAILED: 'Lọc người dùng thất bại'
+    FILTER_FAILED: 'Lọc người dùng thất bại',
+    UPGRADE_SUCCESS: 'Nâng cấp người dùng thành công',
+    UPGRADE_FAILED: 'Nâng cấp tài khoản thất bại'
   },
   property: {
     ADD_SUCCESS: 'Thêm bất động sản thành công',
@@ -28,6 +30,20 @@ const MESSAGE = {
     UNKNOWN_ERROR: 'Đã xảy ra lỗi không xác định',
     NOT_FOUND: 'Không tìm thấy kết quả',
     ERROR_NETWORK: 'Lỗi kết nối mạng'
+  },
+  auth: {
+    LOGIN_SUCCESS: 'Đăng nhập thành công',
+    LOGIN_FAILED: 'Đăng nhập thất bại',
+    LOGOUT_SUCCESS: 'Đăng xuất thành công',
+    LOGOUT_FAILED: 'Đăng xuất thất bại',
+    REGISTER_SUCCESS: 'Đăng ký thành công',
+    REGISTER_FAILED: 'Đăng ký thất bại',
+    REQUIRE: 'Vui lòng nhập trường này',
+    INVALID_EMAIL: 'Email không hợp lệ',
+    INVALID_PHONE: 'Số điện thoại phải có đúng 9 đến 11 chữ số',
+    WEAK_PASSWORD: 'Mật khẩu phải có ít nhất 8 ký tự, chứa ít nhất 1 chữ hoa và 1 ký tự đặc biệt',
+    MISMATCH_PASSWORD: 'Mật khẩu không khớp',
+    TERMREQUIRED: 'Bạn cần đồng ý với điều khoản dịch vụ'
   }
 }
 
