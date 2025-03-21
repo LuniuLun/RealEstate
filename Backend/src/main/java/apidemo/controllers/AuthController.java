@@ -34,7 +34,7 @@ public class AuthController {
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
     try {
-      User user = userService.getUserByUsername(loginRequest.getUsername());
+      User user = userService.getUserByPhone(loginRequest.getPhone());
 
       if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
         Map<String, String> errorResponse = new HashMap<>();

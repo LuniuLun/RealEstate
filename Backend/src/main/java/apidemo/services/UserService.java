@@ -55,8 +55,8 @@ public class UserService {
         .orElseThrow(() -> new RuntimeException("User does not exist"));
   }
 
-  public User getUserByUsername(String username) {
-    return userRepository.findByUsername(username)
+  public User getUserByPhone(String username) {
+    return userRepository.findByPhone(username)
         .orElseThrow(() -> new RuntimeException("User does not exist"));
   }
 
