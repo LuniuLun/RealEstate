@@ -17,6 +17,8 @@ export interface IUser {
   updatedAt: string
 }
 
+export type TRegisterUserRequest = Omit<IUser, 'id' | 'createdAt' | 'updatedAt'>
+
 export interface IToken {
   id: number
   user: IUser
