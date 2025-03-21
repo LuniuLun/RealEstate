@@ -26,7 +26,7 @@ const Register = () => {
       </Flex>
 
       <Box flex={2} p={10} display='flex' justifyContent='center' alignItems='center'>
-        <Stack w='60%' gap={5}>
+        <Stack gap={5} maxW='500px' w='100%'>
           <Heading fontSize='2xl' color={colors.brand.blackTextPrimary}>
             Đăng ký JustHome
           </Heading>
@@ -57,9 +57,9 @@ const Register = () => {
               <TextField placeholder='Họ và tên' variant='outline' borderRadius='md' py={5} />
               <TextField placeholder='Số điện thoại' variant='outline' borderRadius='md' py={5} />
             </Flex>
-            <TextField placeholder='Email' variant='outline' borderRadius='md' py={5} />
-            <TextField placeholder='Mật khẩu' variant='outline' borderRadius='md' py={5} />
-            <TextField placeholder='Nhập lại mật khẩu' variant='outline' borderRadius='md' py={5} />
+            <TextField placeholder='Email' variant='outline' borderRadius='md' py={5} type='email' />
+            <TextField placeholder='Mật khẩu' variant='outline' borderRadius='md' py={5} type='password' />
+            <TextField placeholder='Nhập lại mật khẩu' variant='outline' borderRadius='md' py={5} type='password' />
           </Stack>
 
           <Checkbox mt={3} alignItems='unset' sx={{ '& span:first-of-type': { marginTop: '4px' } }}>

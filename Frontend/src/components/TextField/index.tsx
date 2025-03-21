@@ -85,7 +85,7 @@ const TextField = forwardRef<HTMLInputElement, ITextFieldProps>(
             {...props}
           />
           {type === 'password' && (
-            <InputRightElement width='4.5rem'>
+            <InputRightElement width='4.5rem' height='100%'>
               <IconButton
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                 icon={showPassword ? <EyeIcon /> : <CloseEyeIcon />}
