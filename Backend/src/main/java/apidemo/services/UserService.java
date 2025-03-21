@@ -61,9 +61,6 @@ public class UserService {
   }
 
   public User createUser(User user) {
-    if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-      throw new RuntimeException("Username " + user.getUsername() + " is already taken.");
-    }
     if (userRepository.findByEmail(user.getEmail()).isPresent()) {
       throw new RuntimeException("Email " + user.getEmail() + " is already taken.");
     }
@@ -100,11 +97,9 @@ public class UserService {
 
   public User updateUser(Integer userId, User updatedUser) {
     return userRepository.findById(userId).map(existingUser -> {
-      existingUser.setUsername(updatedUser.getUsername());
       existingUser.setEmail(updatedUser.getEmail());
       existingUser.setPassword(updatedUser.getPassword());
       existingUser.setPhone(updatedUser.getPhone());
-      existingUser.setAddress(updatedUser.getAddress());
       existingUser.setRole(updatedUser.getRole());
       existingUser.setUpdatedAt(LocalDateTime.now());
 
