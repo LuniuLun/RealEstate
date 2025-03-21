@@ -7,6 +7,7 @@ import Dashboard from '@pages/Dashboard'
 import Users from '@pages/Users'
 import ListingProperty from '@pages/ListingProperty'
 import Register from '@pages/Register'
+import Login from '@pages/Login'
 
 function App() {
   const { user } = authStore()
@@ -18,6 +19,7 @@ function App() {
         <Route path='property-listings' element={<ListingProperty />} />
       </Route>
       <Route path='register' element={<Register />} />
+      <Route path='login' element={<Login />} />
       <Route
         element={<ProtectedRoute isAllowed={!!user} userRoles={user?.roles} requiredRole='admin' redirectPath='/' />}
       >
