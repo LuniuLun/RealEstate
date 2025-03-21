@@ -19,7 +19,8 @@ const CheckboxGroup = ({ options, selectedValues, filterType, onValueChange }: I
         onChange={() => onValueChange(String(option.value), String(filterType) as CategoryName)}
         colorScheme={colors.brand.primary}
         size='sm'
-        textAlign='start'
+        alignItems='unset'
+        sx={{ '& span:first-of-type': { marginTop: '4px' } }}
       >
         {option.label}
       </Checkbox>
