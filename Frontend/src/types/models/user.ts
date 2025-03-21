@@ -9,6 +9,7 @@ export interface IRole {
 export interface IUser {
   id: number
   role: IRole
+  fullName: string
   email: string
   password: string
   phone: string

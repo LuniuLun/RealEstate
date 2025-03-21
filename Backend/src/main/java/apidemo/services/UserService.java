@@ -97,6 +97,7 @@ public class UserService {
 
   public User updateUser(Integer userId, User updatedUser) {
     return userRepository.findById(userId).map(existingUser -> {
+      existingUser.setFullName(updatedUser.getFullName());
       existingUser.setEmail(updatedUser.getEmail());
       existingUser.setPassword(updatedUser.getPassword());
       existingUser.setPhone(updatedUser.getPhone());

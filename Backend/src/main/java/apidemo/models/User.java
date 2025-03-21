@@ -16,6 +16,9 @@ public class User {
   @JoinColumn(name = "role_id", nullable = false)
   private Role role;
 
+  @Column(nullable = false, length = 100)
+  private String fullName;
+
   @Column(nullable = false, unique = true, length = 100)
   private String email;
 
@@ -57,6 +60,14 @@ public class User {
 
   public void setRole(Role role) {
     this.role = role;
+  }
+
+  public String getFullName() {
+    return fullName;
+  }
+
+  public void setFullName(String fullName) {
+    this.fullName = fullName;
   }
 
   public String getEmail() {
