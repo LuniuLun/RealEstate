@@ -8,7 +8,6 @@ const useCustomToast = () => {
       status,
       position,
       isClosable: true,
-      variant: `${status}Custom`,
       ...props
     })
   }

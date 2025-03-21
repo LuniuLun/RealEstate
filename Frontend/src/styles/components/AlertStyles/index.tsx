@@ -1,37 +1,30 @@
 import { alertAnatomy } from '@chakra-ui/anatomy'
 import { createMultiStyleConfigHelpers } from '@chakra-ui/react'
 
-const { definePartsStyle, defineMultiStyleConfig } = createMultiStyleConfigHelpers(alertAnatomy.keys)
-
-const successCustom = definePartsStyle({
-  container: {
-    border: '1px solid',
-    borderColor: 'brand.green',
-    background: 'brand.green'
-  }
-})
-
-const errorCustom = definePartsStyle({
-  container: {
-    border: '1px solid',
-    borderColor: 'brand.red',
-    background: 'brand.red'
-  }
-})
+const { defineMultiStyleConfig } = createMultiStyleConfigHelpers(alertAnatomy.keys)
 
 const AlertStyles = defineMultiStyleConfig({
   baseStyle: {
+    container: {
+      '&[data-status="error"]': {
+        background: 'brand.red',
+        borderColor: 'brand.red'
+      },
+      '&[data-status="success"]': {
+        background: 'brand.green',
+        borderColor: 'brand.green'
+      }
+    },
     description: {
-      color: 'brand.secondary'
+      color: 'brand.secondary '
     },
     title: {
-      color: 'brand.white'
+      color: 'brand.white '
     },
     icon: {
-      color: 'brand.white'
+      color: 'brand.white '
     }
-  },
-  variants: { successCustom, errorCustom }
+  }
 })
 
 export default AlertStyles
