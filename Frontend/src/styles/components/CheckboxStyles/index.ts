@@ -4,14 +4,18 @@ const CheckboxStyles: ComponentStyleConfig = {
   baseStyle: {
     control: {
       border: '2px solid',
-      borderColor: 'brand.black',
+      borderColor: 'brand.primary',
       _checked: {
-        bg: 'brand.black',
-        borderColor: 'brand.black',
+        bg: 'brand.primary',
+        borderColor: 'brand.primary',
         _disabled: {
-          borderColor: 'brand.black',
-          bg: 'brand.black',
+          borderColor: 'brand.primary',
+          bg: 'brand.primary',
           cursor: 'default'
+        },
+        _hover: {
+          bg: 'brand.primary',
+          borderColor: 'brand.primary'
         }
       },
       _disabled: {
