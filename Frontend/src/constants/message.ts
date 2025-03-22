@@ -38,7 +38,7 @@ const MESSAGE = {
     LOGOUT_FAILED: 'Đăng xuất thất bại',
     REGISTER_SUCCESS: 'Đăng ký thành công',
     REGISTER_FAILED: 'Đăng ký thất bại',
-    REQUIRE: 'Vui lòng nhập trường này',
+    REQUIRE: 'Vui lòng nhập đầy đủ thông tin của bạn',
     INVALID_EMAIL: 'Email không hợp lệ',
     INVALID_PHONE: 'Số điện thoại phải có đúng 9 đến 11 chữ số',
     WEAK_PASSWORD: 'Mật khẩu phải có ít nhất 8 ký tự, chứa ít nhất 1 chữ hoa và 1 ký tự đặc biệt',
