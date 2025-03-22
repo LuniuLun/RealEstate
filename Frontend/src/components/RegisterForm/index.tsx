@@ -4,10 +4,8 @@ import { TextField } from '@components'
 import colors from '@styles/variables/colors'
 import { Link } from 'react-router-dom'
 import { useForm, SubmitHandler, Controller } from 'react-hook-form'
-import { useState } from 'react'
 import { useRegisterUser } from '@hooks'
-import { IUser, RoleName, TRegisterUserRequest } from '@type/models'
-import { IApiResponse } from '@type/apiResponse'
+import { RoleName, TRegisterUserRequest } from '@type/models'
 import { REGEX } from '@constants/regex'
 import MESSAGE from '@constants/message'
 
@@ -17,7 +15,6 @@ interface IRegisterInputs extends TRegisterUserRequest {
 }
 
 const RegisterForm = () => {
-  const [isLoading, setIsLoading] = useState(false)
   const toast = useToast()
   const { registerUserMutation } = useRegisterUser()
 
@@ -44,13 +41,11 @@ const RegisterForm = () => {
       toast({
         title: MESSAGE.auth.TERMREQUIRED,
         status: 'error',
-        duration: 10000000,
-        isClosable: false
+        duration: 5000,
+        isClosable: true
       })
       return
     }
-
-    setIsLoading(true)
 
     const newUser: TRegisterUserRequest = {
       fullName: data.fullName,
@@ -63,24 +58,8 @@ const RegisterForm = () => {
       }
     }
 
-    registerUserMutation.mutate(newUser, {
-      onSuccess: (response: IApiResponse<IUser>) => {
-        toast({
-          title: response.message,
-          status: response.status
-        })
-        setIsLoading(false)
-      },
-      onError: (error: Error) => {
-        toast({
-          title: error.message || MESSAGE.auth.REGISTER_FAILED,
-          status: 'error'
-        })
-        setIsLoading(false)
-      }
-    })
+    registerUserMutation.mutate(newUser)
   }
-
   return (
     <Stack gap={5} maxW='500px' w='100%' as='form' onSubmit={handleSubmit(onSubmit)}>
       <Heading fontSize='2xl' color={colors.brand.blackTextPrimary} mb={5} alignSelf='flex-start' maxW='500px'>
@@ -255,7 +234,7 @@ const RegisterForm = () => {
         colorScheme='yellow'
         size='md'
         type='submit'
-        isLoading={isLoading || registerUserMutation.isPending}
+        isLoading={registerUserMutation.isPending}
         loadingText='Đang xử lý...'
       >
         Tạo tài khoản
