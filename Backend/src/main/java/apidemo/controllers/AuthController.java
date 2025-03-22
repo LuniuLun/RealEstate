@@ -35,19 +35,19 @@ public class AuthController {
   public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
     try {
       User user = userService.getUserByPhone(loginRequest.getPhone());
-
-      if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+      if (user == null) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "Invalid username or password");
+        errorResponse.put("message", "Số điện thoại không tồn tại");
+        return ResponseEntity.badRequest().body(errorResponse);
+      }
+      if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Mật khẩu hoặc số điện thoại không đúng");
         return ResponseEntity.badRequest().body(errorResponse);
       }
 
       Token token = jwtService.generateToken(user);
-
-      Map<String, Object> response = new HashMap<>();
-      response.put("token", token);
-
-      return ResponseEntity.ok(response);
+      return ResponseEntity.ok(token);
     } catch (Exception e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
