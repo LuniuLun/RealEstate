@@ -6,20 +6,20 @@ const baseUrl = `${import.meta.env.VITE_APP_BASE_URL}${import.meta.env.VITE_APP_
 
 export const registerUser = async (newUser: TRegisterUserRequest): Promise<IApiResponse<IUser>> => {
   try {
-    const response = await fetch(baseUrl, {
+    const response = await fetch(`${baseUrl}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newUser)
     })
+    const data = await response.json()
 
     if (!response.ok) {
       return {
         status: 'error',
-        message: MESSAGE.auth.REGISTER_FAILED
+        message: data?.message || MESSAGE.auth.REGISTER_FAILED
       }
     }
 
-    const data = await response.json()
     return {
       status: 'success',
       message: MESSAGE.auth.REGISTER_SUCCESS,

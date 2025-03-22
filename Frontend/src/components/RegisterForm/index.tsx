@@ -65,17 +65,10 @@ const RegisterForm = () => {
 
     registerUserMutation.mutate(newUser, {
       onSuccess: (response: IApiResponse<IUser>) => {
-        if (response.status === 'success') {
-          toast({
-            title: MESSAGE.auth.REGISTER_SUCCESS,
-            status: 'success'
-          })
-        } else {
-          toast({
-            title: MESSAGE.auth.REGISTER_FAILED,
-            status: 'error'
-          })
-        }
+        toast({
+          title: response.message,
+          status: response.status
+        })
         setIsLoading(false)
       },
       onError: (error: Error) => {
