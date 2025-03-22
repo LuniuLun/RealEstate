@@ -6,9 +6,12 @@ import colors from '@styles/variables/colors'
 import { FILTER_OPTION, SORT_USER_OPTION } from '@constants/option'
 import { filterStore } from '@stores'
 import { CategoryName, Unit } from '@type/models'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const ClientHeader = () => {
   const { filterCriteria, setFilterCriteria, resetFilters } = filterStore()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const selectConfig = {
     width: 'unset',
@@ -23,11 +26,18 @@ const ClientHeader = () => {
     }
   }
 
+  const ensureOnPropertyListings = () => {
+    if (location.pathname !== '/property-listings') {
+      navigate('/property-listings')
+    }
+  }
+
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     resetFilters()
     setFilterCriteria({
       category: Number.parseInt(e.target.value)
     })
+    ensureOnPropertyListings()
   }
 
   const handleFilterFeatureChange = (value: string, filterType: CategoryName) => {
@@ -44,6 +54,7 @@ const ClientHeader = () => {
     setFilterCriteria({
       [filterType === CategoryName.LAND ? 'landCharacteristics' : 'houseCharacteristics']: newFeatures
     })
+    ensureOnPropertyListings()
   }
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -52,24 +63,28 @@ const ClientHeader = () => {
         province: e.target.value
       }
     })
+    ensureOnPropertyListings()
   }
 
   const handleDirectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterCriteria({
       direction: Number.parseInt(e.target.value)
     })
+    ensureOnPropertyListings()
   }
 
   const handleLandTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterCriteria({
       landType: Number.parseInt(e.target.value)
     })
+    ensureOnPropertyListings()
   }
 
   const handleBedroomsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterCriteria({
       bedrooms: Number.parseInt(e.target.value)
     })
+    ensureOnPropertyListings()
   }
 
   return (
