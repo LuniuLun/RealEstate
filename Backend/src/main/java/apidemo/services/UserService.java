@@ -62,10 +62,10 @@ public class UserService {
 
   public User createUser(User user) {
     if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-      throw new RuntimeException("Email " + user.getEmail() + " is already taken.");
+      throw new RuntimeException("Email " + user.getEmail() + " đã tồn tại");
     }
     if (userRepository.findByPhone(user.getPhone()).isPresent()) {
-      throw new RuntimeException("Phone " + user.getPhone() + " is already taken.");
+      throw new RuntimeException("Số điện thoại " + user.getPhone() + " đã tồn tại");
     }
     Role role = roleRepository.findById(user.getRole().getId())
         .orElseThrow(() -> new RuntimeException("Role not found with id: " + user.getRole().getId()));
