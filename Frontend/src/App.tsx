@@ -8,9 +8,10 @@ import Users from '@pages/Users'
 import ListingProperty from '@pages/ListingProperty'
 import Register from '@pages/Register'
 import Login from '@pages/Login'
+import { RoleName } from '@type/models'
 
 function App() {
-  const { user } = authStore()
+  const { token } = authStore()
 
   return (
     <Routes>
@@ -21,7 +22,14 @@ function App() {
       <Route path='register' element={<Register />} />
       <Route path='login' element={<Login />} />
       <Route
-        element={<ProtectedRoute isAllowed={!!user} userRoles={user?.roles} requiredRole='admin' redirectPath='/' />}
+        element={
+          <ProtectedRoute
+            isAllowed={!!token}
+            userRoles={token?.user?.role?.name || RoleName.CUSTOMER}
+            requiredRole={RoleName.ADMIN}
+            redirectPath='/'
+          />
+        }
       >
         <Route element={<AđminLayout />}>
           <Route path='dashboard' element={<Dashboard />} />
