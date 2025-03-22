@@ -18,6 +18,7 @@ export interface IUser {
 }
 
 export type TRegisterUserRequest = Omit<IUser, 'id' | 'createdAt' | 'updatedAt'>
+export type TLoginUserRequest = Pick<TRegisterUserRequest, 'phone' | 'password'>
 
 export interface IToken {
   id: number
