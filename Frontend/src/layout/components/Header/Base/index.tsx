@@ -7,8 +7,13 @@ import { useNavigate } from 'react-router-dom'
 
 const BaseHeader = () => {
   // const { toggleSidebar } = useSidebar()
-  const { user, logout } = authStore()
+  const { token, logout } = authStore()
   const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
   return (
     <Flex
@@ -28,15 +33,19 @@ const BaseHeader = () => {
         <NavItem title='Bài đăng' to='/property-listings' isActive={false} />
       </Flex>
       <Flex alignItems='center' gap={5}>
-        {user ? (
+        {token ? (
           <Flex alignItems='center' gap={6}>
             <Box height='100%'>
               <NotificationIcon />
             </Box>
             <Box position='relative' cursor='pointer' _hover={{ div: { display: 'flex' } }}>
-              <UserCard name={user?.name} role={user?.roles[0]} avatar={<UserIcon />} />
+              <UserCard
+                name={token.user.fullName}
+                role={token.user.role.name.toLocaleLowerCase()}
+                avatar={<UserIcon />}
+              />
               <Flex position='absolute' bottom='-70%' right='0' display='none' bgColor={colors.brand.white} w='100px'>
-                <Box onClick={logout} px={2} py={1} textAlign='end' w='100%'>
+                <Box onClick={handleLogout} px={2} py={1} textAlign='end' w='100%'>
                   Logout
                 </Box>
               </Flex>
