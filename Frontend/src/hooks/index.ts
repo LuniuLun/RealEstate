@@ -6,5 +6,6 @@ export { default as useEditUser } from './UseUser/useEditUser'
 export { default as useAddUser } from './UseUser/useAddUser'
 export { default as useDeleteUser } from './UseUser/useDeleteUser'
 export { default as useRegisterUser } from './UseUser/useRegisterUser'
+export { default as useLoginUser } from './UseUser/useLoginUser'
 
 export { default as useGetProperty } from './UseProperty/useGetProperty'
