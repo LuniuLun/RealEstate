@@ -35,7 +35,15 @@ class ErrorBoundary extends React.Component<IErrorBoundaryProps, IErrorBoundaryS
     if (this.state.hasError) {
       return (
         this.props.fallback || (
-          <Alert display='flex' alignItems='center' gap={10} justifyContent='center' minH='100vh' w='100%'>
+          <Alert
+            display='flex'
+            alignItems='center'
+            gap={10}
+            justifyContent='center'
+            minH='100vh'
+            w='100%'
+            bgColor='unset'
+          >
             <Image src={errorImage} alt='Error' maxH='300px' maxW='300px' />
             <Flex flexDirection='column' gap={4}>
               <AlertTitle color={colors.brand.blackTextPrimary} fontSize='3xl'>
