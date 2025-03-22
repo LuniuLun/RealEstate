@@ -53,7 +53,7 @@ const RegisterForm = () => {
       email: data.email,
       password: data.password,
       role: {
-        id: 1,
+        id: 3,
         name: RoleName.CUSTOMER
       }
     }
