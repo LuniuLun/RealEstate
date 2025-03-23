@@ -231,6 +231,43 @@ export const UserIcon = ({ width = '17', height = '17', fill = '#1A1A1A' }: Icon
   </svg>
 )
 
+export const LogoutIcon = ({ width = '24', height = '24', fill = '#1A1A1A' }: IconProps) => (
+  <svg fill={fill} width={width} height={height} id='Capa_1' viewBox='0 0 384.971 384.971' xmlSpace='preserve'>
+    <g>
+      <g id='Sign_Out'>
+        <path
+          d='M180.455,360.91H24.061V24.061h156.394c6.641,0,12.03-5.39,12.03-12.03s-5.39-12.03-12.03-12.03H12.03
+			C5.39,0.001,0,5.39,0,12.031V372.94c0,6.641,5.39,12.03,12.03,12.03h168.424c6.641,0,12.03-5.39,12.03-12.03
+			C192.485,366.299,187.095,360.91,180.455,360.91z'
+        />
+        <path
+          d='M381.481,184.088l-83.009-84.2c-4.704-4.752-12.319-4.74-17.011,0c-4.704,4.74-4.704,12.439,0,17.179l62.558,63.46H96.279
+			c-6.641,0-12.03,5.438-12.03,12.151c0,6.713,5.39,12.151,12.03,12.151h247.74l-62.558,63.46c-4.704,4.752-4.704,12.439,0,17.179
+			c4.704,4.752,12.319,4.752,17.011,0l82.997-84.2C386.113,196.588,386.161,188.756,381.481,184.088z'
+        />
+      </g>
+      <g></g>
+      <g></g>
+      <g></g>
+      <g></g>
+      <g></g>
+      <g></g>
+    </g>
+  </svg>
+)
+
+export const ProfileIcon = ({ width = '24', height = '24', fill = '#1A1A1A' }: IconProps) => (
+  <svg width={width} height={height} viewBox='0 0 24 24' fill={fill} xmlns='http://www.w3.org/2000/svg'>
+    <path
+      d='M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z'
+      stroke={fill}
+      stroke-width='2'
+      stroke-linecap='round'
+      stroke-linejoin='round'
+    />
+  </svg>
+)
+
 export const FacebookIcon = ({ width = '10', height = '16', fill = '#fff' }: IconProps) => (
   <svg width={width} height={height} viewBox='0 0 10 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
     <path
