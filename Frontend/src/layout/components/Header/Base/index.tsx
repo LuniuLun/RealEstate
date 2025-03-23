@@ -1,5 +1,5 @@
 import { Box, Button, Flex } from '@chakra-ui/react'
-import { LogoIcon, NotificationIcon, UserIcon } from '@assets/icons'
+import { LogoIcon, LogoutIcon, NotificationIcon, ProfileIcon, UserIcon } from '@assets/icons'
 import { Logo, NavItem, UserCard } from '@components'
 import { authStore } from '@stores'
 import colors from '@styles/variables/colors'
@@ -13,6 +13,10 @@ const BaseHeader = () => {
   const handleLogout = () => {
     logout()
     navigate('/')
+  }
+
+  const handleProfile = () => {
+    navigate('/profile')
   }
 
   return (
@@ -44,11 +48,52 @@ const BaseHeader = () => {
                 role={token.user.role.name.toLocaleLowerCase()}
                 avatar={<UserIcon />}
               />
-              <Flex position='absolute' bottom='-70%' right='0' display='none' bgColor={colors.brand.white} w='100px'>
-                <Box onClick={handleLogout} px={2} py={1} textAlign='end' w='100%'>
-                  Logout
-                </Box>
-              </Flex>
+              <Box
+                position='absolute'
+                top='75%'
+                right='0'
+                display='none'
+                bgColor={colors.brand.white}
+                w='150px'
+                borderRadius='md'
+                boxShadow='md'
+                zIndex={10}
+                mt={2}
+                overflow='hidden'
+                border='1px'
+                borderColor='gray.200'
+              >
+                <Flex direction='column' w='100%' justifyContent='flex-start'>
+                  <Button
+                    variant='ghost'
+                    size='md'
+                    justifyContent='flex-start'
+                    py={2}
+                    px={4}
+                    _hover={{ bgColor: 'gray.200' }}
+                    leftIcon={<ProfileIcon />}
+                    fontSize='sm'
+                    color={colors.brand.blackTextPrimary}
+                    onClick={handleProfile}
+                  >
+                    Tài khoản
+                  </Button>
+                  <Button
+                    variant='ghost'
+                    size='md'
+                    justifyContent='flex-start'
+                    py={2}
+                    px={4}
+                    _hover={{ bgColor: 'gray.200' }}
+                    leftIcon={<LogoutIcon />}
+                    fontSize='sm'
+                    color={colors.brand.blackTextPrimary}
+                    onClick={handleLogout}
+                  >
+                    Đăng xuất
+                  </Button>
+                </Flex>
+              </Box>
             </Box>
           </Flex>
         ) : (
