@@ -1,17 +1,17 @@
 import { memo } from 'react'
-import { Text, Stack } from '@chakra-ui/react'
+import { Text, Stack, BoxProps } from '@chakra-ui/react'
 import { TSizeInfoGroup } from '@type/variant'
 import colors from '@styles/variables/colors'
 
-interface IInfoGroupProps {
+interface IInfoGroupProps extends BoxProps {
   heading: string
   description: string
   size?: TSizeInfoGroup
 }
 
-const InfoGroup = ({ heading, description, size = 'sm' }: IInfoGroupProps) => {
+const InfoGroup = ({ heading, description, size = 'sm', ...props }: IInfoGroupProps) => {
   return (
-    <Stack align='start' gap={0} maxW='inherit'>
+    <Stack align='start' gap={0} maxW='inherit' {...props}>
       <Text
         fontWeight='500'
         fontSize={size === 'sm' ? '0.875rem' : size === 'md' ? '1rem' : '1.5rem'}
@@ -34,7 +34,7 @@ const InfoGroup = ({ heading, description, size = 'sm' }: IInfoGroupProps) => {
         sx={{
           display: '-webkit-box',
           WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: 1,
+          WebkitLineClamp: size === 'sm' ? 1 : 2,
           overflow: 'hidden'
         }}
       >
