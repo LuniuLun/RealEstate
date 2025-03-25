@@ -95,22 +95,15 @@ public class PropertyService {
       CriteriaBuilder cb, Root<Property> root) {
     applyStringFilter(predicates, filters, "status",
         value -> cb.equal(root.get("status"), PropertyStatus.valueOf(value)), false);
-
     applyIntFilter(predicates, filters, "category", value -> cb.equal(root.get("category").get("id"), value));
-
     applyIntFilter(predicates, filters, "direction", value -> cb.equal(root.get("direction"), value));
-
     applyStringFilter(predicates, filters, "region", value -> cb.like(root.get("region"), "%" + value + "%"), true);
-
     applyStringFilter(predicates, filters, "wardName", value -> cb.like(root.get("wardName"), "%" + value + "%"), true);
-
     applyStringFilter(predicates, filters, "streetName", value -> cb.like(root.get("streetName"), "%" + value + "%"),
         true);
-
-    applyStringFilter(predicates, filters, "searchText", value -> cb.or(
+    applyStringFilter(predicates, filters, "searchQuery", value -> cb.or(
         cb.like(root.get("title"), "%" + value + "%"),
         cb.like(root.get("description"), "%" + value + "%")), true);
-
     applyRangeFilter(predicates, filters, "price", "minPrice", "maxPrice", cb, root);
     applyRangeFilter(predicates, filters, "area", "minArea", "maxArea", cb, root);
   }
