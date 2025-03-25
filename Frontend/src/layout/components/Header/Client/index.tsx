@@ -80,6 +80,13 @@ const ClientHeader = () => {
     ensureOnPropertyListings()
   }
 
+  const handleHouseTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterCriteria({
+      houseType: Number.parseInt(e.target.value)
+    })
+    ensureOnPropertyListings()
+  }
+
   const handleBedroomsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterCriteria({
       bedrooms: Number.parseInt(e.target.value)
@@ -166,6 +173,14 @@ const ClientHeader = () => {
             </>
           ) : filterCriteria.category === 2 ? (
             <>
+              <CustomSelect
+                {...selectConfig}
+                options={FILTER_OPTION.houseType}
+                placeholder='Loại nhà'
+                value={filterCriteria.houseType?.toString() || ''}
+                onChange={handleHouseTypeChange}
+              />
+
               <CustomSelect
                 {...selectConfig}
                 options={FILTER_OPTION.bedrooms}
