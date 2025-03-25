@@ -33,6 +33,10 @@ public class House {
   @JoinColumn(name = "furnished_status_id", nullable = false)
   private FurnishedStatus furnishedStatus;
 
+  @ManyToOne
+  @JoinColumn(name = "house_type_id", nullable = false)
+  private HouseType houseType;
+
   @OneToMany(mappedBy = "house")
   private Set<HouseCharacteristicMapping> houseCharacteristicMappings;
 
@@ -70,7 +74,7 @@ public class House {
   }
 
   public Integer getFloors() {
-    return toilets;
+    return floors; // Fixed: changed from toilets to floors
   }
 
   public void setFloors(Integer floors) {
@@ -83,6 +87,14 @@ public class House {
 
   public void setFurnishedStatus(FurnishedStatus furnishedStatus) {
     this.furnishedStatus = furnishedStatus;
+  }
+
+  public HouseType getHouseType() {
+    return houseType;
+  }
+
+  public void setHouseType(HouseType houseType) {
+    this.houseType = houseType;
   }
 
   public Set<HouseCharacteristicMapping> getHouseCharacteristicMappings() {
