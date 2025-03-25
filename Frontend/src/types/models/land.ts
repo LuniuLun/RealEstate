@@ -1,5 +1,3 @@
-import { IProperty } from './property'
-
 export interface ILandType {
   id: number
   name: string
@@ -12,7 +10,6 @@ export interface ILandCharacteristic {
 
 export interface ILand {
   id: number
-  property: IProperty
   landType: ILandType
   landCharacteristicMappings: ILandCharacteristicMapping[]
 }
