@@ -26,7 +26,11 @@ const ButtonStyles: ComponentStyleConfig = {
         border: 'none',
         bg: 'brand.hoverBtnColor',
         transform: 'scale(1.02)',
-        boxShadow: 'md'
+        boxShadow: 'md',
+        _disabled: {
+          bg: 'brand.primary',
+          transform: 'unset'
+        }
       }
     },
     secondary: {
@@ -37,7 +41,11 @@ const ButtonStyles: ComponentStyleConfig = {
         bg: 'brand.red  ',
         transform: 'scale(1.02)',
         color: 'brand.white',
-        boxShadow: 'md'
+        boxShadow: 'md',
+        _disabled: {
+          bg: 'brand.red',
+          transform: 'unset'
+        }
       }
     },
     tertiary: {
@@ -51,7 +59,11 @@ const ButtonStyles: ComponentStyleConfig = {
         bg: 'brand.primary',
         transform: 'scale(1.02)',
         color: 'brand.white',
-        boxShadow: 'md'
+        boxShadow: 'md',
+        _disabled: {
+          bg: 'brand.primary',
+          transform: 'unset'
+        }
       }
     },
     quaternary: {
@@ -67,7 +79,11 @@ const ButtonStyles: ComponentStyleConfig = {
         bgColor: 'brand.hoverBtnColor',
         transform: 'scale(1.02)',
         color: 'brand.white',
-        boxShadow: 'md'
+        boxShadow: 'md',
+        _disabled: {
+          bg: 'brand.hoverBtnColor',
+          transform: 'unset'
+        }
       }
     }
   },
