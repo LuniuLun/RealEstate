@@ -1,6 +1,9 @@
-import { IProperty } from './property'
-
 export interface IFurnishedStatus {
+  id: number
+  name: string
+}
+
+export interface IHouseType {
   id: number
   name: string
 }
@@ -12,7 +15,7 @@ export interface IHouseCharacteristic {
 
 export interface IHouse {
   id: number
-  property: IProperty
+  houseType: IHouseType
   bedrooms: number
   floors: number
   toilets: number
