@@ -2,9 +2,11 @@ import { Box, Text, Stack, Flex } from '@chakra-ui/react'
 import InfoGroup from '@components/InfoGroup'
 import defaultImage from '@assets/images/default-image.jpg'
 import colors from '@styles/variables/colors'
-import { useState } from 'react'
+import { memo, useState, useCallback, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 interface IPropertyCardProps {
+  id: number
   imageUrl: string
   title: string
   description: string
@@ -14,8 +16,17 @@ interface IPropertyCardProps {
   time: string
 }
 
-const PropertyCard = ({ imageUrl, title, description, price, areaInfo, location, time }: IPropertyCardProps) => {
+const PropertyCard = ({ id, imageUrl, title, description, price, areaInfo, location, time }: IPropertyCardProps) => {
   const [bgSrc, setBgSrc] = useState(imageUrl || defaultImage)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    setBgSrc(imageUrl || defaultImage)
+  }, [imageUrl])
+
+  const handleClick = useCallback(() => {
+    navigate(`/property-detail/${id}`)
+  }, [id, navigate])
 
   return (
     <Box
@@ -31,6 +42,8 @@ const PropertyCard = ({ imageUrl, title, description, price, areaInfo, location,
       bgImage={`url(${bgSrc})`}
       bgSize='cover'
       bgPosition='center'
+      onClick={handleClick}
+      cursor='pointer'
     >
       <img src={imageUrl} alt='' style={{ display: 'none' }} onError={() => setBgSrc(defaultImage)} />
       <Stack
@@ -39,7 +52,7 @@ const PropertyCard = ({ imageUrl, title, description, price, areaInfo, location,
         bgColor={colors.brand.white}
         p={4}
         borderRadius='xl'
-        h={'160px'}
+        h='160px'
         w='100%'
         border='1px solid'
         borderColor={colors.brand.grey}
@@ -68,4 +81,4 @@ const PropertyCard = ({ imageUrl, title, description, price, areaInfo, location,
   )
 }
 
-export default PropertyCard
+export default memo(PropertyCard)
