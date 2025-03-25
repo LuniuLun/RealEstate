@@ -7,7 +7,8 @@ export const SORT_USER_OPTION: ISelectOption<string>[] = [
 ]
 
 export const SORT_PROPERTY_OPTION: ISelectOption<string>[] = [
-  { value: 'address', label: 'Địa chỉ' },
+  { value: 'price', label: 'Mệnh giá' },
+  { value: 'area', label: 'Diện tích' },
   { value: 'createdAt', label: 'Ngày tạo' }
 ]
 

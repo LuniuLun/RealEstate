@@ -3,7 +3,7 @@ import BaseHeader from '../Base'
 import ThumnailImage from '@assets/images/just-home-thumnail.png'
 import { CheckboxPopover, CustomSelect, Filter, RangeFilter } from '@components'
 import colors from '@styles/variables/colors'
-import { FILTER_OPTION, SORT_USER_OPTION } from '@constants/option'
+import { FILTER_OPTION, SORT_PROPERTY_OPTION } from '@constants/option'
 import { filterStore } from '@stores'
 import { CategoryName, Unit } from '@type/models'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -101,7 +101,7 @@ const ClientHeader = () => {
         <Heading variant='primary' color={colors.brand.white}>
           Đặt niềm tin vào chúng tôi
         </Heading>
-        <Filter sortOptions={SORT_USER_OPTION} />
+        <Filter sortOptions={SORT_PROPERTY_OPTION} />
         <Flex gap={2} mt={4} flexWrap='wrap' justifyContent='center'>
           <CustomSelect
             {...selectConfig}
