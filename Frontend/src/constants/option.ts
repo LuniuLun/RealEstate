@@ -60,6 +60,12 @@ export const FILTER_OPTION = {
     { value: 3, label: 'Đất công nghiệp' },
     { value: 4, label: 'Đất nông nghiệp' }
   ],
+  houseType: [
+    { value: 1, label: 'Nhà mặt phố, mặt tiền' },
+    { value: 2, label: 'Nhà ngõ, hẻm' },
+    { value: 3, label: 'Nhà biệt thự' },
+    { value: 4, label: 'Nhà phố liền kề' }
+  ],
   direction: [
     { value: 1, label: 'Bắc' },
     { value: 2, label: 'Nam' },
@@ -114,5 +120,12 @@ export const FILTER_OPTION = {
     { value: 2, label: 'Đầy đủ nội thất' },
     { value: 3, label: 'Hoàn thiện cơ bản' },
     { value: 4, label: 'Bàn giao thô' }
+  ],
+  propertyLegalDocuments: [
+    { value: 1, label: 'Đã có sổ' },
+    { value: 2, label: 'Chờ cấp sổ' },
+    { value: 3, label: 'Chưa có sổ' },
+    { value: 4, label: 'Sổ chung' },
+    { value: 5, label: 'Giấy viết tay' }
   ]
 }
