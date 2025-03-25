@@ -2,7 +2,7 @@ import { IApiResponse } from '@type/apiResponse'
 import MESSAGE from '@constants/message'
 import { IProperty, IPropertyStatistic, PropertyStatus, RoleName } from '@type/models'
 import { authStore } from '@stores'
-import { FilterCriteria } from '@stores/Filter'
+import { FilterCriteria } from '@stores/PropertyFilter'
 import { IFilterOptions } from '@type/filterOptions'
 
 const baseUrl = `${import.meta.env.VITE_APP_BASE_URL}${import.meta.env.VITE_APP_PROPERTY_ENDPOINT}`
