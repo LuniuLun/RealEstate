@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 14, 2025 lúc 03:20 AM
+-- Thời gian đã tạo: Th3 25, 2025 lúc 04:29 AM
 -- Phiên bản máy phục vụ: 10.4.28-MariaDB
 -- Phiên bản PHP: 8.1.17
 
@@ -97,18 +97,19 @@ CREATE TABLE `houses` (
   `floors` int(11) NOT NULL,
   `bedrooms` int(11) NOT NULL,
   `toilets` int(11) NOT NULL,
-  `furnished_status_id` int(11) NOT NULL
+  `furnished_status_id` int(11) NOT NULL,
+  `house_type_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `houses`
 --
 
-INSERT INTO `houses` (`house_id`, `property_id`, `floors`, `bedrooms`, `toilets`, `furnished_status_id`) VALUES
-(1, 4, 3, 5, 5, 2),
-(2, 5, 3, 3, 3, 3),
-(3, 6, 1, 2, 2, 1),
-(4, 14, 2, 3, 2, 2);
+INSERT INTO `houses` (`house_id`, `property_id`, `floors`, `bedrooms`, `toilets`, `furnished_status_id`, `house_type_id`) VALUES
+(1, 4, 3, 5, 5, 2, 1),
+(2, 5, 3, 3, 3, 3, 2),
+(3, 6, 1, 2, 2, 1, 3),
+(4, 14, 2, 3, 2, 2, 4);
 
 -- --------------------------------------------------------
 
@@ -157,6 +158,27 @@ INSERT INTO `house_characteristic_mappings` (`house_characteristic_mapping_id`, 
 (4, 3, 3),
 (5, 4, 2),
 (6, 4, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `house_type`
+--
+
+CREATE TABLE `house_type` (
+  `house_type_id` int(11) NOT NULL,
+  `house_type_name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `house_type`
+--
+
+INSERT INTO `house_type` (`house_type_id`, `house_type_name`) VALUES
+(1, 'STREETFRONT_HOUSE'),
+(2, 'ALLEY_HOUSE'),
+(3, 'VILLA'),
+(4, 'TOWNHOUSE');
 
 -- --------------------------------------------------------
 
@@ -398,7 +420,35 @@ INSERT INTO `tokens` (`token_id`, `user_id`, `token`, `expires_at`, `created_at`
 (6, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbjAxIiwidXNlcklkIjo1LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDE3NjQ4MjMsImV4cCI6MTc0MjM2OTYyM30.BEgHHkLm-Yk30guSc8YdmZj8AlwvDefWDgwEjXMfVfI', '2025-03-19 14:33:43', '2025-03-12 07:33:43'),
 (7, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbjAxIiwidXNlcklkIjo1LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDE3NzIyOTEsImV4cCI6MTc0MjM3NzA5MX0.p54zxvWNDhIs6Oebzcy4dXZbAphPt5QbPJUKyV0ApwM', '2025-03-19 16:38:11', '2025-03-12 09:38:11'),
 (8, 5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbjAxIiwidXNlcklkIjo1LCJyb2xlIjoiQlJPS0VSIiwiaWF0IjoxNzQxODMzMDAwLCJleHAiOjE3NDI0Mzc4MDB9.hhJam2RuLMolIR3mkNfX-Vog7859UyKfhB7_cknroKc', '2025-03-20 09:30:00', '2025-03-13 02:30:00'),
-(9, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbjEiLCJ1c2VySWQiOjEsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0MTkxODcxNywiZXhwIjoxNzQyNTIzNTE3fQ.3X2I5lm_FuyO_ToAYu5dvf0UCWNOuEdxeK8Ao1Xeaic', '2025-03-21 09:18:37', '2025-03-14 02:18:37');
+(9, 1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbjEiLCJ1c2VySWQiOjEsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc0MTkxODcxNywiZXhwIjoxNzQyNTIzNTE3fQ.3X2I5lm_FuyO_ToAYu5dvf0UCWNOuEdxeK8Ao1Xeaic', '2025-03-21 09:18:37', '2025-03-14 02:18:37'),
+(10, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NDg3NzMsImV4cCI6MTc0MzI1MzU3M30.uGmPOI8N6UP0LZZKjW6PkoEpQcfTEQXOfHKTBWvTo3o', '2025-03-29 20:06:13', '2025-03-22 13:06:13'),
+(11, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NDkxNDIsImV4cCI6MTc0MzI1Mzk0Mn0.BLK9XnGx-mI6_pNdaGqYgRB2RyqK1j_3Q6xhd00Qt-w', '2025-03-29 20:12:22', '2025-03-22 13:12:22'),
+(12, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NDkzMTUsImV4cCI6MTc0MzI1NDExNX0.vCZoIjqqUItwvlUwjXI9kfH_IvdcjgOi4PQXpU9foZ4', '2025-03-29 20:15:15', '2025-03-22 13:15:15'),
+(13, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NDkzMjYsImV4cCI6MTc0MzI1NDEyNn0.D-pomSt883ZHbWUVaVUm-gkMfppLy5RvIJzXP_-ncDY', '2025-03-29 20:15:26', '2025-03-22 13:15:26'),
+(14, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NDk0MDYsImV4cCI6MTc0MzI1NDIwNn0.fiMZWjpih8o3xt0auzh20Sda5XpwuHt1CHoNFXz6F-Q', '2025-03-29 20:16:46', '2025-03-22 13:16:46'),
+(15, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTAwNjUsImV4cCI6MTc0MzI1NDg2NX0.o3RWvppaUv4oEzSwa9GQ5tHBydJ3usjuqwS2SBa5AkY', '2025-03-29 20:27:45', '2025-03-22 13:27:45'),
+(16, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTAxMTYsImV4cCI6MTc0MzI1NDkxNn0.8cLGCEWiB_8Moq-YG0x9wfqu9K0aJN9YRtDabHsc9gM', '2025-03-29 20:28:36', '2025-03-22 13:28:36'),
+(17, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTAzOTIsImV4cCI6MTc0MzI1NTE5Mn0.j_AeJkjm9ZgT17Q_Gv1E_3_v1BU20zqcIxWxekEVhJg', '2025-03-29 20:33:12', '2025-03-22 13:33:12'),
+(18, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTA0MjMsImV4cCI6MTc0MzI1NTIyM30.q68NAsOfPdBqQldefdixw-gY319KX2kwcoDCfQgBjWE', '2025-03-29 20:33:43', '2025-03-22 13:33:43'),
+(19, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTA0NTcsImV4cCI6MTc0MzI1NTI1N30.hlpvUfs5EuJR6PgxZmnkYZZUZq_mtI6N5LgdG5vnuJs', '2025-03-29 20:34:17', '2025-03-22 13:34:17'),
+(20, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTA1NTEsImV4cCI6MTc0MzI1NTM1MX0.oGH0_avtw3OBWcLcl30mTo7GisnUR-gbrJUXD5ECq4Q', '2025-03-29 20:35:51', '2025-03-22 13:35:51'),
+(21, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTA2OTksImV4cCI6MTc0MzI1NTQ5OX0.VV45bEuQEBtltyELgNPOg-6hjh7UJHidUNi7O_YuWIU', '2025-03-29 20:38:19', '2025-03-22 13:38:19'),
+(22, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTA3MjYsImV4cCI6MTc0MzI1NTUyNn0.efDBi1i6JMm_GCqgft_qW8hc1fklYCMGtnIArfHTzCM', '2025-03-29 20:38:46', '2025-03-22 13:38:46'),
+(23, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTA4NTIsImV4cCI6MTc0MzI1NTY1Mn0.MHoGTsQLJTUloWnjDAmT2eGu8lyeq_TzYaicqPpm0xg', '2025-03-29 20:40:52', '2025-03-22 13:40:52'),
+(24, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTA4ODIsImV4cCI6MTc0MzI1NTY4Mn0.rosQ-ydHg4ygibExI5oOlXQOKtq0N9FUyqMDd56amnA', '2025-03-29 20:41:22', '2025-03-22 13:41:22'),
+(25, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTExMjYsImV4cCI6MTc0MzI1NTkyNn0.jtV3dssxYCT7qNgFCL7hHPyDVfqS7Y8XX54kgemc-ZY', '2025-03-29 20:45:26', '2025-03-22 13:45:26'),
+(26, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTE1MjEsImV4cCI6MTc0MzI1NjMyMX0.ASi5Zo6kyh5g_oOsmYvdV3MBjHEmB7bMoyS90mjPukw', '2025-03-29 20:52:01', '2025-03-22 13:52:01'),
+(27, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDI2NTE2NTAsImV4cCI6MTc0MzI1NjQ1MH0.X2nCs1jzpdUsjGpkzMHbeCfHQciA4HX00xJSHUBYU5o', '2025-03-29 20:54:10', '2025-03-22 13:54:10'),
+(28, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NDI2NTE3NzcsImV4cCI6MTc0MzI1NjU3N30.Map2LB28f_pZcpxlgJiqZBgw73wG0jpmTU-O96O1rRA', '2025-03-29 20:56:17', '2025-03-22 13:56:17'),
+(29, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NDI2NTI2MjYsImV4cCI6MTc0MzI1NzQyNn0.Yn4HTiX19wmNHd6h-RbENGt39baj7fMLloNfxxqWPvY', '2025-03-29 21:10:26', '2025-03-22 14:10:26'),
+(30, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NDI2NTI2NDYsImV4cCI6MTc0MzI1NzQ0Nn0.zGhxqV5DX0eWn2rjwFWlRxuqLZHeW3KkUJqz0Ja-ibk', '2025-03-29 21:10:46', '2025-03-22 14:10:46'),
+(31, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NDI2NTMwMzYsImV4cCI6MTc0MzI1NzgzNn0.cLauVtXOaCo3TP-vPn2ezSKntSw-S5xL_eHa6MXv2tw', '2025-03-29 21:17:16', '2025-03-22 14:17:16'),
+(32, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NDI2NTMyOTQsImV4cCI6MTc0MzI1ODA5NH0.vmWuFJ1wOThWFP3yeupFNbqHf02u7eFICJqJZaU7sKI', '2025-03-29 21:21:34', '2025-03-22 14:21:34'),
+(33, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NDI2NTMzNDQsImV4cCI6MTc0MzI1ODE0NH0.0drObWO5JaFP9EPaWUzOVl81meXKIGbq_hXXQwkBgzM', '2025-03-29 21:22:24', '2025-03-22 14:22:24'),
+(34, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NDI2NTM1NTYsImV4cCI6MTc0MzI1ODM1Nn0.4oTe2JgtO3R2iY72nytK7oAP_zC9DCpENHihuaihfIw', '2025-03-29 21:25:56', '2025-03-22 14:25:56'),
+(35, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NDI2NTM1ODQsImV4cCI6MTc0MzI1ODM4NH0._93inaOWDf1EbTGgIglTpGYVRUgTcCyS1oGX5DStueU', '2025-03-29 21:26:24', '2025-03-22 14:26:24'),
+(36, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NDI2NjA2MTIsImV4cCI6MTc0MzI2NTQxMn0.kSSIHimAuqPSmxwtoyGrW4qWZzFmNnyCLy0QcinOdng', '2025-03-29 23:23:32', '2025-03-22 16:23:32'),
+(37, 8, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzczMTE1NDMxIiwidXNlcklkIjo4LCJyb2xlIjoiQ1VTVE9NRVIiLCJpYXQiOjE3NDI2NjI4MjEsImV4cCI6MTc0MzI2NzYyMX0.dRG4MtzslwVWVAcPwO-wGTlqQk1LPqhgf9WMwkctzuw', '2025-03-30 00:00:21', '2025-03-22 17:00:21');
 
 -- --------------------------------------------------------
 
@@ -435,11 +485,10 @@ INSERT INTO `transactions_history` (`transaction_id`, `user_id`, `transaction_ty
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL,
   `role_id` int(11) NOT NULL DEFAULT 3,
-  `username` varchar(50) NOT NULL,
+  `fullName` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL,
   `phone` varchar(15) NOT NULL,
-  `address` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -448,13 +497,14 @@ CREATE TABLE `users` (
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`user_id`, `role_id`, `username`, `email`, `password`, `phone`, `address`, `created_at`, `updated_at`) VALUES
-(1, 1, 'admin1', 'admin1@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '0123456789', '123 Main St', '2025-02-27 07:52:47', '2025-03-14 02:17:54'),
-(2, 2, 'broker1', 'broker1@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '0987654321', '456 Elm St', '2025-02-27 07:52:47', '2025-03-14 02:13:32'),
-(3, 3, 'user01', 'user01@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '0112233445', '789 Oak St', '2025-02-27 07:52:47', '2025-03-14 02:17:39'),
-(5, 3, 'user02', 'user02@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '093454856978', '456 Another St, Hanoi, Vietnam', '2025-03-12 02:32:04', '2025-03-14 02:16:54'),
-(6, 3, 'jane_doe2', 'jane.do2@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '093454456978', '456 Another St, Hanoi, Vietnam', '2025-03-12 03:06:41', '2025-03-14 02:13:24'),
-(7, 3, 'jane_doe1', 'jane.do1@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '093224856978', '456 Another St, Hanoi, Vietnam', '2025-03-14 02:13:08', '2025-03-14 02:13:08');
+INSERT INTO `users` (`user_id`, `role_id`, `fullName`, `email`, `password`, `phone`, `created_at`, `updated_at`) VALUES
+(1, 1, '', 'admin1@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '0123456789', '2025-02-27 07:52:47', '2025-03-14 02:17:54'),
+(2, 2, '', 'broker1@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '0987654321', '2025-02-27 07:52:47', '2025-03-14 02:13:32'),
+(3, 3, '', 'user01@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '0112233445', '2025-02-27 07:52:47', '2025-03-14 02:17:39'),
+(5, 3, '', 'user02@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '093454856978', '2025-03-12 02:32:04', '2025-03-14 02:16:54'),
+(6, 3, '', 'jane.do2@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '093454456978', '2025-03-12 03:06:41', '2025-03-14 02:13:24'),
+(7, 3, '', 'jane.do1@example.com', '$2a$10$d4In6plUgTmyC6RHirAfze1zt1JLcle8UqWiHOpChFYNBSL/tq86e', '093224856978', '2025-03-14 02:13:08', '2025-03-14 02:13:08'),
+(8, 3, 'Vấn Đức', 'nguyenducvan260903@gmail.com', '$2a$10$wYybyB.K5yEBOB7C6HNWlugAr/YJnUJOp.wt5H4T55BXYLyNkj76K', '0373115431', '2025-03-22 11:43:57', '2025-03-22 13:56:04');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -486,7 +536,8 @@ ALTER TABLE `furnished_statuses`
 ALTER TABLE `houses`
   ADD PRIMARY KEY (`house_id`),
   ADD KEY `property_id` (`property_id`),
-  ADD KEY `furnished_status_id` (`furnished_status_id`);
+  ADD KEY `furnished_status_id` (`furnished_status_id`),
+  ADD KEY `fk_house_type` (`house_type_id`);
 
 --
 -- Chỉ mục cho bảng `house_characteristics`
@@ -501,6 +552,12 @@ ALTER TABLE `house_characteristic_mappings`
   ADD PRIMARY KEY (`house_characteristic_mapping_id`),
   ADD KEY `house_id` (`house_id`),
   ADD KEY `house_characteristic_id` (`house_characteristic_id`);
+
+--
+-- Chỉ mục cho bảng `house_type`
+--
+ALTER TABLE `house_type`
+  ADD PRIMARY KEY (`house_type_id`);
 
 --
 -- Chỉ mục cho bảng `lands`
@@ -570,7 +627,6 @@ ALTER TABLE `transactions_history`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
-  ADD UNIQUE KEY `username` (`username`),
   ADD UNIQUE KEY `email` (`email`),
   ADD KEY `role_id` (`role_id`);
 
@@ -613,6 +669,12 @@ ALTER TABLE `house_characteristics`
 --
 ALTER TABLE `house_characteristic_mappings`
   MODIFY `house_characteristic_mapping_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT cho bảng `house_type`
+--
+ALTER TABLE `house_type`
+  MODIFY `house_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `lands`
@@ -660,7 +722,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT cho bảng `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `token_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `token_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT cho bảng `transactions_history`
@@ -672,7 +734,7 @@ ALTER TABLE `transactions_history`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -689,6 +751,7 @@ ALTER TABLE `favourite_properties`
 -- Các ràng buộc cho bảng `houses`
 --
 ALTER TABLE `houses`
+  ADD CONSTRAINT `fk_house_type` FOREIGN KEY (`house_type_id`) REFERENCES `house_type` (`house_type_id`),
   ADD CONSTRAINT `houses_ibfk_1` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `houses_ibfk_2` FOREIGN KEY (`furnished_status_id`) REFERENCES `furnished_statuses` (`furnished_status_id`);
 
