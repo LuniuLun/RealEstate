@@ -17,9 +17,11 @@ import org.springframework.stereotype.Service;
 import apidemo.models.House;
 import apidemo.models.HouseCharacteristic;
 import apidemo.models.HouseCharacteristicMapping;
+import apidemo.models.HouseType;
 import apidemo.models.Property;
 import apidemo.repositories.HouseCharacteristicMappingRepository;
 import apidemo.repositories.HouseCharacteristicRepository;
+import apidemo.repositories.HouseTypeRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -34,6 +36,9 @@ public class HouseService {
 
   @Autowired
   private HouseCharacteristicMappingRepository houseCharacteristicMappingRepository;
+
+  @Autowired
+  private HouseTypeRepository houseTypeRepository;
 
   // Cache to temporarily store house characteristic IDs during transaction
   private final Map<House, List<Integer>> houseCharacteristicsCache = new HashMap<>();
@@ -85,14 +90,21 @@ public class HouseService {
       CriteriaBuilder criteriaBuilder, Root<Property> root) {
     Join<Property, House> houseJoin = root.join("house", JoinType.INNER);
 
-    Stream.of("bedrooms", "toilets", "floors", "furnishedStatus").forEach(key -> Optional.ofNullable(filters.get(key))
-        .map(String::trim)
-        .filter(s -> !s.isEmpty())
-        .map(Integer::parseInt)
-        .ifPresent(value -> predicates.add(
-            "furnishedStatus".equals(key)
-                ? criteriaBuilder.equal(houseJoin.get("furnishedStatus").get("id"), value)
-                : criteriaBuilder.equal(houseJoin.get(key), value))));
+    Stream.of("bedrooms", "toilets", "floors", "furnishedStatus", "houseType")
+        .forEach(key -> Optional.ofNullable(filters.get(key))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .map(value -> {
+              switch (key) {
+                case "furnishedStatus":
+                  return criteriaBuilder.equal(houseJoin.get("furnishedStatus").get("id"), Integer.parseInt(value));
+                case "houseType":
+                  return criteriaBuilder.equal(houseJoin.get("houseType").get("id"), Integer.parseInt(value));
+                default:
+                  return criteriaBuilder.equal(houseJoin.get(key), Integer.parseInt(value));
+              }
+            })
+            .ifPresent(predicates::add));
 
     // houseCharacteristics
     Optional.ofNullable(filters.get("houseCharacteristics"))
@@ -108,7 +120,6 @@ public class HouseService {
               .join("houseCharacteristic", JoinType.INNER);
           predicates.add(criteriaBuilder.equal(characteristicJoin.get("id"), characteristicId));
         }));
-
   }
 
   /**
@@ -144,6 +155,12 @@ public class HouseService {
     existingHouse.setFloors(newHouse.getFloors());
     existingHouse.setFurnishedStatus(newHouse.getFurnishedStatus());
     existingHouse.setToilets(newHouse.getToilets());
+
+    if (newHouse.getHouseType() != null && newHouse.getHouseType().getId() != null) {
+      HouseType houseType = houseTypeRepository.findById(newHouse.getHouseType().getId())
+          .orElseThrow(() -> new RuntimeException("House type not found with id: " + newHouse.getHouseType().getId()));
+      existingHouse.setHouseType(houseType);
+    }
 
     if (newHouse.getHouseCharacteristicMappings() != null) {
       // Clear existing mappings
