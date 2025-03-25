@@ -1,18 +1,13 @@
 import { IApiResponse } from '@type/apiResponse'
 import MESSAGE from '@constants/message'
-import { IProperty, IPropertyStatistic, PropertyStatus } from '@type/models'
+import { IProperty, IPropertyStatistic, PropertyStatus, RoleName } from '@type/models'
 import { authStore } from '@stores'
 import { FilterCriteria } from '@stores/Filter'
+import { IFilterOptions } from '@type/filterOptions'
 
 const baseUrl = `${import.meta.env.VITE_APP_BASE_URL}${import.meta.env.VITE_APP_PROPERTY_ENDPOINT}`
 
-export interface EnhancedFilterOptions {
-  page?: string
-  limit?: string
-  property?: string
-  value?: string
-  sortBy?: string
-  typeOfSort?: 'asc' | 'desc'
+export interface EnhancedFilterOptions extends IFilterOptions {
   filterCriteria?: FilterCriteria
 }
 
@@ -118,13 +113,39 @@ export const fetchProperties = async (
     }
 
     // If user is not admin, only show APPROVAL status properties
-    const user = authStore.getState().user
-    if (!user || !user.roles.includes('admin')) {
+    const user = authStore.getState().token?.user
+    if (!user || !(user.role.name === RoleName.ADMIN)) {
       calledUrl.searchParams.append('status', 'APPROVAL')
     }
     console.log(calledUrl.toString())
 
     const response = await fetch(calledUrl.toString())
+
+    if (!response.ok) {
+      return {
+        status: 'error',
+        message: MESSAGE.property.GET_FAILED
+      }
+    }
+
+    const data = await response.json()
+
+    return {
+      status: 'success',
+      message: MESSAGE.property.GET_SUCCESS,
+      data
+    }
+  } catch (error: unknown) {
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
+    }
+  }
+}
+
+export const fetchPropertyById = async (id: string): Promise<IApiResponse<IProperty>> => {
+  try {
+    const response = await fetch(`${baseUrl}/${id}`)
 
     if (!response.ok) {
       return {
