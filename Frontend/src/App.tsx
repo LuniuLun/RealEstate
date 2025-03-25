@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { authStore } from '@stores'
 import { AđminLayout, DefaultLayout } from '@layout'
+import { RoleName } from '@type/models'
 import ProtectedRoute from './routes/ProtectedRoute'
 import Home from '@pages/Home/Home'
 import Dashboard from '@pages/Dashboard'
@@ -8,7 +9,7 @@ import Users from '@pages/Users'
 import ListingProperty from '@pages/ListingProperty'
 import Register from '@pages/Register'
 import Login from '@pages/Login'
-import { RoleName } from '@type/models'
+import DetailPost from '@pages/DetailPost'
 
 function App() {
   const { token } = authStore()
@@ -18,6 +19,7 @@ function App() {
       <Route path='/' element={<DefaultLayout />}>
         <Route index element={<Home />} />
         <Route path='property-listings' element={<ListingProperty />} />
+        <Route path='property-detail/:id' element={<DetailPost />} />
       </Route>
       <Route path='register' element={<Register />} />
       <Route path='login' element={<Login />} />
