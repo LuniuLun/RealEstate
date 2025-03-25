@@ -90,6 +90,11 @@ export const fetchProperties = async (
         calledUrl.searchParams.append('landType', filterCriteria.landType.toString())
       }
 
+      // House type
+      if (filterCriteria.houseType !== undefined) {
+        calledUrl.searchParams.append('houseType', filterCriteria.houseType.toString())
+      }
+
       // House features (Array)
       if (filterCriteria.houseCharacteristics?.length) {
         calledUrl.searchParams.append('houseCharacteristics', filterCriteria.houseCharacteristics.join(','))
