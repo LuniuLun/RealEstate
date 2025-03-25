@@ -39,7 +39,7 @@ const useGetProperty = (): UseGetPropertyReturn => {
       return (await fetchProperties({
         page: pageParam.toString(),
         limit: itemsPerPage.toString(),
-        property: searchQuery ? 'title' : '',
+        property: 'searchQuery',
         value: searchQuery,
         sortBy,
         typeOfSort: 'desc',
