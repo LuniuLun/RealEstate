@@ -12,6 +12,7 @@ export interface FilterCriteria {
   category?: number
   furnishedStatus?: number
   landType?: number
+  houseType?: number
   houseCharacteristics?: number[]
   landCharacteristics?: number[]
   location?: {
@@ -47,6 +48,7 @@ const initialFilterCriteria: FilterCriteria = {
   category: 1,
   furnishedStatus: undefined,
   landType: undefined,
+  houseType: undefined,
   houseCharacteristics: [],
   landCharacteristics: [],
   location: {
