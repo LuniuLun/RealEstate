@@ -11,7 +11,14 @@ interface IUserCardProps {
 
 const UserCard = ({ name, role, avatar }: IUserCardProps) => {
   return (
-    <Flex gap={4} alignItems='center' backgroundColor='transparent' boxShadow='sm' maxWidth='260px'>
+    <Flex
+      gap={4}
+      alignItems='center'
+      backgroundColor='transparent'
+      boxShadow='sm'
+      maxWidth='260px'
+      justifyContent='space-between'
+    >
       <Flex gap={4} display={{ base: 'none', md: 'flex' }}>
         <InfoGroup heading={name} description={role} size='md' />
       </Flex>
