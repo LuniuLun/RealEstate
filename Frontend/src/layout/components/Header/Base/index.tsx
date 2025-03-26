@@ -15,12 +15,17 @@ const BaseHeader = () => {
     navigate('/')
   }
 
-  const handleProfile = () => {
+  const handleGoToProfile = () => {
     navigate('/profile')
+  }
+
+  const handleGoToNewProperty = () => {
+    navigate('/new-property')
   }
 
   return (
     <Flex
+      as='nav'
       alignItems='center'
       justifyContent='space-between'
       w='100%'
@@ -74,7 +79,7 @@ const BaseHeader = () => {
                     leftIcon={<ProfileIcon />}
                     fontSize='sm'
                     color={colors.brand.blackTextPrimary}
-                    onClick={handleProfile}
+                    onClick={handleGoToProfile}
                   >
                     Tài khoản
                   </Button>
@@ -101,7 +106,7 @@ const BaseHeader = () => {
             Đăng nhập
           </Button>
         )}
-        <Button colorScheme='brand' variant='tertiary'>
+        <Button colorScheme='brand' variant='tertiary' onClick={handleGoToNewProperty}>
           Đăng tin
         </Button>
       </Flex>
