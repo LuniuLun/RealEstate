@@ -8,7 +8,7 @@ const DefaultLayout = () => {
   return (
     <ErrorBoundary>
       <Flex>
-        <Stack w={{ base: '100%' }} bgColor='brand.grey'>
+        <Stack w={{ base: '100%' }} bgColor='brand.grey' gap='unset'>
           <ClientHeader />
           <Outlet />
           <Footer />
