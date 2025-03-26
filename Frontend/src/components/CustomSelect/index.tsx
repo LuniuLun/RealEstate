@@ -1,5 +1,5 @@
 import { Select, SelectProps } from '@chakra-ui/react'
-import { memo } from 'react'
+import { useState, useEffect, memo } from 'react'
 import { TBorderDirection } from '@type/variant'
 import colors from '@styles/variables/colors'
 import React, { forwardRef } from 'react'
@@ -21,7 +21,17 @@ const CustomSelect = forwardRef<HTMLSelectElement, ICustomSelectProps<string | n
     { border = 'none', options, placeholder, value, onChange, sx, ...props }: ICustomSelectProps<string | number>,
     ref
   ) => {
+    const [selectedValue, setSelectedValue] = useState<string | number>('')
+
+    useEffect(() => {
+      if (value) {
+        setSelectedValue(value)
+      }
+    }, [value])
+
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value
+      setSelectedValue(value)
       if (onChange) {
         onChange(e)
       }
@@ -29,17 +39,16 @@ const CustomSelect = forwardRef<HTMLSelectElement, ICustomSelectProps<string | n
 
     return (
       <Select
-        key={`select-${value || 'empty'}`}
         ref={ref}
         fontSize='sm'
         fontWeight='medium'
-        value={value || ''}
+        value={selectedValue}
         onChange={handleChange}
         variant={border === 'bottom' ? 'flushed' : 'filled'}
         borderRadius={20}
         sx={{
           width: 'auto',
-          ...(border === 'full' && { border: `2px solid ${colors.brand.secondary}` }),
+          ...(border === 'full' && { border: `1px solid ${colors.brand.sliver}` }),
           ...(border === 'bottom' && { borderBottom: `1px solid ${colors.brand.black}` }),
           _hover: { bgColor: colors.brand.hoverBtnColor, color: colors.brand.white },
           ...sx
@@ -47,7 +56,7 @@ const CustomSelect = forwardRef<HTMLSelectElement, ICustomSelectProps<string | n
         {...props}
       >
         <option value='' disabled hidden>
-          {placeholder || 'Select'}
+          {selectedValue || placeholder || 'Select'}
         </option>
         {options.map((option, index) => (
           <option key={index} value={option.value}>
