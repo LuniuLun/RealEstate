@@ -7,7 +7,7 @@ import React from 'react'
 
 const Footer = () => {
   return (
-    <Box bg='teal.900' color='white' py={6}>
+    <Box bg='teal.900' color='white' py={6} as='footer'>
       <Container maxW='6xl'>
         <Flex justify='space-between' align='center' flexWrap='wrap'>
           <HStack spacing={2}>
