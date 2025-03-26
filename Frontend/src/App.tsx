@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { authStore } from '@stores'
-import { AđminLayout, DefaultLayout } from '@layout'
+import { AdminLayout, DefaultLayout } from '@layout'
 import { RoleName } from '@type/models'
 import ProtectedRoute from './routes/ProtectedRoute'
 import Home from '@pages/Home/Home'
@@ -10,6 +10,7 @@ import ListingProperty from '@pages/ListingProperty'
 import Register from '@pages/Register'
 import Login from '@pages/Login'
 import DetailPost from '@pages/DetailPost'
+import NewProperty from '@pages/NewProperty'
 
 function App() {
   const { token } = authStore()
@@ -20,6 +21,18 @@ function App() {
         <Route index element={<Home />} />
         <Route path='property-listings' element={<ListingProperty />} />
         <Route path='property-detail/:id' element={<DetailPost />} />
+        <Route
+          element={
+            <ProtectedRoute
+              isAllowed={!!token}
+              userRoles={token?.user?.role?.name || RoleName.CUSTOMER}
+              requiredRole={RoleName.CUSTOMER}
+              redirectPath='/'
+            />
+          }
+        >
+          <Route path='new-property' element={<NewProperty />} />
+        </Route>
       </Route>
       <Route path='register' element={<Register />} />
       <Route path='login' element={<Login />} />
@@ -33,7 +46,7 @@ function App() {
           />
         }
       >
-        <Route element={<AđminLayout />}>
+        <Route element={<AdminLayout />}>
           <Route path='dashboard' element={<Dashboard />} />
           <Route path='users' element={<Users />} />
         </Route>
