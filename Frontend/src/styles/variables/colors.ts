@@ -3,6 +3,7 @@ const colors = {
     primary: '#E7C873',
     secondary: '#EFF4FA',
     red: '#EF4444',
+    sliver: '#c0c0c0',
     white: '#FFFFFF',
     black: '#1A1A1A',
     grey: '#f5f5f5',
