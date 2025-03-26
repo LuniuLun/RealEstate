@@ -119,8 +119,7 @@ const filterStore = create<FilterState>()(
     {
       name: 'property-filter-storage',
       partialize: (state) => ({
-        itemsPerPage: state.itemsPerPage,
-        sortBy: state.sortBy
+        itemsPerPage: state.itemsPerPage
       })
     }
   )
