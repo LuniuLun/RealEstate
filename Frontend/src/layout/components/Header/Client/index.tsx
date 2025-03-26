@@ -96,6 +96,7 @@ const ClientHeader = () => {
 
   return (
     <Stack
+      as='header'
       bgImage={`linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(${ThumnailImage})`}
       bgSize='cover'
       bgRepeat='no-repeat'
