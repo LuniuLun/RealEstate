@@ -3,7 +3,7 @@ import { ComponentStyleConfig } from '@chakra-ui/react'
 const InputStyles: ComponentStyleConfig = {
   baseStyle: {
     field: {
-      borderRadius: 'md',
+      borderRadius: 'sm',
       width: '100%',
       fontSize: 'md',
       backgroundColor: 'brand.white',
@@ -23,12 +23,15 @@ const InputStyles: ComponentStyleConfig = {
   variants: {
     outline: {
       field: {
-        borderRadius: 'xl',
+        borderRadius: 'md',
         width: '100%',
         fontSize: 'md',
         border: '1px solid',
-        borderColor: 'brand.secondary',
-        background: 'brand.white'
+        borderColor: 'brand.sliver',
+        background: 'brand.white',
+        _hover: {
+          borderColor: 'brand.blackTextSecondary '
+        }
       }
     }
   },
