@@ -22,6 +22,7 @@ export interface IProperty {
   title: string
   description: string
   region: string
+  districtName: string
   wardName: string
   streetName: string
   longitude: number
@@ -35,8 +36,8 @@ export interface IProperty {
   price: number
   createdAt: string
   updatedAt: string
-  house?: IHouse
-  land?: ILand
+  house?: IHouse | null
+  land?: ILand | null
 }
 
 export interface IFavouriteProperty {
