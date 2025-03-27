@@ -2,21 +2,19 @@ import { useForm, Controller } from 'react-hook-form'
 import { Button, Flex, FormControl, FormLabel, FormErrorMessage, Heading, Stack, Textarea } from '@chakra-ui/react'
 import { AddressSelector, CheckboxGroup, CustomSelect, ImageUploader, TextField } from '@components'
 import { FILTER_OPTION } from '@constants/option'
-import { IProperty, CategoryName } from '@type/models'
+import { CategoryName, TPostProperty } from '@type/models'
 import { useCustomToast } from '@hooks'
 import { useAddProperty } from '@hooks/UseProperty/useAddProperty'
 import colors from '@styles/variables/colors'
 
-export type HouseFormData = Partial<
-  Omit<IProperty, 'id' | 'user' | 'status' | 'createdAt' | 'updatedAt' | 'land' | 'images'>
-> & {
-  images?: File[]
+export type HouseFormData = Omit<TPostProperty, 'land'> & {
+  images: File[]
   houseCharacteristics?: number[]
-  houseType?: number
-  bedrooms?: number
-  floors?: number
-  toilets?: number
-  furnishedStatus?: number
+  houseType: number
+  bedrooms: number
+  floors: number
+  toilets: number
+  furnishedStatus: number
 }
 
 const HouseForm = () => {
@@ -35,20 +33,19 @@ const HouseForm = () => {
     }
   })
   const { showToast } = useCustomToast()
-  const { tranformHouseData } = useAddProperty()
+  const { tranformHouseData, addPropertyMutation } = useAddProperty()
 
   const onSubmit = (data: HouseFormData) => {
     if (!data.images || data.images.length < 3) {
-      showToast({ title: 'Vui lòng tải lên ít nhất 3 hình ảnh', status: 'error' })
+      showToast({ title: 'Vui lòng tải lên ít nhất 3 hình ảnh', status: 'warning' })
       return
     }
     if (data.images.length > 10) {
-      showToast({ title: 'Số hình ảnh không vượt quá 10 hình ảnh', status: 'error' })
+      showToast({ title: 'Số hình ảnh không vượt quá 10 hình ảnh', status: 'warning' })
       return
     }
     const landFormData = tranformHouseData(data)
-    console.log('Property Data:', JSON.parse(landFormData.get('propertyData') as string))
-    console.log('Uploaded Images:', landFormData.getAll('images'))
+    addPropertyMutation.mutate(landFormData)
   }
 
   const handleImageUpload = (files: File[]) => {
@@ -355,6 +352,7 @@ const HouseForm = () => {
                   borderColor={colors.brand.sliver}
                   placeholder='Nhập mô tả'
                   rows={5}
+                  sx={{ _hover: { borderColor: colors.brand.sliver } }}
                 />
               )}
             />
