@@ -1,0 +1,18 @@
+import MESSAGE from '@constants/message'
+import { useCustomToast } from '@hooks'
+import { authStore } from '@stores'
+
+const useValidateToken = (): (() => boolean) => {
+  const { token } = authStore()
+  const { showToast } = useCustomToast()
+
+  return () => {
+    if (!token || !token.user) {
+      showToast({ status: 'error', title: MESSAGE.common.REQUIRE_USER })
+      return false
+    }
+    return true
+  }
+}
+
+export default useValidateToken
