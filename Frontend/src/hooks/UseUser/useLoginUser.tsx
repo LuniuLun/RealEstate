@@ -23,7 +23,7 @@ const useLoginUser = (): UseLoginUserReturn => {
         title: response.message,
         status: response.status
       })
-      if (response.data) {
+      if (response.data && response.status === 'success') {
         navigate('/')
         storeToken(response.data)
       }

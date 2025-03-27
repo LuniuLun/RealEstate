@@ -21,8 +21,7 @@ const useRegisterUser = (): UseRegisterUserReturn => {
         title: response.message,
         status: response.status
       })
-
-      navigate('/login')
+      if (response.status === 'success') navigate('/login')
     },
     onError: (error: Error) => {
       toast({
