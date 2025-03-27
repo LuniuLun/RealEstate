@@ -24,6 +24,7 @@ interface AddressSelectorProps<T extends FieldValues> {
   districtName: Path<T>
   wardName: Path<T>
   streetName: Path<T>
+  isLoading?: boolean
 }
 
 const AddressSelector = <T extends FieldValues>({
@@ -31,7 +32,8 @@ const AddressSelector = <T extends FieldValues>({
   cityName,
   districtName,
   wardName,
-  streetName
+  streetName,
+  isLoading
 }: AddressSelectorProps<T>) => {
   const [cities, setCities] = useState<City[]>([])
   const [districts, setDistricts] = useState<District[]>([])
@@ -54,6 +56,7 @@ const AddressSelector = <T extends FieldValues>({
           <FormControl isInvalid={!!error}>
             <CustomSelect
               {...field}
+              isDisabled={isLoading}
               sx={{ width: '100%' }}
               borderRadius='md'
               border='full'
@@ -90,7 +93,7 @@ const AddressSelector = <T extends FieldValues>({
                 setWards(selected?.Wards || [])
               }}
               options={districts.map((district) => ({ value: district.Id, label: district.Name }))}
-              isDisabled={districts.length === 0}
+              isDisabled={districts.length === 0 || isLoading}
             />
             <FormErrorMessage>{error && error.message}</FormErrorMessage>
           </FormControl>
@@ -115,7 +118,7 @@ const AddressSelector = <T extends FieldValues>({
                 field.onChange(selected?.Name || '')
               }}
               options={wards.map((ward) => ({ value: ward.Id, label: ward.Name }))}
-              isDisabled={wards.length === 0}
+              isDisabled={wards.length === 0 || isLoading}
             />
             <FormErrorMessage>{error && error.message}</FormErrorMessage>
           </FormControl>
@@ -133,7 +136,13 @@ const AddressSelector = <T extends FieldValues>({
         }}
         render={({ field, fieldState: { error } }) => (
           <FormControl isInvalid={!!error}>
-            <TextField {...field} variant='outline' size='md' placeholder='Nhập số nhà, tên đường' />
+            <TextField
+              {...field}
+              variant='outline'
+              size='md'
+              placeholder='Nhập số nhà, tên đường'
+              isDisabled={isLoading}
+            />
             <FormErrorMessage>{error && error.message}</FormErrorMessage>
           </FormControl>
         )}
