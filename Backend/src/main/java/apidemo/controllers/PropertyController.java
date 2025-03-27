@@ -214,7 +214,7 @@ public class PropertyController {
 
       if (currentUser.getRole().getName() == RoleName.CUSTOMER) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "Upgrade your account before using this feature");
+        errorResponse.put("message", "Nâng cấp tài khoản của bạn để dùng chức năng này");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
 
