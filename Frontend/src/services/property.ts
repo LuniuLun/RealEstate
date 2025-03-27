@@ -230,22 +230,27 @@ export const fetchPropertyCountsByCategoryAndStatus = async (
   }
 }
 
-export const addProperty = async (newProperty: IProperty): Promise<IApiResponse<IProperty>> => {
+export const addProperty = async (newProperty: FormData): Promise<IApiResponse<IProperty>> => {
+  const token = authStore.getState().token?.token
+
   try {
     const response = await fetch(baseUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newProperty)
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: newProperty
     })
+
+    const data = await response.json()
 
     if (!response.ok) {
       return {
         status: 'error',
-        message: MESSAGE.property.ADD_FAILED
+        message: data?.message || MESSAGE.property.ADD_FAILED
       }
     }
 
-    const data = await response.json()
     return {
       status: 'success',
       message: MESSAGE.property.ADD_SUCCESS,
