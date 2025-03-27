@@ -29,7 +29,8 @@ const MESSAGE = {
     ERROR_EVENT: 'Chức năng chưa được hỗ trợ',
     UNKNOWN_ERROR: 'Đã xảy ra lỗi không xác định',
     NOT_FOUND: 'Không tìm thấy kết quả',
-    ERROR_NETWORK: 'Lỗi kết nối mạng'
+    ERROR_NETWORK: 'Lỗi kết nối mạng',
+    REQUIRE_USER: 'Hãy đăng nhập trước khi dùng chắc năng này'
   },
   auth: {
     LOGIN_SUCCESS: 'Đăng nhập thành công',
