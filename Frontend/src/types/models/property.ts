@@ -40,6 +40,14 @@ export interface IProperty {
   land?: ILand | null
 }
 
+export type TPostProperty = Omit<
+  IProperty,
+  'id' | 'createdAt' | 'updatedAt' | 'status' | 'images' | 'house' | 'land'
+> & {
+  house?: Omit<IHouse, 'id'> | null
+  land?: Omit<ILand, 'id'> | null
+}
+
 export interface IFavouriteProperty {
   id: number
   user: IUser
