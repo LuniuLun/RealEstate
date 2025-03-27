@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
 import { Controller, Control, FieldValues, Path } from 'react-hook-form'
 import CustomSelect from '@components/CustomSelect'
 import TextField from '@components/TextField'
 import { Stack, FormControl, FormErrorMessage } from '@chakra-ui/react'
+import { debounce } from '@utils'
 
 interface Location {
   Id: string
@@ -25,6 +27,7 @@ interface AddressSelectorProps<T extends FieldValues> {
   wardName: Path<T>
   streetName: Path<T>
   isLoading?: boolean
+  onStreetNameChange?: (streetName: string) => void
 }
 
 const AddressSelector = <T extends FieldValues>({
@@ -33,11 +36,22 @@ const AddressSelector = <T extends FieldValues>({
   districtName,
   wardName,
   streetName,
-  isLoading
+  isLoading,
+  onStreetNameChange
 }: AddressSelectorProps<T>) => {
   const [cities, setCities] = useState<City[]>([])
   const [districts, setDistricts] = useState<District[]>([])
   const [wards, setWards] = useState<Location[]>([])
+  const [currentCity, setCurrentCity] = useState<string>()
+  const [currentDistrict, setCurrentDistrict] = useState<string>()
+  const [currentWard, setCurrentWard] = useState<string>()
+
+  const debouncedStreetNameChange = useCallback(
+    debounce((value: string) => {
+      onStreetNameChange?.(value)
+    }, 1500),
+    [onStreetNameChange]
+  )
 
   useEffect(() => {
     axios
@@ -56,6 +70,7 @@ const AddressSelector = <T extends FieldValues>({
           <FormControl isInvalid={!!error}>
             <CustomSelect
               {...field}
+              value={currentCity}
               isDisabled={isLoading}
               sx={{ width: '100%' }}
               borderRadius='md'
@@ -65,6 +80,7 @@ const AddressSelector = <T extends FieldValues>({
                 const cityId = e.target.value
                 const selected = cities.find((city) => city.Id === cityId)
                 field.onChange(selected?.Name || '')
+                setCurrentCity(selected?.Id)
                 setDistricts(selected?.Districts || [])
               }}
               options={cities.map((city) => ({ value: city.Id, label: city.Name }))}
@@ -82,6 +98,7 @@ const AddressSelector = <T extends FieldValues>({
           <FormControl isInvalid={!!error}>
             <CustomSelect
               {...field}
+              value={currentDistrict}
               sx={{ width: '100%' }}
               borderRadius='md'
               border='full'
@@ -90,6 +107,7 @@ const AddressSelector = <T extends FieldValues>({
                 const districtId = e.target.value
                 const selected = districts.find((district) => district.Id === districtId)
                 field.onChange(selected?.Name || '')
+                setCurrentDistrict(selected?.Id)
                 setWards(selected?.Wards || [])
               }}
               options={districts.map((district) => ({ value: district.Id, label: district.Name }))}
@@ -108,6 +126,7 @@ const AddressSelector = <T extends FieldValues>({
           <FormControl isInvalid={!!error}>
             <CustomSelect
               {...field}
+              value={currentWard}
               sx={{ width: '100%' }}
               borderRadius='md'
               border='full'
@@ -116,6 +135,7 @@ const AddressSelector = <T extends FieldValues>({
                 const wardId = e.target.value
                 const selected = wards.find((ward) => ward.Id === wardId)
                 field.onChange(selected?.Name || '')
+                setCurrentWard(selected?.Id)
               }}
               options={wards.map((ward) => ({ value: ward.Id, label: ward.Name }))}
               isDisabled={wards.length === 0 || isLoading}
@@ -142,6 +162,11 @@ const AddressSelector = <T extends FieldValues>({
               size='md'
               placeholder='Nhập số nhà, tên đường'
               isDisabled={isLoading}
+              onChange={(e) => {
+                const value = e.target.value
+                field.onChange(e)
+                debouncedStreetNameChange(value)
+              }}
             />
             <FormErrorMessage>{error && error.message}</FormErrorMessage>
           </FormControl>
