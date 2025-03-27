@@ -7,7 +7,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import apidemo.models.Property;
 import apidemo.models.Property.PropertyStatus;
@@ -180,6 +182,9 @@ public class PropertyController {
       @RequestParam("propertyData") String propertyDataJson) {
     try {
       ObjectMapper mapper = new ObjectMapper();
+      mapper.registerModule(new JavaTimeModule());
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
       Property property = mapper.readValue(propertyDataJson, Property.class);
 
       List<String> uploadedUrls = storageService.storeMultiFile(images);
