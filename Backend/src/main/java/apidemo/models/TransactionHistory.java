@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name = "transactions_history")
 public class TransactionHistory {
@@ -25,9 +27,11 @@ public class TransactionHistory {
   private BigDecimal amount;
 
   @Column(name = "created_at", nullable = false, updatable = false)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime createdAt;
 
   @Column(name = "updated_at", nullable = false)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime updatedAt;
 
   public enum TransactionType {
