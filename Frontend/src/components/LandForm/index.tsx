@@ -2,17 +2,15 @@ import { useForm, Controller } from 'react-hook-form'
 import { Button, Flex, FormControl, FormLabel, Heading, Stack, Textarea, FormErrorMessage } from '@chakra-ui/react'
 import { AddressSelector, CheckboxGroup, CustomSelect, ImageUploader, TextField } from '@components'
 import { FILTER_OPTION } from '@constants/option'
-import { CategoryName, IProperty } from '@type/models'
+import { CategoryName, TPostProperty } from '@type/models'
 import { useCustomToast } from '@hooks'
 import { useAddProperty } from '@hooks/UseProperty/useAddProperty'
 import colors from '@styles/variables/colors'
 
-export type LandFormData = Partial<
-  Omit<IProperty, 'id' | 'user' | 'status' | 'createdAt' | 'updatedAt' | 'house' | 'images'>
-> & {
-  images?: File[]
+export type LandFormData = Omit<TPostProperty, 'house'> & {
+  images: File[]
   landCharacteristics?: number[]
-  landType?: number
+  landType: number
 }
 
 const LandForm = () => {
@@ -31,7 +29,7 @@ const LandForm = () => {
     }
   })
   const { showToast } = useCustomToast()
-  const { tranformLandData } = useAddProperty()
+  const { tranformLandData, addPropertyMutation, isLoading } = useAddProperty()
 
   const onSubmit = (data: LandFormData) => {
     if (!data.images || data.images.length < 3) {
@@ -49,8 +47,7 @@ const LandForm = () => {
       return
     }
     const landFormData = tranformLandData(data)
-    console.log('Property Data:', JSON.parse(landFormData.get('propertyData') as string))
-    console.log('Uploaded Images:', landFormData.getAll('images'))
+    addPropertyMutation.mutate(landFormData)
   }
 
   const handleImageUpload = (files: File[]) => {
@@ -60,7 +57,7 @@ const LandForm = () => {
   return (
     <Flex w='100%' gap={4} as='form' onSubmit={handleSubmit(onSubmit)}>
       <FormControl flex={1}>
-        <ImageUploader label='Hình ảnh sản phẩm' onUpload={handleImageUpload} />
+        <ImageUploader label='Hình ảnh sản phẩm' onUpload={handleImageUpload} isLoading={isLoading} />
       </FormControl>
 
       <Stack flex={2} gap={4}>
@@ -88,6 +85,7 @@ const LandForm = () => {
               render={({ field }) => (
                 <CustomSelect
                   {...field}
+                  isDisabled={isLoading}
                   options={FILTER_OPTION.landType}
                   sx={{ width: '100%' }}
                   borderRadius='md'
@@ -108,6 +106,7 @@ const LandForm = () => {
               render={({ field }) => (
                 <CustomSelect
                   {...field}
+                  isDisabled={isLoading}
                   options={FILTER_OPTION.direction}
                   sx={{ width: '100%' }}
                   borderRadius='md'
@@ -131,6 +130,7 @@ const LandForm = () => {
               render={({ field }) => (
                 <CustomSelect
                   {...field}
+                  isDisabled={isLoading}
                   options={FILTER_OPTION.propertyLegalDocuments}
                   sx={{ width: '100%' }}
                   borderRadius='md'
@@ -150,6 +150,7 @@ const LandForm = () => {
               control={control}
               render={({ field: { value, onChange } }) => (
                 <CheckboxGroup
+                  isLoading={isLoading}
                   options={FILTER_OPTION.landCharacteristics}
                   selectedValues={value?.map(String) || []}
                   filterType='landCharacteristics'
@@ -180,7 +181,14 @@ const LandForm = () => {
                 min: { value: 0, message: 'Diện tích phải lớn hơn 0' }
               }}
               render={({ field }) => (
-                <TextField {...field} size='md' type='number' placeholder='m²' variant='outline' />
+                <TextField
+                  {...field}
+                  size='md'
+                  type='number'
+                  placeholder='m²'
+                  variant='outline'
+                  isDisabled={isLoading}
+                />
               )}
             />
             <FormErrorMessage>{errors.area && errors.area.message}</FormErrorMessage>
@@ -197,7 +205,14 @@ const LandForm = () => {
                   min: { value: 0, message: 'Chiều ngang phải lớn hơn 0' }
                 }}
                 render={({ field }) => (
-                  <TextField {...field} size='md' type='number' placeholder='m' variant='outline' />
+                  <TextField
+                    {...field}
+                    size='md'
+                    type='number'
+                    placeholder='m'
+                    variant='outline'
+                    isDisabled={isLoading}
+                  />
                 )}
               />
               <FormErrorMessage>{errors.width && errors.width.message}</FormErrorMessage>
@@ -213,7 +228,14 @@ const LandForm = () => {
                   min: { value: 0, message: 'Chiều dài phải lớn hơn 0' }
                 }}
                 render={({ field }) => (
-                  <TextField {...field} size='md' type='number' placeholder='m' variant='outline' />
+                  <TextField
+                    {...field}
+                    size='md'
+                    type='number'
+                    placeholder='m'
+                    variant='outline'
+                    isDisabled={isLoading}
+                  />
                 )}
               />
               <FormErrorMessage>{errors.length && errors.length.message}</FormErrorMessage>
@@ -230,13 +252,20 @@ const LandForm = () => {
                 min: { value: 0, message: 'Giá bán phải lớn hơn 0' }
               }}
               render={({ field }) => (
-                <TextField {...field} size='md' type='number' placeholder='VNĐ' variant='outline' />
+                <TextField
+                  {...field}
+                  size='md'
+                  type='number'
+                  placeholder='VNĐ'
+                  variant='outline'
+                  isDisabled={isLoading}
+                />
               )}
             />
             <FormErrorMessage>{errors.price && errors.price.message}</FormErrorMessage>
           </FormControl>
 
-          <Button variant='primary' my={6} alignSelf='flex-end'>
+          <Button variant='primary' my={6} alignSelf='flex-end' isLoading={isLoading}>
             Định giá
           </Button>
         </Stack>
@@ -251,7 +280,9 @@ const LandForm = () => {
                 required: 'Vui lòng nhập tiêu đề',
                 minLength: { value: 10, message: 'Tiêu đề phải có ít nhất 10 ký tự' }
               }}
-              render={({ field }) => <TextField {...field} size='md' placeholder='Nhập tiêu đề' variant='outline' />}
+              render={({ field }) => (
+                <TextField {...field} size='md' placeholder='Nhập tiêu đề' variant='outline' isDisabled={isLoading} />
+              )}
             />
             <FormErrorMessage>{errors.title && errors.title.message}</FormErrorMessage>
           </FormControl>
@@ -272,6 +303,8 @@ const LandForm = () => {
                   borderColor={colors.brand.sliver}
                   placeholder='Nhập mô tả'
                   rows={5}
+                  sx={{ _hover: { borderColor: colors.brand.sliver } }}
+                  isDisabled={isLoading}
                 />
               )}
             />
@@ -279,7 +312,7 @@ const LandForm = () => {
           </FormControl>
         </Stack>
 
-        <Button variant='primary' type='submit' my={6} alignSelf='flex-end'>
+        <Button variant='primary' type='submit' my={6} alignSelf='flex-end' isLoading={isLoading}>
           Đăng tin
         </Button>
       </Stack>
