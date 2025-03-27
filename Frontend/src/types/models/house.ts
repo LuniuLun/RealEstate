@@ -20,11 +20,10 @@ export interface IHouse {
   floors: number
   toilets: number
   furnishedStatus: IFurnishedStatus
-  houseCharacteristicMappings: IHouseCharacteristicMapping[]
+  houseCharacteristicMappings: IHouseCharacteristicMapping[] | []
 }
 
 export interface IHouseCharacteristicMapping {
   id: number
-  house: IHouse
   houseCharacteristic: IHouseCharacteristic
 }

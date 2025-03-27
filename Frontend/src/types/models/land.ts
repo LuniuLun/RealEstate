@@ -11,11 +11,10 @@ export interface ILandCharacteristic {
 export interface ILand {
   id: number
   landType: ILandType
-  landCharacteristicMappings: ILandCharacteristicMapping[]
+  landCharacteristicMappings: ILandCharacteristicMapping[] | []
 }
 
 export interface ILandCharacteristicMapping {
   id: number
-  land: ILand
   landCharacteristic: ILandCharacteristic
 }
