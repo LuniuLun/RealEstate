@@ -6,6 +6,7 @@ import { CategoryName, TPostProperty } from '@type/models'
 import { useCustomToast } from '@hooks'
 import { useAddProperty } from '@hooks/UseProperty/useAddProperty'
 import colors from '@styles/variables/colors'
+import { useGetCoordinates } from '@hooks/UseCoordinates/useGetCoordinates'
 
 export type LandFormData = Omit<TPostProperty, 'house'> & {
   images: File[]
@@ -18,6 +19,7 @@ const LandForm = () => {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors }
   } = useForm<LandFormData>({
     defaultValues: {
@@ -29,7 +31,25 @@ const LandForm = () => {
     }
   })
   const { showToast } = useCustomToast()
-  const { tranformLandData, addPropertyMutation, isLoading } = useAddProperty()
+  const { transformLandData, addPropertyMutation, isLoading } = useAddProperty()
+  const { getCoordinatesMutation, isError: isGetCoordinatesError } = useGetCoordinates()
+  const region = watch('region')
+  const districtName = watch('districtName')
+  const wardName = watch('wardName')
+
+  const handleChangeStreetName = (streetName: string) => {
+    if (region && districtName && wardName && streetName) {
+      const fullAddress = `${streetName}, ${wardName}, ${districtName}, ${region}, Vietnam`
+      getCoordinatesMutation.mutate(fullAddress, {
+        onSuccess: (response) => {
+          if (response?.data?.lat && response?.data?.lon) {
+            setValue('latitude', response.data.lat)
+            setValue('longitude', response.data.lon)
+          }
+        }
+      })
+    }
+  }
 
   const onSubmit = (data: LandFormData) => {
     if (!data.images || data.images.length < 3) {
@@ -46,7 +66,8 @@ const LandForm = () => {
       })
       return
     }
-    const landFormData = tranformLandData(data)
+    const landFormData = transformLandData(data)
+    if (!landFormData) return
     addPropertyMutation.mutate(landFormData)
   }
 
@@ -70,6 +91,8 @@ const LandForm = () => {
               districtName='districtName'
               wardName='wardName'
               streetName='streetName'
+              isLoading={isLoading}
+              onStreetNameChange={handleChangeStreetName}
             />
           </FormControl>
         </Stack>
@@ -265,7 +288,13 @@ const LandForm = () => {
             <FormErrorMessage>{errors.price && errors.price.message}</FormErrorMessage>
           </FormControl>
 
-          <Button variant='primary' my={6} alignSelf='flex-end' isLoading={isLoading}>
+          <Button
+            variant='primary'
+            my={6}
+            alignSelf='flex-end'
+            isLoading={isLoading}
+            isDisabled={isGetCoordinatesError}
+          >
             Định giá
           </Button>
         </Stack>
@@ -312,7 +341,14 @@ const LandForm = () => {
           </FormControl>
         </Stack>
 
-        <Button variant='primary' type='submit' my={6} alignSelf='flex-end' isLoading={isLoading}>
+        <Button
+          variant='primary'
+          type='submit'
+          my={6}
+          alignSelf='flex-end'
+          isLoading={isLoading}
+          isDisabled={isGetCoordinatesError}
+        >
           Đăng tin
         </Button>
       </Stack>

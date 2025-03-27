@@ -6,6 +6,7 @@ import { CategoryName, TPostProperty } from '@type/models'
 import { useCustomToast } from '@hooks'
 import { useAddProperty } from '@hooks/UseProperty/useAddProperty'
 import colors from '@styles/variables/colors'
+import { useGetCoordinates } from '@hooks/UseCoordinates/useGetCoordinates'
 
 export type HouseFormData = Omit<TPostProperty, 'land'> & {
   images: File[]
@@ -22,6 +23,7 @@ const HouseForm = () => {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors }
   } = useForm<HouseFormData>({
     defaultValues: {
@@ -33,7 +35,25 @@ const HouseForm = () => {
     }
   })
   const { showToast } = useCustomToast()
-  const { tranformHouseData, addPropertyMutation } = useAddProperty()
+  const { transformHouseData, addPropertyMutation, isLoading } = useAddProperty()
+  const { getCoordinatesMutation, isError: isGetCoordinatesError } = useGetCoordinates()
+  const region = watch('region')
+  const districtName = watch('districtName')
+  const wardName = watch('wardName')
+
+  const handleChangeStreetName = (streetName: string) => {
+    if (region && districtName && wardName && streetName) {
+      const fullAddress = `${streetName}, ${wardName}, ${districtName}, ${region}, Vietnam`
+      getCoordinatesMutation.mutate(fullAddress, {
+        onSuccess: (response) => {
+          if (response?.data?.lat && response?.data?.lon) {
+            setValue('latitude', response.data.lat)
+            setValue('longitude', response.data.lon)
+          }
+        }
+      })
+    }
+  }
 
   const onSubmit = (data: HouseFormData) => {
     if (!data.images || data.images.length < 3) {
@@ -44,8 +64,9 @@ const HouseForm = () => {
       showToast({ title: 'Số hình ảnh không vượt quá 10 hình ảnh', status: 'warning' })
       return
     }
-    const landFormData = tranformHouseData(data)
-    addPropertyMutation.mutate(landFormData)
+    const houseFormData = transformHouseData(data)
+    if (!houseFormData) return
+    addPropertyMutation.mutate(houseFormData)
   }
 
   const handleImageUpload = (files: File[]) => {
@@ -69,6 +90,8 @@ const HouseForm = () => {
               districtName='districtName'
               wardName='wardName'
               streetName='streetName'
+              isLoading={isLoading}
+              onStreetNameChange={handleChangeStreetName}
             />
           </FormControl>
         </Stack>
@@ -85,6 +108,7 @@ const HouseForm = () => {
               render={({ field }) => (
                 <CustomSelect
                   {...field}
+                  isDisabled={isLoading}
                   options={FILTER_OPTION.houseType}
                   sx={{ width: '100%' }}
                   borderRadius='md'
@@ -106,6 +130,7 @@ const HouseForm = () => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
+                    isDisabled={isLoading}
                     options={FILTER_OPTION.bedrooms}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -126,6 +151,7 @@ const HouseForm = () => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
+                    isDisabled={isLoading}
                     options={FILTER_OPTION.toilets}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -148,6 +174,7 @@ const HouseForm = () => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
+                    isDisabled={isLoading}
                     options={FILTER_OPTION.direction}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -166,7 +193,14 @@ const HouseForm = () => {
                 control={control}
                 rules={{ required: 'Vui lòng nhập tổng số tầng' }}
                 render={({ field }) => (
-                  <TextField {...field} size='md' type='number' placeholder='Tổng số tầng' variant='outline' />
+                  <TextField
+                    {...field}
+                    size='md'
+                    type='number'
+                    placeholder='Tổng số tầng'
+                    variant='outline'
+                    isDisabled={isLoading}
+                  />
                 )}
               />
               <FormErrorMessage>{errors.floors?.message}</FormErrorMessage>
@@ -185,6 +219,7 @@ const HouseForm = () => {
                   render={({ field }) => (
                     <CustomSelect
                       {...field}
+                      isDisabled={isLoading}
                       options={FILTER_OPTION.propertyLegalDocuments}
                       sx={{ width: '100%' }}
                       borderRadius='md'
@@ -207,6 +242,7 @@ const HouseForm = () => {
                   render={({ field }) => (
                     <CustomSelect
                       {...field}
+                      isDisabled={isLoading}
                       options={FILTER_OPTION.furnishedStatus}
                       sx={{ width: '100%' }}
                       borderRadius='md'
@@ -228,6 +264,7 @@ const HouseForm = () => {
                 control={control}
                 render={({ field: { value, onChange } }) => (
                   <CheckboxGroup
+                    isLoading={isLoading}
                     options={FILTER_OPTION.houseCharacteristics}
                     selectedValues={value?.map(String) || []}
                     filterType='houseCharacteristics'
@@ -260,7 +297,14 @@ const HouseForm = () => {
                 min: { value: 0, message: 'Diện tích phải lớn hơn 0' }
               }}
               render={({ field }) => (
-                <TextField {...field} size='md' type='number' placeholder='m²' variant='outline' />
+                <TextField
+                  {...field}
+                  size='md'
+                  type='number'
+                  placeholder='m²'
+                  variant='outline'
+                  isDisabled={isLoading}
+                />
               )}
             />
             <FormErrorMessage>{errors.area?.message}</FormErrorMessage>
@@ -277,7 +321,14 @@ const HouseForm = () => {
                   min: { value: 0, message: 'Chiều ngang phải lớn hơn 0' }
                 }}
                 render={({ field }) => (
-                  <TextField {...field} size='md' type='number' placeholder='m' variant='outline' />
+                  <TextField
+                    {...field}
+                    size='md'
+                    type='number'
+                    placeholder='m'
+                    variant='outline'
+                    isDisabled={isLoading}
+                  />
                 )}
               />
               <FormErrorMessage>{errors.width?.message}</FormErrorMessage>
@@ -293,7 +344,14 @@ const HouseForm = () => {
                   min: { value: 0, message: 'Chiều dài phải lớn hơn 0' }
                 }}
                 render={({ field }) => (
-                  <TextField {...field} size='md' type='number' placeholder='m' variant='outline' />
+                  <TextField
+                    {...field}
+                    size='md'
+                    type='number'
+                    placeholder='m'
+                    variant='outline'
+                    isDisabled={isLoading}
+                  />
                 )}
               />
               <FormErrorMessage>{errors.length?.message}</FormErrorMessage>
@@ -310,13 +368,26 @@ const HouseForm = () => {
                 min: { value: 0, message: 'Giá bán phải lớn hơn 0' }
               }}
               render={({ field }) => (
-                <TextField {...field} size='md' type='number' placeholder='VNĐ' variant='outline' />
+                <TextField
+                  {...field}
+                  size='md'
+                  type='number'
+                  placeholder='VNĐ'
+                  variant='outline'
+                  isDisabled={isLoading}
+                />
               )}
             />
             <FormErrorMessage>{errors.price?.message}</FormErrorMessage>
           </FormControl>
 
-          <Button variant='primary' my={6} alignSelf='flex-end'>
+          <Button
+            variant='primary'
+            my={6}
+            alignSelf='flex-end'
+            isLoading={isLoading}
+            isDisabled={isGetCoordinatesError}
+          >
             Định giá
           </Button>
         </Stack>
@@ -331,7 +402,9 @@ const HouseForm = () => {
                 required: 'Vui lòng nhập tiêu đề',
                 minLength: { value: 10, message: 'Tiêu đề phải có ít nhất 10 ký tự' }
               }}
-              render={({ field }) => <TextField {...field} size='md' placeholder='Nhập tiêu đề' variant='outline' />}
+              render={({ field }) => (
+                <TextField {...field} size='md' placeholder='Nhập tiêu đề' variant='outline' isDisabled={isLoading} />
+              )}
             />
             <FormErrorMessage>{errors.title?.message}</FormErrorMessage>
           </FormControl>
@@ -348,6 +421,7 @@ const HouseForm = () => {
               render={({ field }) => (
                 <Textarea
                   {...field}
+                  isDisabled={isLoading}
                   border='1px solid'
                   borderColor={colors.brand.sliver}
                   placeholder='Nhập mô tả'
@@ -360,7 +434,14 @@ const HouseForm = () => {
           </FormControl>
         </Stack>
 
-        <Button variant='primary' type='submit' my={6} alignSelf='flex-end'>
+        <Button
+          variant='primary'
+          type='submit'
+          my={6}
+          alignSelf='flex-end'
+          isLoading={isLoading}
+          isDisabled={isGetCoordinatesError}
+        >
           Đăng tin
         </Button>
       </Stack>
