@@ -45,6 +45,10 @@ const MESSAGE = {
     WEAK_PASSWORD: 'Mật khẩu phải có ít nhất 8 ký tự, chứa ít nhất 1 chữ hoa và 1 ký tự đặc biệt',
     MISMATCH_PASSWORD: 'Mật khẩu không khớp',
     TERMREQUIRED: 'Bạn cần đồng ý với điều khoản dịch vụ'
+  },
+  coordinates: {
+    GET_SUCCESS: 'Lấy toạ độ thành công',
+    GET_FAILED: 'Không tồn tại vị trí này'
   }
 }
 
