@@ -171,12 +171,13 @@ public class PropertyService {
     long userPostCount = propertyRepository.countByUser_id(user.getId());
 
     if (user.getRole().getName() == RoleName.CUSTOMER && userPostCount >= 3) {
-      throw new IllegalStateException("Customers can only post up to 3 properties.");
+      throw new IllegalStateException("Tài khoản này đã đạt tối đa số lượng bài viết bất động sản.");
     }
 
     if (user.getRole().getName() == RoleName.BROKER && userPostCount >= 30) {
-      throw new IllegalStateException("Brokers can only post up to 30 properties per month.");
+      throw new IllegalStateException("Tài khoản môi giới đã đạt tối đa số lượng bài viết bất động sản.");
     }
+
     Property savedProperty = propertyRepository.save(property);
 
     if (property.getLand() != null) {
