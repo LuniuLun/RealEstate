@@ -23,7 +23,6 @@ export const useGetCoordinates = (): UseGetCoordinatesReturn => {
           status: response.status
         })
       }
-      console.log(response)
     },
     onError: (error) => {
       console.log(error.message)
