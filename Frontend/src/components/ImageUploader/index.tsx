@@ -8,9 +8,10 @@ interface IImageUploaderProps {
   label: string
   onUpload?: (files: File[]) => void
   initialImages?: string[]
+  isLoading?: boolean
 }
 
-const ImageUploader = ({ label, onUpload, initialImages = [] }: IImageUploaderProps) => {
+const ImageUploader = ({ label, onUpload, initialImages = [], isLoading }: IImageUploaderProps) => {
   const toast = useToast()
   const [images, setImages] = useState<string[]>(initialImages)
   const [files, setFiles] = useState<File[]>([])
@@ -59,7 +60,7 @@ const ImageUploader = ({ label, onUpload, initialImages = [] }: IImageUploaderPr
       />
       <Flex justifyContent='space-between' alignItems='center'>
         <Heading variant='secondary'>{label}</Heading>
-        <Button as='label' htmlFor='file-upload' variant='primary' cursor='pointer'>
+        <Button as='label' htmlFor='file-upload' variant='primary' cursor='pointer' isLoading={isLoading}>
           Chọn ảnh
         </Button>
       </Flex>
