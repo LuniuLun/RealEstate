@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Box, Button, Flex, Grid, Heading, IconButton, Image, Input, Stack, useToast } from '@chakra-ui/react'
 import { CloseIcon } from '@assets/icons'
 import { REGEX } from '@constants/regex'
-import colors from '@styles/variables/colors'
 
 interface IImageUploaderProps {
   label: string
@@ -49,7 +48,7 @@ const ImageUploader = ({ label, onUpload, initialImages = [], isLoading }: IImag
   }
 
   return (
-    <Stack gap={5} p={4} border='1px dashed' borderColor={colors.brand.primary} borderRadius='md'>
+    <Stack gap={5} p={4} border='1px dashed' borderColor='brand.primary' borderRadius='md'>
       <Input
         type='file'
         multiple

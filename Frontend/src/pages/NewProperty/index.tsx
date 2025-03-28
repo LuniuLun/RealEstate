@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Flex, FormControl, Heading, Stack } from '@chakra-ui/react'
 import { CustomSelect, HouseForm, LandForm } from '@components'
-import colors from '@styles/variables/colors'
 
 const NewProperty = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
@@ -35,7 +34,7 @@ const NewProperty = () => {
       p={6}
       borderWidth={1}
       boxShadow='md'
-      bgColor={colors.brand.white}
+      bgColor='brand.white'
       gap={4}
       flexDirection='column'
     >
@@ -47,7 +46,7 @@ const NewProperty = () => {
             sx={{ width: '100%' }}
             borderRadius='md'
             border='full'
-            borderColor={colors.brand.sliver}
+            borderColor='brand.sliver'
             placeholder='Chọn danh mục'
             onChange={handleCategoryChange}
           />

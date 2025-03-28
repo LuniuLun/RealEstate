@@ -2,7 +2,6 @@ import { memo, useCallback } from 'react'
 import { Flex, Text, Skeleton, IconButton } from '@chakra-ui/react'
 import { LeftArrowIcon, RightArrowIcon } from '@assets/icons'
 import CustomSelect from '@components/CustomSelect'
-import colors from '@styles/variables/colors'
 import { filterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
 
@@ -60,7 +59,7 @@ const Pagination = ({ totalItems, itemsPerPageOptions, fetchNextPage, hasNextPag
       gap='26px'
       flexDirection={{ base: 'column', md: 'row' }}
       p={4}
-      color={colors.brand.blackTextQuaternary}
+      color='brand.blackTextQuaternary'
       fontSize='xs'
     >
       <Skeleton isLoaded={isLoaded} startColor='gray.100' endColor='gray.300' minH='25px'>

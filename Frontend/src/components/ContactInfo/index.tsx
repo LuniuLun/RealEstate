@@ -1,7 +1,6 @@
 import { Stack, Flex, Text } from '@chakra-ui/react'
 import { PhoneIcon, UserIcon } from '@assets/icons'
 import UserCard from '@components/UserCard'
-import colors from '@styles/variables/colors'
 import { memo } from 'react'
 
 interface ContactInfoProps {
@@ -21,19 +20,11 @@ const ContactInfo = ({ name, role, phone }: ContactInfoProps) => {
       py={3}
       px={5}
       borderRadius='md'
-      bgColor={colors.brand.white}
+      bgColor='brand.white'
       boxShadow='md'
     >
       <UserCard name={name} role={role} avatar={<UserIcon />} />
-      <Flex
-        alignItems='center'
-        justifyContent='center'
-        gap={4}
-        px={6}
-        py={3}
-        bgColor={colors.brand.green}
-        borderRadius='md'
-      >
+      <Flex alignItems='center' justifyContent='center' gap={4} px={6} py={3} bgColor='brand.green' borderRadius='md'>
         <PhoneIcon />
         <Text color='white' fontSize='lg' fontWeight='bold'>
           {phone}

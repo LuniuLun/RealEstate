@@ -10,7 +10,6 @@ import {
   InputRightElement,
   Box
 } from '@chakra-ui/react'
-import colors from '@styles/variables/colors'
 import { EyeIcon, CloseEyeIcon } from '@assets/icons'
 import { formatCurrency } from '@utils'
 
@@ -74,7 +73,7 @@ const TextField = forwardRef<HTMLInputElement, ITextFieldProps>(
                 alignItems='center'
                 justifyContent='center'
                 borderRadius='full'
-                bgColor={colors.brand.primary}
+                bgColor='brand.primary'
                 h='30px'
                 w='30px'
               >
@@ -112,7 +111,7 @@ const TextField = forwardRef<HTMLInputElement, ITextFieldProps>(
           position='absolute'
           left='12px'
           bottom='-10px'
-          color={colors.brand.red}
+          color='brand.red'
           fontSize='xs'
           fontWeight='light'
           height='12px'

@@ -51,7 +51,7 @@ const CustomSelect = forwardRef<HTMLSelectElement, ICustomSelectProps<string | n
           width: 'auto',
           ...(border === 'full' && { border: `1px solid ${colors.brand.sliver}` }),
           ...(border === 'bottom' && { borderBottom: `1px solid ${colors.brand.black}` }),
-          _hover: { bgColor: colors.brand.hoverBtnColor, color: colors.brand.white },
+          _hover: { bgColor: 'brand.hoverBtnColor', borderColor: 'brand.hoverBtnColor', color: 'brand.white' },
           ...sx
         }}
         {...props}

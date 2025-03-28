@@ -5,7 +5,6 @@ import { transformPriceUnit, calculatePricePerSquareMeter } from '@utils'
 import { FILTER_OPTION } from '@constants/option'
 import { IProperty } from '@type/models'
 import { memo } from 'react'
-import colors from '@styles/variables/colors'
 
 interface BasePropertyDetailsProps {
   property: IProperty
@@ -20,10 +19,10 @@ const BasePropertyDetails = ({ property }: BasePropertyDetailsProps) => {
   const formattedDate = new Date(property.updatedAt).toLocaleDateString('vi-VN')
 
   return (
-    <Box bg={colors.brand.secondary} p={4} borderRadius='lg' mb={6}>
+    <Box bg='brand.secondary' p={4} borderRadius='lg' mb={6}>
       <Flex align='center' justifyContent='space-between' mb={4}>
         <Heading variant='secondary'>Thông tin chi tiết</Heading>
-        <Text fontSize='sm' color={colors.brand.blackTextSecondary}>
+        <Text fontSize='sm' color='brand.blackTextSecondary'>
           Cập nhật {formattedDate}
         </Text>
       </Flex>
@@ -36,7 +35,7 @@ const BasePropertyDetails = ({ property }: BasePropertyDetailsProps) => {
             icon={<PriceIcon />}
             highlight
           />
-          <Text fontSize='sm' color={colors.brand.blackTextPrimary}>
+          <Text fontSize='sm' color='brand.blackTextPrimary'>
             {calculatePricePerSquareMeter(property.price, property.area)}
           </Text>
         </Flex>

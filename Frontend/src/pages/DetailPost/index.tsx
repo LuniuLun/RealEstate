@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom'
 import { Box, Flex, Heading, Text, Stack, IconButton, Spinner } from '@chakra-ui/react'
 import { HeartIcon, LocationIcon } from '@assets/icons'
 import { ContactInfo, PropertyDetails } from '@components'
-import colors from '@styles/variables/colors'
 import useGetPropertyById from '@hooks/UseProperty/useGetPropertyById'
 import ImageGallery from '@components/ImageGallery'
 
@@ -14,7 +13,7 @@ const DetailPost = () => {
     return (
       <Flex justify='center' align='center' h='50vh'>
         {isLoading ? (
-          <Spinner size='xl' color={colors.brand.primary} />
+          <Spinner size='xl' color='brand.primary' />
         ) : (
           <Text>Không thể tải thông tin. Vui lòng thử lại sau.</Text>
         )}
@@ -39,17 +38,11 @@ const DetailPost = () => {
           <Box mb={4}>
             <Flex justify='space-between' align='flex-start'>
               <Heading variant='primary'>{property.title}</Heading>
-              <IconButton
-                size='sm'
-                icon={<HeartIcon />}
-                aria-label='save'
-                bg={colors.brand.white}
-                borderRadius='full'
-              />
+              <IconButton size='sm' icon={<HeartIcon />} aria-label='save' bg='brand.white' borderRadius='full' />
             </Flex>
             <Flex mt={2} align='center' gap={2}>
               <LocationIcon />
-              <Text fontSize='sm' color={colors.brand.blackTextPrimary}>
+              <Text fontSize='sm' color='brand.blackTextPrimary'>
                 {address}
               </Text>
             </Flex>

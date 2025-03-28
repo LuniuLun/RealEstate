@@ -20,7 +20,6 @@ import { useEstimatePropertyPrice } from '@hooks/UseProperty/useEstimateProperty
 import { useConvertPropertyData } from '@hooks/UseProperty/useConvertProperty'
 import { formatCurrency } from '@utils'
 import { useState } from 'react'
-import colors from '@styles/variables/colors'
 
 export type TLandFormData = Omit<TPostProperty, 'house'> & {
   images: File[]
@@ -324,7 +323,7 @@ const LandForm = () => {
               {estimatePrice && (
                 <>
                   <Heading variant='secondary'>Dự đoán giá của hệ thống: </Heading>
-                  <Text color={colors.brand.green} fontWeight='semibold'>
+                  <Text color='brand.green' fontWeight='semibold'>
                     {formatCurrency(estimatePrice)} VNĐ
                   </Text>
                 </>
@@ -375,10 +374,10 @@ const LandForm = () => {
                 <Textarea
                   {...field}
                   border='1px solid'
-                  borderColor={colors.brand.sliver}
+                  borderColor='brand.sliver'
                   placeholder='Nhập mô tả'
                   rows={5}
-                  sx={{ _hover: { borderColor: colors.brand.sliver } }}
+                  sx={{ _hover: { borderColor: 'brand.sliver' } }}
                   isDisabled={isLoading}
                 />
               )}

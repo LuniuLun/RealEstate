@@ -22,7 +22,7 @@ const Home = () => {
           gap={4}
           maxW='400px'
         >
-          <PostIcon />
+          <PostIcon height='58px' width='58px' />
           <InfoGroup
             size='md'
             heading='Bất Động Sản Cao Cấp'

@@ -4,7 +4,6 @@ import { CustomSelect, TextField } from '@components'
 import { FilterIcon, SearchIcon } from '@assets/icons'
 import { debounce } from '@utils'
 import { filterStore } from '@stores'
-import colors from '@styles/variables/colors'
 import { ISelectOption } from '@components/CustomSelect'
 
 interface IFilterProps {
@@ -66,7 +65,7 @@ const Filter = ({ isLoaded = true, sortOptions, children }: IFilterProps) => {
           maxW={{ base: '100%', md: '150px' }}
           isDisabled={!isLoaded}
           aria-label='sort'
-          bgColor={colors.brand.white}
+          bgColor='brand.white'
         />
         <Box w='19px'>
           <FilterIcon />

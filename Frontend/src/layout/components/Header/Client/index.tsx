@@ -2,7 +2,6 @@ import { Flex, Heading, Stack } from '@chakra-ui/react'
 import BaseHeader from '../Base'
 import ThumnailImage from '@assets/images/just-home-thumnail.png'
 import { CheckboxPopover, CustomSelect, Filter, RangeFilter } from '@components'
-import colors from '@styles/variables/colors'
 import { FILTER_OPTION, SORT_PROPERTY_OPTION } from '@constants/option'
 import { filterStore } from '@stores'
 import { CategoryName, Unit } from '@type/models'
@@ -106,7 +105,7 @@ const ClientHeader = () => {
     >
       <BaseHeader />
       <Stack alignItems='center' justifyContent='center' gap={4} height='100%'>
-        <Heading variant='primary' color={colors.brand.white}>
+        <Heading variant='primary' color='brand.white'>
           Đặt niềm tin vào chúng tôi
         </Heading>
         <Filter sortOptions={SORT_PROPERTY_OPTION} />

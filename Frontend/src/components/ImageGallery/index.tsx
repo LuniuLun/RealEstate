@@ -2,7 +2,6 @@ import { useState, useCallback, memo } from 'react'
 import { Box, Flex, Image, IconButton, HStack, useBreakpointValue } from '@chakra-ui/react'
 import { LeftIcon, RightIcon, HeartIcon } from '@assets/icons'
 import defaultImage from '@assets/images/default-image.jpg'
-import colors from '@styles/variables/colors'
 
 interface IImageGalleryProps {
   images: string[]
@@ -68,7 +67,7 @@ const ImageGallery = ({ images, alt = 'Bất động sản' }: IImageGalleryProp
           position='absolute'
           left='10px'
           top='50%'
-          bg={colors.brand.blackTextSecondary}
+          bg='brand.blackTextSecondary'
           borderRadius='full'
           size='sm'
           onClick={handlePrevImage}
@@ -80,7 +79,7 @@ const ImageGallery = ({ images, alt = 'Bất động sản' }: IImageGalleryProp
           position='absolute'
           right='10px'
           top='50%'
-          bg={colors.brand.blackTextSecondary}
+          bg='brand.blackTextSecondary'
           borderRadius='full'
           size='sm'
           onClick={handleNextImage}

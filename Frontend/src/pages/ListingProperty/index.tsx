@@ -5,7 +5,6 @@ import { filterStore } from '@stores'
 import { FILTER_OPTION, ITEM_PER_PAGE } from '@constants/option'
 import { useGetProperty, useCustomToast } from '@hooks'
 import { useShallow } from 'zustand/shallow'
-import colors from '@styles/variables/colors'
 import { calculatePricePerSquareMeter, transformPriceUnit } from '@utils'
 
 const ListingProperty = () => {
@@ -36,7 +35,7 @@ const ListingProperty = () => {
   return (
     <Stack my={10} mb={20}>
       <Stack justifyContent='center' alignItems='center' gap={6}>
-        <Heading size='2xl' color={colors.brand.yellowHeading}>
+        <Heading size='2xl' color='brand.yellowHeading'>
           Mua Bán Nhà Đất Chính Chủ, Giá Rẻ
         </Heading>
 

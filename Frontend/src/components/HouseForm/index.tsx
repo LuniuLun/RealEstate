@@ -15,7 +15,6 @@ import { FILTER_OPTION } from '@constants/option'
 import { CategoryName, TPostProperty } from '@type/models'
 import { useCustomToast } from '@hooks'
 import { useAddProperty } from '@hooks/UseProperty/useAddProperty'
-import colors from '@styles/variables/colors'
 import { useGetCoordinates } from '@hooks/UseCoordinates/useGetCoordinates'
 import { useState } from 'react'
 import { useConvertPropertyData } from '@hooks/UseProperty/useConvertProperty'
@@ -418,7 +417,7 @@ const HouseForm = () => {
               {estimatePrice && (
                 <>
                   <Heading variant='secondary'>Dự đoán giá của hệ thống: </Heading>
-                  <Text color={colors.brand.green} fontWeight='semibold'>
+                  <Text color='brand.green' fontWeight='semibold'>
                     {formatCurrency(estimatePrice)} VNĐ
                   </Text>
                 </>
@@ -470,10 +469,10 @@ const HouseForm = () => {
                   {...field}
                   isDisabled={isLoading}
                   border='1px solid'
-                  borderColor={colors.brand.sliver}
+                  borderColor='brand.sliver'
                   placeholder='Nhập mô tả'
                   rows={5}
-                  sx={{ _hover: { borderColor: colors.brand.sliver } }}
+                  sx={{ _hover: { borderColor: 'brand.sliver' } }}
                 />
               )}
             />

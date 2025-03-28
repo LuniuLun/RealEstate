@@ -2,7 +2,6 @@ import { Box, Button, Flex } from '@chakra-ui/react'
 import { LogoIcon, LogoutIcon, NotificationIcon, ProfileIcon, UserIcon } from '@assets/icons'
 import { Logo, NavItem, UserCard } from '@components'
 import { authStore } from '@stores'
-import colors from '@styles/variables/colors'
 import { useNavigate } from 'react-router-dom'
 
 const BaseHeader = () => {
@@ -31,7 +30,7 @@ const BaseHeader = () => {
       w='100%'
       px={6}
       mt={4}
-      bgColor={colors.brand.white}
+      bgColor='brand.white'
       borderRadius={20}
     >
       <Flex gap={4}>
@@ -58,7 +57,7 @@ const BaseHeader = () => {
                 top='75%'
                 right='0'
                 display='none'
-                bgColor={colors.brand.white}
+                bgColor='brand.white'
                 w='150px'
                 borderRadius='md'
                 boxShadow='md'
@@ -78,7 +77,7 @@ const BaseHeader = () => {
                     _hover={{ bgColor: 'gray.200' }}
                     leftIcon={<ProfileIcon />}
                     fontSize='sm'
-                    color={colors.brand.blackTextPrimary}
+                    color='brand.blackTextPrimary'
                     onClick={handleGoToProfile}
                   >
                     Tài khoản
@@ -92,7 +91,7 @@ const BaseHeader = () => {
                     _hover={{ bgColor: 'gray.200' }}
                     leftIcon={<LogoutIcon />}
                     fontSize='sm'
-                    color={colors.brand.blackTextPrimary}
+                    color='brand.blackTextPrimary'
                     onClick={handleLogout}
                   >
                     Đăng xuất

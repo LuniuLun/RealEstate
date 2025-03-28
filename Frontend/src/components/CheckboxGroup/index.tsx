@@ -1,6 +1,5 @@
 import { Checkbox, SimpleGrid } from '@chakra-ui/react'
 import { ISelectOption } from '@components/CustomSelect'
-import colors from '@styles/variables/colors'
 import { CategoryName } from '@type/models'
 
 interface ICheckboxGroupProps {
@@ -19,7 +18,7 @@ const CheckboxGroup = ({ options, selectedValues, filterType, onValueChange, isL
         isDisabled={isLoading}
         isChecked={selectedValues.includes(String(option.value))}
         onChange={() => onValueChange(String(option.value), String(filterType) as CategoryName)}
-        colorScheme={colors.brand.primary}
+        colorScheme='brand.primary'
         size='sm'
         alignItems='unset'
         sx={{ '& span:first-of-type': { marginTop: '4px' } }}
