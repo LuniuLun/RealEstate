@@ -39,11 +39,17 @@ export const MODULE_PERMISSION = [
   }
 ]
 
-export const NAV_ITEMS = [
-  { path: '/', id: 'dashboard', title: 'Dashboard' },
-  { path: '/users', id: 'users', title: 'Users' },
-  { path: '/posts', id: 'posts', title: 'Posts' },
-  { path: '/', id: 'setting', title: 'Setting' }
+export const ADMIN_NAV_ITEMS = [
+  { path: '/dashboard', id: 'dashboard', title: 'Thống kê' },
+  { path: '/users', id: 'users', title: 'Tài khoản' },
+  { path: '/posts', id: 'posts', title: 'Bài viết' }
+]
+
+export const USER_NAV_ITEMS = [
+  { path: '/personal', id: 'personal', title: 'Thông tin cá nhân' },
+  { path: '/my-report', id: 'myReport', title: 'Bài viết của tôi' },
+  { path: '/upgrade', id: 'upgrade', title: 'Nâng cấp' },
+  { path: '/transactions', id: 'transactions', title: 'Lịch sử giao dịch' }
 ]
 
 export const ITEM_PER_PAGE = [5, 10, 12, 20, 50]
