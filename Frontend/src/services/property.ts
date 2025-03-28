@@ -1,6 +1,13 @@
 import { IApiResponse } from '@type/apiResponse'
 import MESSAGE from '@constants/message'
-import { IProperty, IPropertyStatistic, PropertyStatus, RoleName } from '@type/models'
+import {
+  IEstimatePropertyResult,
+  IProperty,
+  IPropertyStatistic,
+  PropertyStatus,
+  RoleName,
+  TPostProperty
+} from '@type/models'
 import { authStore } from '@stores'
 import { FilterCriteria } from '@stores/PropertyFilter'
 import { IFilterOptions } from '@type/filterOptions'
@@ -254,6 +261,44 @@ export const addProperty = async (newProperty: FormData): Promise<IApiResponse<I
     return {
       status: 'success',
       message: MESSAGE.property.ADD_SUCCESS,
+      data
+    }
+  } catch (error: unknown) {
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
+    }
+  }
+}
+
+export const estimatePropertyPrice = async (
+  property: TPostProperty
+): Promise<IApiResponse<IEstimatePropertyResult>> => {
+  const token = authStore.getState().token?.token
+  console.log(property)
+  try {
+    const response = await fetch(`${baseUrl}/estimate-price`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(property)
+    })
+
+    const data = await response.json()
+    console.log(data)
+
+    if (!response.ok) {
+      return {
+        status: 'error',
+        message: data?.message || MESSAGE.property.ESTIMATE_FAILED
+      }
+    }
+
+    return {
+      status: 'success',
+      message: MESSAGE.property.ESTIMATE_SUCCESS,
       data
     }
   } catch (error: unknown) {
