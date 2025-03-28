@@ -59,3 +59,7 @@ export interface IPropertyStatistic {
   canceled: number
   pending: number
 }
+
+export interface IEstimatePropertyResult {
+  estimatedPrice: number
+}
