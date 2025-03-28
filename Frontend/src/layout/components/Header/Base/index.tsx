@@ -16,7 +16,7 @@ const BaseHeader = () => {
   }
 
   const handleGoToProfile = () => {
-    navigate('/profile')
+    navigate('/personal')
   }
 
   const handleGoToNewProperty = () => {
