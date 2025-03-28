@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { authStore } from '@stores'
-import { AdminLayout, DefaultLayout, PersonalLayout } from '@layout'
+import { DefaultLayout, PersonalLayout } from '@layout'
 import { RoleName } from '@type/models'
 import ProtectedRoute from './routes/ProtectedRoute'
 import Home from '@pages/Home/Home'
@@ -49,21 +49,19 @@ function App() {
       >
         <Route path='personal' element={<PersonalLayout />}>
           <Route index element={<Profile />} />
-        </Route>
-      </Route>
-      <Route
-        element={
-          <ProtectedRoute
-            isAllowed={!!token}
-            userRoles={token?.user?.role?.name || RoleName.CUSTOMER}
-            requiredRole={RoleName.ADMIN}
-            redirectPath='/'
-          />
-        }
-      >
-        <Route element={<AdminLayout />}>
-          <Route path='dashboard' element={<Dashboard />} />
-          <Route path='users' element={<Users />} />
+          <Route
+            element={
+              <ProtectedRoute
+                isAllowed={!!token}
+                userRoles={token?.user?.role?.name || RoleName.CUSTOMER}
+                requiredRole={RoleName.ADMIN}
+                redirectPath='/'
+              />
+            }
+          >
+            <Route path='dashboard' element={<Dashboard />} />
+            <Route path='users' element={<Users />} />
+          </Route>
         </Route>
       </Route>
     </Routes>
