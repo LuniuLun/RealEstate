@@ -13,8 +13,8 @@ public class HouseType {
   @Column(name = "house_type_id")
   private Integer id;
 
-  @Column(name = "house_type_name", nullable = false)
-  private String housTypeName;
+  @Column(name = "name", nullable = false)
+  private String name;
 
   @OneToMany(mappedBy = "houseType")
   @JsonIgnore
@@ -29,12 +29,12 @@ public class HouseType {
     this.id = id;
   }
 
-  public String getHousTypeName() {
-    return housTypeName;
+  public String getName() {
+    return name;
   }
 
-  public void setHousTypeName(String housTypeName) {
-    this.housTypeName = housTypeName;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public Set<House> getHouses() {
