@@ -46,6 +46,7 @@ const CustomSelect = forwardRef<HTMLSelectElement, ICustomSelectProps<string | n
         onChange={handleChange}
         variant={border === 'bottom' ? 'flushed' : 'filled'}
         borderRadius={20}
+        cursor='pointer'
         sx={{
           width: 'auto',
           ...(border === 'full' && { border: `1px solid ${colors.brand.sliver}` }),
