@@ -1,18 +1,18 @@
-import { LandFormData } from '@components/LandForm'
-import { HouseFormData } from '@components/HouseForm'
+import { TLandFormData } from '@components/LandForm'
+import { THouseFormData } from '@components/HouseForm'
 import { authStore } from '@stores'
 import { IUser, TPostProperty } from '@type/models'
 import useValidateToken from '@hooks/UseUser/useValidateToken'
 
 interface UseConvertPropertyDataReturn {
-  convertLandData: (formData: LandFormData) => TPostProperty | null
-  convertHouseData: (formData: HouseFormData) => TPostProperty | null
+  convertLandData: (formData: TLandFormData) => TPostProperty | null
+  convertHouseData: (formData: THouseFormData) => TPostProperty | null
 }
 
 export const useConvertPropertyData = (): UseConvertPropertyDataReturn => {
   const { token } = authStore()
   const validateToken = useValidateToken()
-  const convertLandData = (formData: LandFormData): TPostProperty | null => {
+  const convertLandData = (formData: TLandFormData): TPostProperty | null => {
     if (!validateToken()) return null
 
     return {
@@ -52,7 +52,7 @@ export const useConvertPropertyData = (): UseConvertPropertyDataReturn => {
     }
   }
 
-  const convertHouseData = (formData: HouseFormData): TPostProperty | null => {
+  const convertHouseData = (formData: THouseFormData): TPostProperty | null => {
     if (!validateToken()) return null
 
     return {

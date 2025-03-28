@@ -1,5 +1,5 @@
-import { LandFormData } from '@components/LandForm'
-import { HouseFormData } from '@components/HouseForm'
+import { TLandFormData } from '@components/LandForm'
+import { THouseFormData } from '@components/HouseForm'
 import { IProperty } from '@type/models'
 import useCustomToast from '@hooks/UseCustomToast'
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
@@ -10,8 +10,8 @@ import { useConvertPropertyData } from './useConvertProperty'
 
 interface UseAddPropertyReturn {
   addPropertyMutation: UseMutationResult<IApiResponse<IProperty>, Error, FormData>
-  transformLandData: (formData: LandFormData) => FormData | null
-  transformHouseData: (formData: HouseFormData) => FormData | null
+  transformLandData: (formData: TLandFormData) => FormData | null
+  transformHouseData: (formData: THouseFormData) => FormData | null
   isLoading: boolean
   isError: boolean
 }
@@ -21,7 +21,7 @@ export const useAddProperty = (): UseAddPropertyReturn => {
   const { showToast } = useCustomToast()
   const { convertHouseData, convertLandData } = useConvertPropertyData()
 
-  const transformLandData = (formData: LandFormData): FormData | null => {
+  const transformLandData = (formData: TLandFormData): FormData | null => {
     const landFormData = new FormData()
     const landData = convertLandData(formData)
     if (!landData) return null
@@ -34,7 +34,7 @@ export const useAddProperty = (): UseAddPropertyReturn => {
     return landFormData
   }
 
-  const transformHouseData = (formData: HouseFormData): FormData | null => {
+  const transformHouseData = (formData: THouseFormData): FormData | null => {
     const houseFormData = new FormData()
     const houseData = convertHouseData(formData)
     if (!houseData) return null
