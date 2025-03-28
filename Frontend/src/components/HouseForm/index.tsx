@@ -1,5 +1,15 @@
 import { useForm, Controller } from 'react-hook-form'
-import { Button, Flex, FormControl, FormLabel, FormErrorMessage, Heading, Stack, Textarea } from '@chakra-ui/react'
+import {
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Heading,
+  Stack,
+  Textarea,
+  Text
+} from '@chakra-ui/react'
 import { AddressSelector, CheckboxGroup, CustomSelect, ImageUploader, TextField } from '@components'
 import { FILTER_OPTION } from '@constants/option'
 import { CategoryName, TPostProperty } from '@type/models'
@@ -7,8 +17,12 @@ import { useCustomToast } from '@hooks'
 import { useAddProperty } from '@hooks/UseProperty/useAddProperty'
 import colors from '@styles/variables/colors'
 import { useGetCoordinates } from '@hooks/UseCoordinates/useGetCoordinates'
+import { useState } from 'react'
+import { useConvertPropertyData } from '@hooks/UseProperty/useConvertProperty'
+import { useEstimatePropertyPrice } from '@hooks/UseProperty/useEstimatePropertyPrice'
+import { formatCurrency } from '@utils'
 
-export type HouseFormData = Omit<TPostProperty, 'land'> & {
+export type THouseFormData = Omit<TPostProperty, 'land'> & {
   images: File[]
   houseCharacteristics?: number[]
   houseType: number
@@ -24,8 +38,9 @@ const HouseForm = () => {
     handleSubmit,
     setValue,
     watch,
+    getValues,
     formState: { errors }
-  } = useForm<HouseFormData>({
+  } = useForm<THouseFormData>({
     defaultValues: {
       houseCharacteristics: [],
       category: { id: 2, name: CategoryName.HOUSE },
@@ -37,6 +52,9 @@ const HouseForm = () => {
   const { showToast } = useCustomToast()
   const { transformHouseData, addPropertyMutation, isLoading } = useAddProperty()
   const { getCoordinatesMutation, isError: isGetCoordinatesError } = useGetCoordinates()
+  const { estimatePropertyPriceMutation, isLoading: isEstimatingPrice } = useEstimatePropertyPrice()
+  const { convertHouseData } = useConvertPropertyData()
+  const [estimatePrice, setEstimatePrice] = useState<number>()
   const region = watch('region')
   const districtName = watch('districtName')
   const wardName = watch('wardName')
@@ -55,7 +73,7 @@ const HouseForm = () => {
     }
   }
 
-  const onSubmit = (data: HouseFormData) => {
+  const onSubmit = (data: THouseFormData) => {
     if (!data.images || data.images.length < 3) {
       showToast({ title: 'Vui lòng tải lên ít nhất 3 hình ảnh', status: 'warning' })
       return
@@ -71,6 +89,20 @@ const HouseForm = () => {
 
   const handleImageUpload = (files: File[]) => {
     setValue('images', files)
+  }
+
+  const handleEstimatePropertyPrice = (data: THouseFormData) => {
+    const landFormData = convertHouseData(data)
+    if (!landFormData) return
+
+    estimatePropertyPriceMutation.mutate(landFormData, {
+      onSuccess: (response) => {
+        if (response && response.data) {
+          const roundedPrice = Math.round(response.data?.estimatedPrice)
+          setEstimatePrice(roundedPrice)
+        }
+      }
+    })
   }
 
   return (
@@ -90,7 +122,7 @@ const HouseForm = () => {
               districtName='districtName'
               wardName='wardName'
               streetName='streetName'
-              isLoading={isLoading}
+              isLoading={isLoading || isEstimatingPrice}
               onStreetNameChange={handleChangeStreetName}
             />
           </FormControl>
@@ -108,7 +140,7 @@ const HouseForm = () => {
               render={({ field }) => (
                 <CustomSelect
                   {...field}
-                  isDisabled={isLoading}
+                  isDisabled={isLoading || isEstimatingPrice}
                   options={FILTER_OPTION.houseType}
                   sx={{ width: '100%' }}
                   borderRadius='md'
@@ -130,7 +162,7 @@ const HouseForm = () => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
-                    isDisabled={isLoading}
+                    isDisabled={isLoading || isEstimatingPrice}
                     options={FILTER_OPTION.bedrooms}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -151,7 +183,7 @@ const HouseForm = () => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
-                    isDisabled={isLoading}
+                    isDisabled={isLoading || isEstimatingPrice}
                     options={FILTER_OPTION.toilets}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -174,7 +206,7 @@ const HouseForm = () => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
-                    isDisabled={isLoading}
+                    isDisabled={isLoading || isEstimatingPrice}
                     options={FILTER_OPTION.direction}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -199,7 +231,7 @@ const HouseForm = () => {
                     type='number'
                     placeholder='Tổng số tầng'
                     variant='outline'
-                    isDisabled={isLoading}
+                    isDisabled={isLoading || isEstimatingPrice}
                   />
                 )}
               />
@@ -219,7 +251,7 @@ const HouseForm = () => {
                   render={({ field }) => (
                     <CustomSelect
                       {...field}
-                      isDisabled={isLoading}
+                      isDisabled={isLoading || isEstimatingPrice}
                       options={FILTER_OPTION.propertyLegalDocuments}
                       sx={{ width: '100%' }}
                       borderRadius='md'
@@ -242,7 +274,7 @@ const HouseForm = () => {
                   render={({ field }) => (
                     <CustomSelect
                       {...field}
-                      isDisabled={isLoading}
+                      isDisabled={isLoading || isEstimatingPrice}
                       options={FILTER_OPTION.furnishedStatus}
                       sx={{ width: '100%' }}
                       borderRadius='md'
@@ -264,7 +296,7 @@ const HouseForm = () => {
                 control={control}
                 render={({ field: { value, onChange } }) => (
                   <CheckboxGroup
-                    isLoading={isLoading}
+                    isLoading={isLoading || isEstimatingPrice}
                     options={FILTER_OPTION.houseCharacteristics}
                     selectedValues={value?.map(String) || []}
                     filterType='houseCharacteristics'
@@ -303,7 +335,7 @@ const HouseForm = () => {
                   type='number'
                   placeholder='m²'
                   variant='outline'
-                  isDisabled={isLoading}
+                  isDisabled={isLoading || isEstimatingPrice}
                 />
               )}
             />
@@ -327,7 +359,7 @@ const HouseForm = () => {
                     type='number'
                     placeholder='m'
                     variant='outline'
-                    isDisabled={isLoading}
+                    isDisabled={isLoading || isEstimatingPrice}
                   />
                 )}
               />
@@ -350,7 +382,7 @@ const HouseForm = () => {
                     type='number'
                     placeholder='m'
                     variant='outline'
-                    isDisabled={isLoading}
+                    isDisabled={isLoading || isEstimatingPrice}
                   />
                 )}
               />
@@ -371,25 +403,40 @@ const HouseForm = () => {
                 <TextField
                   {...field}
                   size='md'
-                  type='number'
+                  type='Price'
                   placeholder='VNĐ'
                   variant='outline'
-                  isDisabled={isLoading}
+                  isDisabled={isLoading || isEstimatingPrice}
                 />
               )}
             />
             <FormErrorMessage>{errors.price?.message}</FormErrorMessage>
           </FormControl>
 
-          <Button
-            variant='primary'
-            my={6}
-            alignSelf='flex-end'
-            isLoading={isLoading}
-            isDisabled={isGetCoordinatesError}
-          >
-            Định giá
-          </Button>
+          <Flex alignItems='center' justifyContent='space-between'>
+            <Flex gap={4}>
+              {estimatePrice && (
+                <>
+                  <Heading variant='secondary'>Dự đoán giá của hệ thống: </Heading>
+                  <Text color={colors.brand.green} fontWeight='semibold'>
+                    {formatCurrency(estimatePrice)} VNĐ
+                  </Text>
+                </>
+              )}
+            </Flex>
+            <Button
+              variant='primary'
+              type='button'
+              my={6}
+              alignSelf='flex-end'
+              justifySelf='flex-end'
+              isLoading={isLoading || isEstimatingPrice}
+              isDisabled={isGetCoordinatesError}
+              onClick={() => handleEstimatePropertyPrice(getValues())}
+            >
+              Định giá
+            </Button>
+          </Flex>
         </Stack>
 
         <Stack gap={3}>
