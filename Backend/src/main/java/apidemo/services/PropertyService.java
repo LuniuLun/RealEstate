@@ -251,6 +251,7 @@ public class PropertyService {
     property.setTitle(propertyDetails.getTitle());
     property.setDescription(propertyDetails.getDescription());
     property.setRegion(propertyDetails.getRegion());
+    property.setDistrictName(propertyDetails.getDistrictName());
     property.setWardName(propertyDetails.getWardName());
     property.setStreetName(propertyDetails.getStreetName());
     property.setLongitude(propertyDetails.getLongitude());
@@ -294,6 +295,7 @@ public class PropertyService {
     requiredFields.put("Title", property.getTitle());
     requiredFields.put("Description", property.getDescription());
     requiredFields.put("Region", property.getRegion());
+    requiredFields.put("District name", property.getDistrictName());
     requiredFields.put("Ward name", property.getWardName());
     requiredFields.put("Street name", property.getStreetName());
     requiredFields.put("Longitude", property.getLongitude());

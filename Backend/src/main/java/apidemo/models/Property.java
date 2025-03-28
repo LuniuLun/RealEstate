@@ -39,6 +39,9 @@ public class Property {
   @Column(nullable = false, length = 50)
   private String region;
 
+  @Column(name = "district_name", nullable = false, length = 50)
+  private String districtName;
+
   @Column(name = "ward_name", nullable = false, length = 50)
   private String wardName;
 
@@ -161,6 +164,14 @@ public class Property {
 
   public void setRegion(String region) {
     this.region = region;
+  }
+
+  public String getDistrictName() {
+    return districtName;
+  }
+
+  public void setDistrictName(String districtName) {
+    this.districtName = districtName;
   }
 
   public String getWardName() {
