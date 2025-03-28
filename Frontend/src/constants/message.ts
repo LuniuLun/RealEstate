@@ -23,7 +23,9 @@ const MESSAGE = {
     GET_SUCCESS: 'Lấy danh sách bất động sản thành công',
     GET_FAILED: 'Không thể tải danh sách bất động sản',
     FILTER_SUCCESS: 'Lọc bất động sản thành công',
-    FILTER_FAILED: 'Lọc bất động sản thất bại'
+    FILTER_FAILED: 'Lọc bất động sản thất bại',
+    ESTIMATE_FAILED: 'Dự đoán giá thất bại',
+    ESTIMATE_SUCCESS: 'Dự đoán giá thành công'
   },
   common: {
     ERROR_EVENT: 'Chức năng chưa được hỗ trợ',
