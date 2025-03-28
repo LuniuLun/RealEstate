@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { Flex, Stack } from '@chakra-ui/react'
+import { Stack } from '@chakra-ui/react'
 import { ErrorBoundary } from '@components'
 import { ClientHeader } from '@layout/components/Header'
 import Footer from '@layout/components/Footer'
@@ -7,13 +7,11 @@ import Footer from '@layout/components/Footer'
 const DefaultLayout = () => {
   return (
     <ErrorBoundary>
-      <Flex>
-        <Stack w={{ base: '100%' }} bgColor='brand.grey' gap='unset'>
-          <ClientHeader />
-          <Outlet />
-          <Footer />
-        </Stack>
-      </Flex>
+      <Stack w={{ base: '100%' }} bgColor='brand.grey' gap='unset'>
+        <ClientHeader />
+        <Outlet />
+        <Footer />
+      </Stack>
     </ErrorBoundary>
   )
 }
