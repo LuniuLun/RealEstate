@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { authStore } from '@stores'
-import { AdminLayout, DefaultLayout } from '@layout'
+import { AdminLayout, DefaultLayout, PersonalLayout } from '@layout'
 import { RoleName } from '@type/models'
 import ProtectedRoute from './routes/ProtectedRoute'
 import Home from '@pages/Home/Home'
@@ -11,6 +11,7 @@ import Register from '@pages/Register'
 import Login from '@pages/Login'
 import DetailPost from '@pages/DetailPost'
 import NewProperty from '@pages/NewProperty'
+import Profile from '@pages/Profile'
 
 function App() {
   const { token } = authStore()
@@ -36,6 +37,20 @@ function App() {
       </Route>
       <Route path='register' element={<Register />} />
       <Route path='login' element={<Login />} />
+      <Route
+        element={
+          <ProtectedRoute
+            isAllowed={!!token}
+            userRoles={token?.user?.role?.name || RoleName.CUSTOMER}
+            requiredRole={RoleName.CUSTOMER || RoleName.BROKER}
+            redirectPath='/'
+          />
+        }
+      >
+        <Route path='personal' element={<PersonalLayout />}>
+          <Route index element={<Profile />} />
+        </Route>
+      </Route>
       <Route
         element={
           <ProtectedRoute
