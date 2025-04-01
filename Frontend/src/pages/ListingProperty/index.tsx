@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from 'react'
 import { Stack, Flex, Spinner, Text, Center, Heading } from '@chakra-ui/react'
 import { PropertyCard, Pagination } from '@components'
-import { filterStore } from '@stores'
+import { propertyFilterStore } from '@stores'
 import { FILTER_OPTION, ITEM_PER_PAGE } from '@constants/option'
 import { useGetProperty, useCustomToast } from '@hooks'
 import { useShallow } from 'zustand/shallow'
@@ -9,12 +9,13 @@ import { calculatePricePerSquareMeter, transformPriceUnit } from '@utils'
 
 const ListingProperty = () => {
   const { showToast } = useCustomToast()
-  const { itemsPerPage, currentPage } = filterStore(
+  const { itemsPerPage, currentPage } = propertyFilterStore(
     useShallow((state) => ({
       itemsPerPage: state.itemsPerPage,
       currentPage: state.currentPage
     }))
   )
+  const { setItemsPerPage, setCurrentPage } = propertyFilterStore()
 
   const { properties, propertiesQuery, totalProperties, isLoading, isError } = useGetProperty()
 
@@ -94,6 +95,10 @@ const ListingProperty = () => {
               hasNextPage={propertiesQuery.hasNextPage}
               itemsPerPageOptions={ITEM_PER_PAGE}
               isLoaded={!propertiesQuery.isFetching || !propertiesQuery.isFetchingNextPage}
+              currentPage={currentPage}
+              setCurrentPage={setItemsPerPage}
+              itemsPerPage={itemsPerPage}
+              setItemsPerPage={setCurrentPage}
             />
           </Flex>
         )}
