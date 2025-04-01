@@ -46,10 +46,10 @@ export const ADMIN_NAV_ITEMS = [
 ]
 
 export const USER_NAV_ITEMS = [
-  { path: '/personal', id: 'personal', title: 'Thông tin cá nhân' },
-  { path: '/my-report', id: 'myReport', title: 'Bài viết của tôi' },
-  { path: '/upgrade', id: 'upgrade', title: 'Nâng cấp' },
-  { path: '/transactions', id: 'transactions', title: 'Lịch sử giao dịch' }
+  { path: '', id: 'personal', title: 'Thông tin cá nhân' },
+  { path: 'my-posts', id: 'myPosts', title: 'Bài viết của tôi' },
+  { path: 'upgrade', id: 'upgrade', title: 'Nâng cấp' },
+  { path: 'transactions', id: 'transactions', title: 'Lịch sử giao dịch' }
 ]
 
 export const ITEM_PER_PAGE = [5, 10, 12, 20, 50]
