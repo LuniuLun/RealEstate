@@ -7,7 +7,7 @@ import ImageGallery from '@components/ImageGallery'
 
 const DetailPost = () => {
   const { id } = useParams()
-  const { property, isLoading, isError } = useGetPropertyById(id ?? '')
+  const { property, isLoading, isError } = useGetPropertyById(Number(id))
 
   if (isLoading || isError || !property) {
     return (
