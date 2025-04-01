@@ -3,17 +3,27 @@ import { Box, Flex } from '@chakra-ui/react'
 import { CustomSelect, TextField } from '@components'
 import { FilterIcon, SearchIcon } from '@assets/icons'
 import { debounce } from '@utils'
-import { filterStore } from '@stores'
 import { ISelectOption } from '@components/CustomSelect'
 
 interface IFilterProps {
   children?: ReactNode
   isLoaded?: boolean
   sortOptions: ISelectOption<string | number>[]
+  searchQuery: string
+  sortBy: string
+  setSearchQuery: (query: string) => void
+  setSortBy: (sort: string) => void
 }
 
-const Filter = ({ isLoaded = true, sortOptions, children }: IFilterProps) => {
-  const { searchQuery, sortBy, setSearchQuery, setSortBy } = filterStore()
+const Filter = ({
+  isLoaded = true,
+  sortOptions,
+  searchQuery,
+  sortBy,
+  setSearchQuery,
+  setSortBy,
+  children
+}: IFilterProps) => {
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery)
 
   const debouncedSearchQuery = useMemo(() => debounce((value: string) => setSearchQuery(value), 700), [setSearchQuery])
