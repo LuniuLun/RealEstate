@@ -12,7 +12,7 @@ import {
   Skeleton
 } from '@chakra-ui/react'
 import { EyeIcon, CloseEyeIcon } from '@assets/icons'
-import { formatCurrency } from '@utils'
+import { formatCurrency, parsePrice } from '@utils'
 
 export interface ITextFieldProps extends InputProps {
   icon?: React.ReactElement
@@ -39,18 +39,30 @@ const TextField = forwardRef<HTMLInputElement, ITextFieldProps>(
   ) => {
     const [showPassword, setShowPassword] = React.useState(false)
 
+    const getDisplayValue = () => {
+      if (type === 'price' && value) {
+        return formatCurrency(parsePrice(value as string))
+      }
+      return value as string
+    }
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      let newValue = e.target.value
+      if (!onChange) return
 
       if (type === 'price') {
-        const numericValue = newValue.replace(/\D/g, '')
-        newValue = formatCurrency(Number(numericValue))
-      }
+        const numericValue = e.target.value.replace(/\D/g, '')
+        const syntheticEvent = {
+          ...e,
+          target: {
+            ...e.target,
+            value: numericValue
+          }
+        }
 
-      onChange?.({
-        ...e,
-        target: { ...e.target, value: newValue }
-      })
+        onChange(syntheticEvent)
+      } else {
+        onChange(e)
+      }
     }
 
     const togglePasswordVisibility = () => {
@@ -95,7 +107,7 @@ const TextField = forwardRef<HTMLInputElement, ITextFieldProps>(
               placeholder={placeholder}
               variant={variant}
               size={size}
-              value={value}
+              value={getDisplayValue()}
               onChange={handleChange}
               disabled={isDisabled}
               type={type === 'password' ? (!showPassword ? 'password' : 'text') : 'text'}
