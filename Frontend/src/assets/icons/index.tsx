@@ -189,7 +189,7 @@ export const TrustingIcon = ({ width = '52', height = '54', fill = '#1A1A1A' }: 
   </svg>
 )
 
-export const LogoutIcon = ({ width = '24', height = '24', fill = '#e20000' }: IconProps) => (
+export const LogoutIcon = ({ width = '24', height = '24', fill = '#1A1A1A' }: IconProps) => (
   <svg fill={fill} width={width} height={height} id='Capa_1' viewBox='0 0 384.971 384.971' xmlSpace='preserve'>
     <g>
       <g id='Sign_Out'>
@@ -233,7 +233,7 @@ export const TransactionIcon = ({ width = '24', height = '24', fill = '#1A1A1A' 
 )
 
 export const UpgradeIcon = ({ width = '24', height = '24', fill = '#1A1A1A' }: IconProps) => (
-  <svg width={width} height={height} fill={fill} id='XMLID_122_' viewBox='0 0 24 24' enable-background='new 0 0 24 24'>
+  <svg width={width} height={height} fill={fill} id='XMLID_122_' viewBox='0 0 24 24' enableBackground='new 0 0 24 24'>
     <g id='upgrade'>
       <g>
         <path
