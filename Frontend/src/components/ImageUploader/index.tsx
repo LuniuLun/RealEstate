@@ -2,19 +2,22 @@ import { useState, useEffect } from 'react'
 import { Box, Button, Flex, Grid, Heading, IconButton, Image, Input, Stack, useToast } from '@chakra-ui/react'
 import { CloseIcon } from '@assets/icons'
 import { REGEX } from '@constants/regex'
+import { parseImagesString } from '@utils'
 
 interface IImageUploaderProps {
   label: string
   onUpload?: (files: File[]) => void
-  initialImages?: string[]
+  initialImages?: string
   isLoading?: boolean
 }
 
-const ImageUploader = ({ label, onUpload, initialImages = [], isLoading }: IImageUploaderProps) => {
+const ImageUploader = ({ label, onUpload, initialImages = '', isLoading }: IImageUploaderProps) => {
   const toast = useToast()
-  const [images, setImages] = useState<string[]>(initialImages)
+  // Khởi tạo state chỉ một lần từ prop initialImages (đã parse thành mảng)
+  const [images, setImages] = useState<string[]>(parseImagesString(initialImages))
   const [files, setFiles] = useState<File[]>([])
 
+  // Khi files thay đổi, gọi callback onUpload nếu có
   useEffect(() => {
     if (onUpload) {
       onUpload(files)
