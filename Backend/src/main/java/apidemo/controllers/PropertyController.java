@@ -58,6 +58,32 @@ public class PropertyController {
     }
   }
 
+  @GetMapping("/user/{userId}")
+  public ResponseEntity<?> getUserProperties(
+      @PathVariable Integer userId,
+      @RequestParam(required = false) Integer limit,
+      @RequestParam(required = false) Integer page,
+      @RequestParam(required = false) String sortBy,
+      @RequestParam(required = false) String typeOfSort,
+      @RequestParam(required = false) Map<String, String> filters) {
+    try {
+      if (filters != null) {
+        filters.remove("page");
+        filters.remove("limit");
+        filters.remove("sortBy");
+        filters.remove("typeOfSort");
+      }
+
+      Map<String, Object> result = propertyService.getPropertiesByUser(userId, limit, page, sortBy, typeOfSort,
+          filters);
+      return ResponseEntity.ok(result);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<?> getPropertyById(@PathVariable Integer id) {
     try {
@@ -148,34 +174,6 @@ public class PropertyController {
     }
   }
 
-  /**
-   * API endpoint để lấy số lượng bài viết theo trạng thái của người dùng hiện tại
-   * 
-   * @param status Trạng thái cần đếm (PENDING, APPROVAL, CANCELED)
-   * @return Số lượng bài viết
-   */
-  @GetMapping("/count/{status}/my")
-  public ResponseEntity<?> getMyPropertyCountByStatus(@PathVariable String status) {
-    try {
-      User currentUser = getCurrentUser();
-      Property.PropertyStatus propertyStatus = Property.PropertyStatus.valueOf(status.toUpperCase());
-      long count = propertyService.getCountPropertiesByStatusAndUser(propertyStatus, currentUser.getId());
-
-      Map<String, Long> result = new HashMap<>();
-      result.put("count", count);
-
-      return ResponseEntity.ok(result);
-    } catch (IllegalArgumentException e) {
-      Map<String, String> errorResponse = new HashMap<>();
-      errorResponse.put("message", "Invalid status value. Must be PENDING, APPROVAL, or CANCELED");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    } catch (RuntimeException e) {
-      Map<String, String> errorResponse = new HashMap<>();
-      errorResponse.put("message", e.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-    }
-  }
-
   @PostMapping
   public ResponseEntity<?> createProperty(
       @RequestParam("images") MultipartFile[] images,
@@ -235,6 +233,8 @@ public class PropertyController {
     try {
       // Parse property data from JSON
       ObjectMapper mapper = new ObjectMapper();
+      mapper.registerModule(new JavaTimeModule());
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       Property updatedProperty = mapper.readValue(propertyDataJson, Property.class);
 
       // Get current user and existing property
