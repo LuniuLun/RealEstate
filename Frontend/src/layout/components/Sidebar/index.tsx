@@ -16,19 +16,20 @@ import {
 import { useSidebar } from '@hooks'
 import { authStore } from '@stores'
 import { RoleName } from '@type/models'
+import colors from '@styles/variables/colors'
 
 const iconMap: Record<string, ElementType> = {
   dashboard: DashboardIcon,
   users: LeaderboardIcon,
   posts: PostIcon,
   personal: ProfileIcon,
-  myReport: PostIcon,
+  myPosts: PostIcon,
   upgrade: UpgradeIcon,
   transactions: TransactionIcon
 }
 
 const Sidebar = () => {
-  const [activeNavItem, setActiveNavItem] = useState<string>('dashboard')
+  const [activeNavItem, setActiveNavItem] = useState<string>('personal')
   const { isSidebarOpen, closeSidebar } = useSidebar()
   const { token } = authStore()
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -37,14 +38,14 @@ const Sidebar = () => {
   const NAV_ITEMS = token?.user?.role?.name === RoleName.ADMIN ? ADMIN_NAV_ITEMS : USER_NAV_ITEMS
 
   useEffect(() => {
-    const currentPath = location.pathname
-    const normalizedCurrentPath = currentPath.replace(/\/$/, '')
+    const currentPath = location.pathname.replace(/\/$/, '')
 
     const matchedItem = NAV_ITEMS.find((item) => {
-      return normalizedCurrentPath === item.path || normalizedCurrentPath.startsWith(item.path + '/')
+      const itemPath = `/personal/${item.path}`.replace('//', '/')
+      return currentPath === itemPath || currentPath.startsWith(itemPath + '/')
     })
 
-    setActiveNavItem(matchedItem ? matchedItem.id : 'dashboard')
+    setActiveNavItem(matchedItem ? matchedItem.id : 'personal')
   }, [location.pathname])
 
   useEffect(() => {
@@ -75,8 +76,9 @@ const Sidebar = () => {
         xl: 'translateX(0)'
       }}
       zIndex={1000}
-      width='300px'
       minH='100vh'
+      w='100%'
+      maxW='238px'
       padding='20px 0 40px'
       bgColor='white'
     >
@@ -92,7 +94,7 @@ const Sidebar = () => {
               icon={<Icon />}
               title={item.title}
               isActive={activeNavItem === item.id}
-              to={item.path}
+              to={`/personal/${item.path}`}
               onClick={() => closeSidebar()}
             />
           )
@@ -100,9 +102,8 @@ const Sidebar = () => {
       </Stack>
       <Button
         aria-label='log out'
-        leftIcon={<LogoutIcon />}
+        leftIcon={<LogoutIcon fill={colors.brand.red} />}
         alignSelf='flex-start'
-        mt={20}
         bg='transparent'
         borderRadius='full'
         size='sm'
