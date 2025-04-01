@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
-import { Controller, Control, FieldValues, Path } from 'react-hook-form'
+import { Controller, Control, FieldValues, Path, useWatch } from 'react-hook-form'
 import CustomSelect from '@components/CustomSelect'
 import TextField from '@components/TextField'
 import { Stack, FormControl, FormErrorMessage } from '@chakra-ui/react'
@@ -45,6 +45,9 @@ const AddressSelector = <T extends FieldValues>({
   const [currentCity, setCurrentCity] = useState<string>()
   const [currentDistrict, setCurrentDistrict] = useState<string>()
   const [currentWard, setCurrentWard] = useState<string>()
+  const cityValue = useWatch({ control, name: cityName })
+  const districtValue = useWatch({ control, name: districtName })
+  const wardValue = useWatch({ control, name: wardName })
 
   const debouncedStreetNameChange = useCallback(
     debounce((value: string) => {
@@ -56,7 +59,25 @@ const AddressSelector = <T extends FieldValues>({
   useEffect(() => {
     axios
       .get<City[]>('https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json')
-      .then((response) => setCities(response.data))
+      .then((response) => {
+        setCities(response.data)
+        if (cityValue) {
+          const selectedCity = response.data.find((city) => city.Name === cityValue)
+          setCurrentCity(selectedCity?.Id)
+          if (selectedCity) {
+            setDistricts(selectedCity.Districts)
+            if (districtValue) {
+              const selectedDistrict = selectedCity.Districts.find((district) => district.Name === districtValue)
+              setCurrentDistrict(selectedDistrict?.Id)
+              if (selectedDistrict) {
+                setWards(selectedDistrict.Wards)
+                const selectedWard = selectedDistrict.Wards.find((ward) => ward.Name === wardValue)
+                setCurrentWard(selectedWard?.Id)
+              }
+            }
+          }
+        }
+      })
       .catch((error) => console.error('Error fetching data:', error))
   }, [])
 
