@@ -12,8 +12,8 @@ import {
 } from '@chakra-ui/react'
 import { AddressSelector, CheckboxGroup, CustomSelect, ImageUploader, TextField } from '@components'
 import { FILTER_OPTION } from '@constants/option'
-import { CategoryName, TPostProperty } from '@type/models'
-import { useCustomToast } from '@hooks'
+import { CategoryName, IProperty, TPostProperty } from '@type/models'
+import { useCustomToast, useUpdateProperty } from '@hooks'
 import { useAddProperty } from '@hooks/UseProperty/useAddProperty'
 import { useGetCoordinates } from '@hooks/UseCoordinates/useGetCoordinates'
 import { useState } from 'react'
@@ -29,9 +29,16 @@ export type THouseFormData = Omit<TPostProperty, 'land'> & {
   floors: number
   toilets: number
   furnishedStatus: number
+  houseId?: number
+  propertyLegalDocument: number
+  initialImages: string
 }
 
-const HouseForm = () => {
+interface IHouseFormProps {
+  initialData?: IProperty | undefined
+}
+
+const HouseForm = ({ initialData }: IHouseFormProps) => {
   const {
     control,
     handleSubmit,
@@ -40,16 +47,33 @@ const HouseForm = () => {
     getValues,
     formState: { errors }
   } = useForm<THouseFormData>({
-    defaultValues: {
-      houseCharacteristics: [],
-      category: { id: 2, name: CategoryName.HOUSE },
-      region: '',
-      wardName: '',
-      streetName: ''
-    }
+    defaultValues: initialData
+      ? {
+          ...initialData,
+          bedrooms: initialData.house?.bedrooms,
+          floors: initialData.house?.floors,
+          toilets: initialData.house?.toilets,
+          furnishedStatus: initialData.house?.furnishedStatus?.id,
+          houseType: initialData.house?.houseType?.id,
+          propertyLegalDocument: initialData.propertyLegalDocument?.id,
+          houseId: initialData.house?.id,
+          houseCharacteristics:
+            initialData.house?.houseCharacteristicMappings?.map((char) => char.houseCharacteristic.id) || [],
+          images: [],
+          initialImages: initialData.images
+        }
+      : {
+          houseCharacteristics: [],
+          category: { id: 2, name: CategoryName.HOUSE },
+          region: '',
+          wardName: '',
+          streetName: ''
+        }
   })
+
   const { showToast } = useCustomToast()
-  const { transformHouseData, addPropertyMutation, isLoading } = useAddProperty()
+  const { transformHouseData, addPropertyMutation, isLoading: isAdding } = useAddProperty()
+  const { updatePropertyMutation, isLoading: isUpdating } = useUpdateProperty()
   const { getCoordinatesMutation, isError: isGetCoordinatesError } = useGetCoordinates()
   const { estimatePropertyPriceMutation, isLoading: isEstimatingPrice } = useEstimatePropertyPrice()
   const { convertHouseData } = useConvertPropertyData()
@@ -73,7 +97,7 @@ const HouseForm = () => {
   }
 
   const onSubmit = (data: THouseFormData) => {
-    if (!data.images || data.images.length < 3) {
+    if ((!data.images || data.images.length < 3) && !initialData?.images) {
       showToast({ title: 'Vui lòng tải lên ít nhất 3 hình ảnh', status: 'warning' })
       return
     }
@@ -83,11 +107,16 @@ const HouseForm = () => {
     }
     const houseFormData = transformHouseData(data)
     if (!houseFormData) return
+    if (initialData) {
+      updatePropertyMutation.mutate({ id: initialData.id, newProperty: houseFormData })
+      return
+    }
     addPropertyMutation.mutate(houseFormData)
   }
 
-  const handleImageUpload = (files: File[]) => {
+  const handleImageUpload = (files: File[], remainingInitialImages: string) => {
     setValue('images', files)
+    setValue('initialImages', remainingInitialImages)
   }
 
   const handleEstimatePropertyPrice = (data: THouseFormData) => {
@@ -107,7 +136,12 @@ const HouseForm = () => {
   return (
     <Flex w='100%' gap={4} as='form' onSubmit={handleSubmit(onSubmit)}>
       <FormControl flex={1} isInvalid={!!errors.images}>
-        <ImageUploader label='Hình ảnh sản phẩm' onUpload={handleImageUpload} />
+        <ImageUploader
+          label='Hình ảnh sản phẩm'
+          initialImages={initialData?.images}
+          onUpload={handleImageUpload}
+          isLoading={isAdding || isUpdating}
+        />
         <FormErrorMessage>{errors.images?.message}</FormErrorMessage>
       </FormControl>
 
@@ -121,7 +155,7 @@ const HouseForm = () => {
               districtName='districtName'
               wardName='wardName'
               streetName='streetName'
-              isLoading={isLoading || isEstimatingPrice}
+              isLoading={isAdding || isUpdating || isEstimatingPrice}
               onStreetNameChange={handleChangeStreetName}
             />
           </FormControl>
@@ -139,7 +173,7 @@ const HouseForm = () => {
               render={({ field }) => (
                 <CustomSelect
                   {...field}
-                  isDisabled={isLoading || isEstimatingPrice}
+                  isDisabled={isAdding || isUpdating || isEstimatingPrice}
                   options={FILTER_OPTION.houseType}
                   sx={{ width: '100%' }}
                   borderRadius='md'
@@ -161,7 +195,7 @@ const HouseForm = () => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
-                    isDisabled={isLoading || isEstimatingPrice}
+                    isDisabled={isAdding || isUpdating || isEstimatingPrice}
                     options={FILTER_OPTION.bedrooms}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -182,7 +216,7 @@ const HouseForm = () => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
-                    isDisabled={isLoading || isEstimatingPrice}
+                    isDisabled={isAdding || isUpdating || isEstimatingPrice}
                     options={FILTER_OPTION.toilets}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -205,7 +239,7 @@ const HouseForm = () => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
-                    isDisabled={isLoading || isEstimatingPrice}
+                    isDisabled={isAdding || isUpdating || isEstimatingPrice}
                     options={FILTER_OPTION.direction}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -230,7 +264,7 @@ const HouseForm = () => {
                     type='number'
                     placeholder='Tổng số tầng'
                     variant='outline'
-                    isDisabled={isLoading || isEstimatingPrice}
+                    isDisabled={isAdding || isUpdating || isEstimatingPrice}
                   />
                 )}
               />
@@ -240,6 +274,7 @@ const HouseForm = () => {
 
           <Stack gap={3}>
             <Heading variant='secondary'>Thông tin khác</Heading>
+
             <Flex gap={4}>
               <FormControl isInvalid={!!errors.propertyLegalDocument}>
                 <FormLabel>Giấy tờ pháp lý</FormLabel>
@@ -250,19 +285,16 @@ const HouseForm = () => {
                   render={({ field }) => (
                     <CustomSelect
                       {...field}
-                      isDisabled={isLoading || isEstimatingPrice}
+                      isDisabled={isAdding || isUpdating || isEstimatingPrice}
                       options={FILTER_OPTION.propertyLegalDocuments}
                       sx={{ width: '100%' }}
                       borderRadius='md'
                       border='full'
                       placeholder='Chọn loại giấy tờ'
-                      value={field.value?.id}
                     />
                   )}
                 />
-                <FormErrorMessage>
-                  {errors.propertyLegalDocument && errors.propertyLegalDocument.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.propertyLegalDocument?.message}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={!!errors.furnishedStatus}>
                 <FormLabel>Tình trạng nội thất</FormLabel>
@@ -273,7 +305,7 @@ const HouseForm = () => {
                   render={({ field }) => (
                     <CustomSelect
                       {...field}
-                      isDisabled={isLoading || isEstimatingPrice}
+                      isDisabled={isAdding || isUpdating || isEstimatingPrice}
                       options={FILTER_OPTION.furnishedStatus}
                       sx={{ width: '100%' }}
                       borderRadius='md'
@@ -283,9 +315,7 @@ const HouseForm = () => {
                     />
                   )}
                 />
-                <FormErrorMessage>
-                  {errors.propertyLegalDocument && errors.propertyLegalDocument.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.furnishedStatus?.message}</FormErrorMessage>
               </FormControl>
             </Flex>
             <FormControl>
@@ -295,7 +325,7 @@ const HouseForm = () => {
                 control={control}
                 render={({ field: { value, onChange } }) => (
                   <CheckboxGroup
-                    isLoading={isLoading || isEstimatingPrice}
+                    isLoading={isAdding || isUpdating || isEstimatingPrice}
                     options={FILTER_OPTION.houseCharacteristics}
                     selectedValues={value?.map(String) || []}
                     filterType='houseCharacteristics'
@@ -334,7 +364,7 @@ const HouseForm = () => {
                   type='number'
                   placeholder='m²'
                   variant='outline'
-                  isDisabled={isLoading || isEstimatingPrice}
+                  isDisabled={isAdding || isUpdating || isEstimatingPrice}
                 />
               )}
             />
@@ -358,7 +388,7 @@ const HouseForm = () => {
                     type='number'
                     placeholder='m'
                     variant='outline'
-                    isDisabled={isLoading || isEstimatingPrice}
+                    isDisabled={isAdding || isUpdating || isEstimatingPrice}
                   />
                 )}
               />
@@ -381,7 +411,7 @@ const HouseForm = () => {
                     type='number'
                     placeholder='m'
                     variant='outline'
-                    isDisabled={isLoading || isEstimatingPrice}
+                    isDisabled={isAdding || isUpdating || isEstimatingPrice}
                   />
                 )}
               />
@@ -402,10 +432,10 @@ const HouseForm = () => {
                 <TextField
                   {...field}
                   size='md'
-                  type='Price'
+                  type='price'
                   placeholder='VNĐ'
                   variant='outline'
-                  isDisabled={isLoading || isEstimatingPrice}
+                  isDisabled={isAdding || isUpdating || isEstimatingPrice}
                 />
               )}
             />
@@ -429,7 +459,7 @@ const HouseForm = () => {
               my={6}
               alignSelf='flex-end'
               justifySelf='flex-end'
-              isLoading={isLoading || isEstimatingPrice}
+              isLoading={isAdding || isUpdating || isEstimatingPrice}
               isDisabled={isGetCoordinatesError}
               onClick={() => handleEstimatePropertyPrice(getValues())}
             >
@@ -449,7 +479,13 @@ const HouseForm = () => {
                 minLength: { value: 10, message: 'Tiêu đề phải có ít nhất 10 ký tự' }
               }}
               render={({ field }) => (
-                <TextField {...field} size='md' placeholder='Nhập tiêu đề' variant='outline' isDisabled={isLoading} />
+                <TextField
+                  {...field}
+                  size='md'
+                  placeholder='Nhập tiêu đề'
+                  variant='outline'
+                  isDisabled={isAdding || isUpdating}
+                />
               )}
             />
             <FormErrorMessage>{errors.title?.message}</FormErrorMessage>
@@ -467,7 +503,7 @@ const HouseForm = () => {
               render={({ field }) => (
                 <Textarea
                   {...field}
-                  isDisabled={isLoading}
+                  isDisabled={isAdding || isUpdating}
                   border='1px solid'
                   borderColor='brand.sliver'
                   placeholder='Nhập mô tả'
@@ -485,7 +521,7 @@ const HouseForm = () => {
           type='submit'
           my={6}
           alignSelf='flex-end'
-          isLoading={isLoading}
+          isLoading={isAdding || isUpdating}
           isDisabled={isGetCoordinatesError}
         >
           Đăng tin
