@@ -12,8 +12,8 @@ import {
 } from '@chakra-ui/react'
 import { AddressSelector, CheckboxGroup, CustomSelect, ImageUploader, TextField } from '@components'
 import { FILTER_OPTION } from '@constants/option'
-import { CategoryName, TPostProperty } from '@type/models'
-import { useCustomToast } from '@hooks'
+import { CategoryName, IProperty, TPostProperty } from '@type/models'
+import { useCustomToast, useUpdateProperty } from '@hooks'
 import { useAddProperty } from '@hooks/UseProperty/useAddProperty'
 import { useGetCoordinates } from '@hooks/UseCoordinates/useGetCoordinates'
 import { useEstimatePropertyPrice } from '@hooks/UseProperty/useEstimatePropertyPrice'
@@ -25,9 +25,16 @@ export type TLandFormData = Omit<TPostProperty, 'house'> & {
   images: File[]
   landCharacteristics?: number[]
   landType: number
+  landId?: number
+  propertyLegalDocument: number
+  initialImages: string
 }
 
-const LandForm = () => {
+interface ILandFormProps {
+  initialData: IProperty | undefined
+}
+
+const LandForm = ({ initialData }: ILandFormProps) => {
   const {
     control,
     handleSubmit,
@@ -36,16 +43,29 @@ const LandForm = () => {
     getValues,
     formState: { errors }
   } = useForm<TLandFormData>({
-    defaultValues: {
-      landCharacteristics: [],
-      category: { id: 1, name: CategoryName.LAND },
-      region: '',
-      wardName: '',
-      streetName: ''
-    }
+    defaultValues: initialData
+      ? {
+          ...initialData,
+          landType: initialData.land?.landType?.id,
+          propertyLegalDocument: initialData.propertyLegalDocument?.id,
+          landId: initialData.land?.id,
+          landCharacteristics:
+            initialData.land?.landCharacteristicMappings?.map((char) => char.landCharacteristic.id) || [],
+          images: [],
+          initialImages: initialData.images
+        }
+      : {
+          landCharacteristics: [],
+          category: { id: 1, name: CategoryName.LAND },
+          region: '',
+          wardName: '',
+          streetName: ''
+        }
   })
+
   const { showToast } = useCustomToast()
-  const { transformLandData, addPropertyMutation, isLoading } = useAddProperty()
+  const { transformLandData, addPropertyMutation, isLoading: isAdding } = useAddProperty()
+  const { updatePropertyMutation, isLoading: isUpdating } = useUpdateProperty()
   const { estimatePropertyPriceMutation, isLoading: isEstimatingPrice } = useEstimatePropertyPrice()
   const { convertLandData } = useConvertPropertyData()
   const { getCoordinatesMutation, isError: isGetCoordinatesError } = useGetCoordinates()
@@ -69,7 +89,7 @@ const LandForm = () => {
   }
 
   const onSubmit = (data: TLandFormData) => {
-    if (!data.images || data.images.length < 3) {
+    if ((!data.images || data.images.length < 3) && !initialData?.images) {
       showToast({
         title: 'Vui lòng tải lên ít nhất 3 hình ảnh',
         status: 'error'
@@ -85,11 +105,16 @@ const LandForm = () => {
     }
     const landFormData = transformLandData(data)
     if (!landFormData) return
+    if (initialData) {
+      updatePropertyMutation.mutate({ id: initialData.id, newProperty: landFormData })
+      return
+    }
     addPropertyMutation.mutate(landFormData)
   }
 
-  const handleImageUpload = (files: File[]) => {
+  const handleImageUpload = (files: File[], remainingInitialImages: string) => {
     setValue('images', files)
+    setValue('initialImages', remainingInitialImages)
   }
 
   const handleEstimatePropertyPrice = (data: TLandFormData) => {
@@ -109,7 +134,12 @@ const LandForm = () => {
   return (
     <Flex w='100%' gap={4} as='form' onSubmit={handleSubmit(onSubmit)}>
       <FormControl flex={1}>
-        <ImageUploader label='Hình ảnh sản phẩm' onUpload={handleImageUpload} isLoading={isLoading} />
+        <ImageUploader
+          label='Hình ảnh sản phẩm'
+          initialImages={initialData?.images}
+          onUpload={handleImageUpload}
+          isLoading={isAdding || isUpdating}
+        />
       </FormControl>
 
       <Stack flex={2} gap={4}>
@@ -122,7 +152,7 @@ const LandForm = () => {
               districtName='districtName'
               wardName='wardName'
               streetName='streetName'
-              isLoading={isLoading || isEstimatingPrice}
+              isLoading={isAdding || isUpdating || isEstimatingPrice}
               onStreetNameChange={handleChangeStreetName}
             />
           </FormControl>
@@ -130,6 +160,7 @@ const LandForm = () => {
 
         <Stack gap={3}>
           <Heading variant='secondary'>Thông tin chi tiết</Heading>
+
           <FormControl isInvalid={!!errors.landType}>
             <FormLabel>Loại hình đất</FormLabel>
             <Controller
@@ -139,7 +170,7 @@ const LandForm = () => {
               render={({ field }) => (
                 <CustomSelect
                   {...field}
-                  isDisabled={isLoading || isEstimatingPrice}
+                  isDisabled={isAdding || isUpdating || isEstimatingPrice}
                   options={FILTER_OPTION.landType}
                   sx={{ width: '100%' }}
                   borderRadius='md'
@@ -148,7 +179,7 @@ const LandForm = () => {
                 />
               )}
             />
-            <FormErrorMessage>{errors.landType && errors.landType.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.landType?.message}</FormErrorMessage>
           </FormControl>
 
           <FormControl isInvalid={!!errors.direction}>
@@ -160,7 +191,7 @@ const LandForm = () => {
               render={({ field }) => (
                 <CustomSelect
                   {...field}
-                  isDisabled={isLoading}
+                  isDisabled={isAdding || isUpdating}
                   options={FILTER_OPTION.direction}
                   sx={{ width: '100%' }}
                   borderRadius='md'
@@ -169,12 +200,13 @@ const LandForm = () => {
                 />
               )}
             />
-            <FormErrorMessage>{errors.direction && errors.direction.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.direction?.message}</FormErrorMessage>
           </FormControl>
         </Stack>
 
         <Stack gap={3}>
           <Heading variant='secondary'>Thông tin khác</Heading>
+
           <FormControl isInvalid={!!errors.propertyLegalDocument}>
             <FormLabel>Giấy tờ pháp lý</FormLabel>
             <Controller
@@ -184,17 +216,16 @@ const LandForm = () => {
               render={({ field }) => (
                 <CustomSelect
                   {...field}
-                  isDisabled={isLoading || isEstimatingPrice}
+                  isDisabled={isAdding || isUpdating || isEstimatingPrice}
                   options={FILTER_OPTION.propertyLegalDocuments}
                   sx={{ width: '100%' }}
                   borderRadius='md'
                   border='full'
                   placeholder='Chọn loại giấy tờ'
-                  value={field.value?.id}
                 />
               )}
             />
-            <FormErrorMessage>{errors.propertyLegalDocument && errors.propertyLegalDocument.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.propertyLegalDocument?.message}</FormErrorMessage>
           </FormControl>
 
           <FormControl>
@@ -202,23 +233,25 @@ const LandForm = () => {
             <Controller
               name='landCharacteristics'
               control={control}
-              render={({ field: { value, onChange } }) => (
-                <CheckboxGroup
-                  isLoading={isLoading || isEstimatingPrice}
-                  options={FILTER_OPTION.landCharacteristics}
-                  selectedValues={value?.map(String) || []}
-                  filterType='landCharacteristics'
-                  onValueChange={(val) => {
-                    const currentValues = value || []
-                    const numVal = Number(val)
-                    onChange(
-                      currentValues.includes(numVal)
-                        ? currentValues.filter((v) => v !== numVal)
-                        : [...currentValues, numVal]
-                    )
-                  }}
-                />
-              )}
+              render={({ field: { value, onChange } }) => {
+                return (
+                  <CheckboxGroup
+                    isLoading={isAdding || isUpdating || isEstimatingPrice}
+                    options={FILTER_OPTION.landCharacteristics}
+                    selectedValues={(value || []).map(String)}
+                    filterType='landCharacteristics'
+                    onValueChange={(val) => {
+                      const currentValues = value || []
+                      const numVal = Number(val)
+                      onChange(
+                        currentValues.includes(numVal)
+                          ? currentValues.filter((v) => v !== numVal)
+                          : [...currentValues, numVal]
+                      )
+                    }}
+                  />
+                )
+              }}
             />
           </FormControl>
         </Stack>
@@ -241,7 +274,7 @@ const LandForm = () => {
                   type='number'
                   placeholder='m²'
                   variant='outline'
-                  isDisabled={isLoading || isEstimatingPrice}
+                  isDisabled={isAdding || isUpdating || isEstimatingPrice}
                 />
               )}
             />
@@ -265,7 +298,7 @@ const LandForm = () => {
                     type='number'
                     placeholder='m'
                     variant='outline'
-                    isDisabled={isLoading || isEstimatingPrice}
+                    isDisabled={isAdding || isUpdating || isEstimatingPrice}
                   />
                 )}
               />
@@ -288,7 +321,7 @@ const LandForm = () => {
                     type='number'
                     placeholder='m'
                     variant='outline'
-                    isDisabled={isLoading || isEstimatingPrice}
+                    isDisabled={isAdding || isUpdating || isEstimatingPrice}
                   />
                 )}
               />
@@ -312,11 +345,11 @@ const LandForm = () => {
                   type='price'
                   placeholder='VNĐ'
                   variant='outline'
-                  isDisabled={isLoading || isEstimatingPrice}
+                  isDisabled={isAdding || isUpdating || isEstimatingPrice}
                 />
               )}
             />
-            <FormErrorMessage>{errors.price && errors.price.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.price?.message}</FormErrorMessage>
           </FormControl>
           <Flex alignItems='center' justifyContent='space-between'>
             <Flex gap={4}>
@@ -335,7 +368,7 @@ const LandForm = () => {
               my={6}
               alignSelf='flex-end'
               justifySelf='flex-end'
-              isLoading={isLoading || isEstimatingPrice}
+              isLoading={isAdding || isUpdating || isEstimatingPrice}
               isDisabled={isGetCoordinatesError}
               onClick={() => handleEstimatePropertyPrice(getValues())}
             >
@@ -355,7 +388,13 @@ const LandForm = () => {
                 minLength: { value: 10, message: 'Tiêu đề phải có ít nhất 10 ký tự' }
               }}
               render={({ field }) => (
-                <TextField {...field} size='md' placeholder='Nhập tiêu đề' variant='outline' isDisabled={isLoading} />
+                <TextField
+                  {...field}
+                  size='md'
+                  placeholder='Nhập tiêu đề'
+                  variant='outline'
+                  isDisabled={isAdding || isUpdating}
+                />
               )}
             />
             <FormErrorMessage>{errors.title && errors.title.message}</FormErrorMessage>
@@ -378,7 +417,7 @@ const LandForm = () => {
                   placeholder='Nhập mô tả'
                   rows={5}
                   sx={{ _hover: { borderColor: 'brand.sliver' } }}
-                  isDisabled={isLoading}
+                  isDisabled={isAdding || isUpdating}
                 />
               )}
             />
@@ -391,10 +430,10 @@ const LandForm = () => {
           type='submit'
           my={6}
           alignSelf='flex-end'
-          isLoading={isLoading}
+          isLoading={isAdding || isUpdating}
           isDisabled={isGetCoordinatesError}
         >
-          Đăng tin
+          {initialData ? 'Cập nhật' : 'Đăng tin'}
         </Button>
       </Stack>
     </Flex>
