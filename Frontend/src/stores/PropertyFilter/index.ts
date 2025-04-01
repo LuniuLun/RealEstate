@@ -1,7 +1,8 @@
+import { PropertyStatus } from '@type/models'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export interface FilterCriteria {
+export interface PropertyFilterCriteria {
   minPrice: number
   maxPrice: number
   minArea: number
@@ -11,6 +12,7 @@ export interface FilterCriteria {
   direction?: number
   category?: number
   furnishedStatus?: number
+  status: PropertyStatus | undefined
   landType?: number
   houseType?: number
   houseCharacteristics?: number[]
@@ -22,22 +24,22 @@ export interface FilterCriteria {
   }
 }
 
-export interface FilterState {
+export interface PropertyFilterState {
   searchQuery: string
   sortBy: string
   itemsPerPage: number
   currentPage: number
-  filterCriteria: FilterCriteria
+  propertyFilterCriteria: PropertyFilterCriteria
 
   setCurrentPage: (currentPage: number) => void
   setItemsPerPage: (itemsPerPage: number) => void
   setSearchQuery: (query: string) => void
   setSortBy: (sort: string) => void
-  setFilterCriteria: (criteria: Partial<FilterCriteria>) => void
+  setPropertyFilterCriteria: (criteria: Partial<PropertyFilterCriteria>) => void
   resetFilters: () => void
 }
 
-const initialFilterCriteria: FilterCriteria = {
+const initialPropertyFilterCriteria: PropertyFilterCriteria = {
   minPrice: 0,
   maxPrice: 0,
   minArea: 0,
@@ -45,8 +47,9 @@ const initialFilterCriteria: FilterCriteria = {
   bedrooms: undefined,
   toilets: undefined,
   direction: undefined,
-  category: 1,
+  category: -1,
   furnishedStatus: undefined,
+  status: undefined,
   landType: undefined,
   houseType: undefined,
   houseCharacteristics: [],
@@ -58,14 +61,14 @@ const initialFilterCriteria: FilterCriteria = {
   }
 }
 
-const filterStore = create<FilterState>()(
+const propertyFilterStore = create<PropertyFilterState>()(
   persist(
     (set) => ({
       searchQuery: '',
       sortBy: '',
       itemsPerPage: 12,
       currentPage: 0,
-      filterCriteria: initialFilterCriteria,
+      propertyFilterCriteria: initialPropertyFilterCriteria,
 
       setCurrentPage: (currentPage: number) => set(() => ({ currentPage })),
 
@@ -93,26 +96,26 @@ const filterStore = create<FilterState>()(
           return {}
         }),
 
-      setFilterCriteria: (criteria: Partial<FilterCriteria>) =>
+      setPropertyFilterCriteria: (criteria: Partial<PropertyFilterCriteria>) =>
         set((state) => {
-          const newFilterCriteria = {
-            ...state.filterCriteria,
+          const newPropertyFilterCriteria = {
+            ...state.propertyFilterCriteria,
             ...criteria,
             location: criteria.location
-              ? { ...state.filterCriteria.location, ...criteria.location }
-              : state.filterCriteria.location,
-            houseCharacteristics: criteria.houseCharacteristics ?? state.filterCriteria.houseCharacteristics,
-            landCharacteristics: criteria.landCharacteristics ?? state.filterCriteria.landCharacteristics
+              ? { ...state.propertyFilterCriteria.location, ...criteria.location }
+              : state.propertyFilterCriteria.location,
+            houseCharacteristics: criteria.houseCharacteristics ?? state.propertyFilterCriteria.houseCharacteristics,
+            landCharacteristics: criteria.landCharacteristics ?? state.propertyFilterCriteria.landCharacteristics
           }
           return {
-            filterCriteria: newFilterCriteria,
+            propertyFilterCriteria: newPropertyFilterCriteria,
             currentPage: 0
           }
         }),
 
       resetFilters: () =>
         set(() => ({
-          filterCriteria: initialFilterCriteria,
+          propertyFilterCriteria: initialPropertyFilterCriteria,
           currentPage: 0
         }))
     }),
@@ -125,4 +128,4 @@ const filterStore = create<FilterState>()(
   )
 )
 
-export default filterStore
+export default propertyFilterStore
