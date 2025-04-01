@@ -9,13 +9,18 @@ import {
   TPostProperty
 } from '@type/models'
 import { authStore } from '@stores'
-import { FilterCriteria } from '@stores/PropertyFilter'
+import { PropertyFilterCriteria } from '@stores/PropertyFilter'
 import { IFilterOptions } from '@type/filterOptions'
+import { PersonalPropertyFilterCriteria } from '@stores/PersonalPropertyFilter'
 
 const baseUrl = `${import.meta.env.VITE_APP_BASE_URL}${import.meta.env.VITE_APP_PROPERTY_ENDPOINT}`
 
 export interface EnhancedFilterOptions extends IFilterOptions {
-  filterCriteria?: FilterCriteria
+  propertyFilterCriteria?: PropertyFilterCriteria
+}
+
+export interface EnhancedPersonalFilterOptions extends IFilterOptions {
+  personalPropertyFilterCriteria?: PersonalPropertyFilterCriteria
 }
 
 export const fetchProperties = async (
@@ -33,19 +38,17 @@ export const fetchProperties = async (
       typeOfSort = 'desc',
       limit = '12',
       page = '1',
-      filterCriteria
+      propertyFilterCriteria
     } = params
 
     const calledUrl = new URL(baseUrl)
     calledUrl.searchParams.append('page', page)
     calledUrl.searchParams.append('limit', limit)
 
-    // Add basic property and value if provided
     if (property && value) {
       calledUrl.searchParams.append(property, value)
     }
 
-    // Add sorting parameters
     if (sortBy) {
       calledUrl.searchParams.append('sortBy', sortBy)
       calledUrl.searchParams.append('typeOfSort', typeOfSort)
@@ -54,77 +57,68 @@ export const fetchProperties = async (
       calledUrl.searchParams.append('typeOfSort', 'desc')
     }
 
-    // Add complex filter criteria if provided
-    if (filterCriteria) {
-      // Price range
-      if (filterCriteria.minPrice && filterCriteria.minPrice > 0) {
-        calledUrl.searchParams.append('minPrice', (filterCriteria.minPrice * 1_000_000_000).toString())
+    if (propertyFilterCriteria) {
+      if (propertyFilterCriteria.minPrice && propertyFilterCriteria.minPrice > 0) {
+        calledUrl.searchParams.append('minPrice', (propertyFilterCriteria.minPrice * 1_000_000_000).toString())
       }
-      if (filterCriteria.maxPrice && filterCriteria.maxPrice > 0) {
-        calledUrl.searchParams.append('maxPrice', (filterCriteria.maxPrice * 1_000_000_000).toString())
+      if (propertyFilterCriteria.maxPrice && propertyFilterCriteria.maxPrice > 0) {
+        calledUrl.searchParams.append('maxPrice', (propertyFilterCriteria.maxPrice * 1_000_000_000).toString())
       }
 
-      // Area range
-      if (filterCriteria.minArea && filterCriteria.minArea > 0) {
-        calledUrl.searchParams.append('minArea', filterCriteria.minArea.toString())
+      if (propertyFilterCriteria.minArea && propertyFilterCriteria.minArea > 0) {
+        calledUrl.searchParams.append('minArea', propertyFilterCriteria.minArea.toString())
       }
-      if (filterCriteria.maxArea && filterCriteria.maxArea > 0) {
-        calledUrl.searchParams.append('maxArea', filterCriteria.maxArea.toString())
-      }
-
-      // Bedrooms
-      if (filterCriteria.bedrooms !== undefined) {
-        calledUrl.searchParams.append('bedrooms', filterCriteria.bedrooms.toString())
+      if (propertyFilterCriteria.maxArea && propertyFilterCriteria.maxArea > 0) {
+        calledUrl.searchParams.append('maxArea', propertyFilterCriteria.maxArea.toString())
       }
 
-      // Direction
-      if (filterCriteria.direction !== undefined) {
-        calledUrl.searchParams.append('direction', filterCriteria.direction.toString())
+      if (propertyFilterCriteria.bedrooms !== undefined) {
+        calledUrl.searchParams.append('bedrooms', propertyFilterCriteria.bedrooms.toString())
       }
 
-      // Property type
-      if (filterCriteria.category !== undefined && filterCriteria.category > 0) {
-        calledUrl.searchParams.append('category', filterCriteria.category.toString())
+      if (propertyFilterCriteria.direction !== undefined) {
+        calledUrl.searchParams.append('direction', propertyFilterCriteria.direction.toString())
       }
 
-      // Furnished status
-      if (filterCriteria.furnishedStatus !== undefined) {
-        calledUrl.searchParams.append('furnishedStatus', filterCriteria.furnishedStatus.toString())
+      if (propertyFilterCriteria.category !== undefined && propertyFilterCriteria.category > 0) {
+        calledUrl.searchParams.append('category', propertyFilterCriteria.category.toString())
       }
 
-      // Land type
-      if (filterCriteria.landType !== undefined) {
-        calledUrl.searchParams.append('landType', filterCriteria.landType.toString())
+      if (propertyFilterCriteria.furnishedStatus !== undefined) {
+        calledUrl.searchParams.append('furnishedStatus', propertyFilterCriteria.furnishedStatus.toString())
       }
 
-      // House type
-      if (filterCriteria.houseType !== undefined) {
-        calledUrl.searchParams.append('houseType', filterCriteria.houseType.toString())
+      if (propertyFilterCriteria.status !== undefined) {
+        calledUrl.searchParams.append('status', propertyFilterCriteria.status.toString())
       }
 
-      // House features (Array)
-      if (filterCriteria.houseCharacteristics?.length) {
-        calledUrl.searchParams.append('houseCharacteristics', filterCriteria.houseCharacteristics.join(','))
+      if (propertyFilterCriteria.landType !== undefined) {
+        calledUrl.searchParams.append('landType', propertyFilterCriteria.landType.toString())
       }
 
-      // Land features (Array)
-      if (filterCriteria.landCharacteristics?.length) {
-        calledUrl.searchParams.append('landCharacteristics', filterCriteria.landCharacteristics.join(','))
+      if (propertyFilterCriteria.houseType !== undefined) {
+        calledUrl.searchParams.append('houseType', propertyFilterCriteria.houseType.toString())
       }
 
-      // Location filters
-      if (filterCriteria.location?.province) {
-        calledUrl.searchParams.append('province', filterCriteria.location.province)
+      if (propertyFilterCriteria.houseCharacteristics?.length) {
+        calledUrl.searchParams.append('houseCharacteristics', propertyFilterCriteria.houseCharacteristics.join(','))
       }
-      if (filterCriteria.location?.district) {
-        calledUrl.searchParams.append('district', filterCriteria.location.district)
+
+      if (propertyFilterCriteria.landCharacteristics?.length) {
+        calledUrl.searchParams.append('landCharacteristics', propertyFilterCriteria.landCharacteristics.join(','))
       }
-      if (filterCriteria.location?.ward) {
-        calledUrl.searchParams.append('ward', filterCriteria.location.ward)
+
+      if (propertyFilterCriteria.location?.province) {
+        calledUrl.searchParams.append('province', propertyFilterCriteria.location.province)
+      }
+      if (propertyFilterCriteria.location?.district) {
+        calledUrl.searchParams.append('district', propertyFilterCriteria.location.district)
+      }
+      if (propertyFilterCriteria.location?.ward) {
+        calledUrl.searchParams.append('ward', propertyFilterCriteria.location.ward)
       }
     }
 
-    // If user is not admin, only show APPROVAL status properties
     const user = authStore.getState().token?.user
     if (!user || !(user.role.name === RoleName.ADMIN)) {
       calledUrl.searchParams.append('status', 'APPROVAL')
@@ -154,8 +148,78 @@ export const fetchProperties = async (
     }
   }
 }
+export const fetchPersonalProperties = async (
+  userId: number | undefined,
+  params: EnhancedPersonalFilterOptions = {
+    page: '1',
+    limit: '5',
+    typeOfSort: 'desc'
+  }
+): Promise<IApiResponse<IProperty[]>> => {
+  try {
+    const {
+      property = '',
+      value = '',
+      sortBy = '',
+      typeOfSort = 'desc',
+      limit = '5',
+      page = '1',
+      personalPropertyFilterCriteria
+    } = params
 
-export const fetchPropertyById = async (id: string): Promise<IApiResponse<IProperty>> => {
+    const calledUrl = new URL(`${baseUrl}/user/${userId}`)
+    const token = authStore.getState().token?.token
+
+    calledUrl.searchParams.append('page', page)
+    calledUrl.searchParams.append('limit', limit)
+
+    if (property && value) {
+      calledUrl.searchParams.append(property, value)
+    }
+
+    if (sortBy) {
+      calledUrl.searchParams.append('sortBy', sortBy)
+      calledUrl.searchParams.append('typeOfSort', typeOfSort)
+    } else {
+      calledUrl.searchParams.append('sortBy', 'createdAt')
+      calledUrl.searchParams.append('typeOfSort', 'desc')
+    }
+
+    if (personalPropertyFilterCriteria?.status) {
+      calledUrl.searchParams.append('status', personalPropertyFilterCriteria.status)
+    }
+
+    const response = await fetch(calledUrl.toString(), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : ''
+      }
+    })
+
+    if (!response.ok) {
+      return {
+        status: 'error',
+        message: MESSAGE.property.GET_FAILED
+      }
+    }
+
+    const data = await response.json()
+
+    return {
+      status: 'success',
+      message: MESSAGE.property.GET_SUCCESS,
+      data
+    }
+  } catch (error: unknown) {
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
+    }
+  }
+}
+
+export const fetchPropertyById = async (id: number): Promise<IApiResponse<IProperty>> => {
   try {
     const response = await fetch(`${baseUrl}/${id}`)
 
@@ -181,7 +245,6 @@ export const fetchPropertyById = async (id: string): Promise<IApiResponse<IPrope
   }
 }
 
-// Keep existing functions unchanged
 export const fetchPropertyCounts = async (): Promise<IApiResponse<IPropertyStatistic>> => {
   try {
     const response = await fetch(`${baseUrl}/counts`)
@@ -275,7 +338,6 @@ export const estimatePropertyPrice = async (
   property: TPostProperty
 ): Promise<IApiResponse<IEstimatePropertyResult>> => {
   const token = authStore.getState().token?.token
-  console.log(property)
   try {
     const response = await fetch(`${baseUrl}/estimate-price`, {
       method: 'POST',
@@ -287,7 +349,6 @@ export const estimatePropertyPrice = async (
     })
 
     const data = await response.json()
-    console.log(data)
 
     if (!response.ok) {
       return {
@@ -309,17 +370,25 @@ export const estimatePropertyPrice = async (
   }
 }
 
-export const editProperty = async (newProperty: IProperty): Promise<IApiResponse<IProperty>> => {
+export const updateProperty = async (id: number, newProperty: FormData): Promise<IApiResponse<IProperty>> => {
   try {
-    if (!newProperty.id) {
+    const token = authStore.getState().token?.token
+
+    if (!id) {
       throw new Error('Property ID is required for editing.')
     }
 
-    const response = await fetch(`${baseUrl}/${newProperty.id}`, {
+    const response = await fetch(`${baseUrl}/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newProperty)
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: newProperty
     })
+
+    const data = await response.json()
+    console.log(data)
+    console.log(data?.message)
 
     if (!response.ok) {
       return {
@@ -328,7 +397,6 @@ export const editProperty = async (newProperty: IProperty): Promise<IApiResponse
       }
     }
 
-    const data = await response.json()
     return {
       status: 'success',
       message: MESSAGE.property.EDIT_SUCCESS,
