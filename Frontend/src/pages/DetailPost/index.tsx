@@ -1,13 +1,39 @@
 import { useParams } from 'react-router-dom'
-import { Box, Flex, Heading, Text, Stack, IconButton, Spinner } from '@chakra-ui/react'
+import { Box, Flex, Heading, Text, Stack, IconButton, Spinner, Badge } from '@chakra-ui/react'
 import { HeartIcon, LocationIcon } from '@assets/icons'
 import { ContactInfo, PropertyDetails } from '@components'
+import { useEstimatePropertyPrice } from '@hooks/UseProperty/useEstimatePropertyPrice'
+import { useEffect, useState } from 'react'
+import { RoleName } from '@type/models'
+import { formatCurrency } from '@utils'
 import useGetPropertyById from '@hooks/UseProperty/useGetPropertyById'
 import ImageGallery from '@components/ImageGallery'
+import useAuthStore from '@stores/Authentication'
 
 const DetailPost = () => {
   const { id } = useParams()
   const { property, isLoading, isError } = useGetPropertyById(Number(id))
+  const { token } = useAuthStore()
+  const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null)
+
+  const {
+    estimatePropertyPriceMutation,
+    isError: isErrorEstimate,
+    isLoading: isEstimateLoading
+  } = useEstimatePropertyPrice()
+
+  useEffect(() => {
+    if (property && token && (token.user.role.name === RoleName.BROKER || token.user.role.name === RoleName.ADMIN)) {
+      estimatePropertyPriceMutation.mutate(property, {
+        onSuccess: (response) => {
+          if (response.data) {
+            const roundedPrice = Math.round(response.data?.estimatedPrice)
+            setEstimatedPrice(roundedPrice)
+          }
+        }
+      })
+    }
+  }, [property, token])
 
   if (isLoading || isError || !property) {
     return (
@@ -15,7 +41,9 @@ const DetailPost = () => {
         {isLoading ? (
           <Spinner size='xl' color='brand.primary' />
         ) : (
-          <Text>Không thể tải thông tin. Vui lòng thử lại sau.</Text>
+          <Heading variant='secondary' color='brand.red' p={10}>
+            Không tìm thấy thông tin bài viết
+          </Heading>
         )}
       </Flex>
     )
@@ -48,10 +76,29 @@ const DetailPost = () => {
             </Flex>
           </Box>
 
-          <PropertyDetails property={property} />
+          <Box mb={4}>
+            <PropertyDetails property={property} />
 
-          <Box>
-            <Heading variant='secondary' mb={2}>
+            <Box mb={4} p={2} borderRadius='md' bg='gray.50'>
+              <Flex align='center' gap={2}>
+                <Text fontWeight='bold'>Hệ thống định giá:</Text>
+                {token?.user.role.name === RoleName.BROKER || token?.user.role.name === RoleName.ADMIN ? (
+                  isEstimateLoading ? (
+                    <Text>Hệ thống đang định giá...</Text>
+                  ) : estimatedPrice ? (
+                    <Badge colorScheme='red' fontSize='md' p={1}>
+                      {formatCurrency(estimatedPrice)} VNĐ
+                    </Badge>
+                  ) : isErrorEstimate ? (
+                    <Text color='red.500'>Lỗi định giá</Text>
+                  ) : null
+                ) : (
+                  <Text>Nâng cấp tài khoản để sử dụng chức năng này</Text>
+                )}
+              </Flex>
+            </Box>
+
+            <Heading variant='secondary' my={2}>
               Mô tả chi tiết
             </Heading>
             <Text>{property.description}</Text>
