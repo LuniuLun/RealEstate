@@ -1,11 +1,11 @@
 import { Box, Flex, Heading, Stack, useDisclosure } from '@chakra-ui/react'
-import { FILTER_OPTION, ITEM_PER_PAGE, SORT_PROPERTY_OPTION } from '@constants/option'
+import { ITEM_PER_PAGE, SORT_PROPERTY_OPTION } from '@constants/option'
 import { useCustomToast, useDeleteProperty, useGetPropertyByUser } from '@hooks'
 import { personalPropertyFilterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CustomTable, Filter, Pagination, WarningModal } from '@components'
-import { transformPriceUnit } from '@utils'
+import { propertySummaryTable } from '@utils'
 import { useNavigate } from 'react-router-dom'
 
 const MyPosts = () => {
@@ -70,17 +70,7 @@ const MyPosts = () => {
   }
 
   const dataTable = useMemo(() => {
-    const transformedData =
-      properties?.map((property) => ({
-        id: property.id,
-        'Loại hình': FILTER_OPTION.category[property.category.id - 1].label,
-        'Tiêu đề': property.title,
-        'Vị trí': `${property.streetName}, ${property.wardName}, ${property.districtName}, ${property.region}`,
-        'Diện tích': property.area,
-        Giá: transformPriceUnit(property.price),
-        'Trạng thái': property.status,
-        'Cập nhập': new Date(property.createdAt).toLocaleDateString()
-      })) || []
+    const transformedData = properties?.map(propertySummaryTable) || []
 
     return transformedData.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
   }, [properties, currentPage, itemsPerPage])
