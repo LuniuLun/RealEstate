@@ -13,6 +13,7 @@ import DetailPost from '@pages/DetailPost'
 import PropertyForm from '@pages/PropertyForm'
 import Profile from '@pages/Profile'
 import MyPosts from '@pages/MyPosts'
+import Upgrade from '@pages/Upgrade'
 
 function App() {
   const { token } = authStore()
@@ -35,6 +36,7 @@ function App() {
         >
           <Route path='new-property' element={<PropertyForm />} />
           <Route path='my-posts/update/:id' element={<PropertyForm />} />
+          <Route path='upgrade' element={<Upgrade />} />
         </Route>
       </Route>
       <Route path='register' element={<Register />} />
