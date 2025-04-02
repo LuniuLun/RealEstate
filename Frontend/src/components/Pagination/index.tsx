@@ -58,7 +58,6 @@ const Pagination = ({
     }
   }
 
-  // Đảm bảo hiển thị chính xác khoảng items
   const startItem = totalItems === 0 ? 0 : currentPage * itemsPerPage + 1
   const endItem = Math.min((currentPage + 1) * itemsPerPage, totalItems)
 
