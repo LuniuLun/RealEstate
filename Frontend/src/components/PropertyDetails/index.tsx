@@ -19,7 +19,7 @@ const BasePropertyDetails = ({ property }: BasePropertyDetailsProps) => {
   const formattedDate = new Date(property.updatedAt).toLocaleDateString('vi-VN')
 
   return (
-    <Box bg='brand.secondary' p={4} borderRadius='lg' mb={6}>
+    <Box bg='brand.secondary' p={4} borderRadius='lg' mb={2}>
       <Flex align='center' justifyContent='space-between' mb={4}>
         <Heading variant='secondary'>Thông tin chi tiết</Heading>
         <Text fontSize='sm' color='brand.blackTextSecondary'>
