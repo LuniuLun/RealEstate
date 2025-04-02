@@ -374,10 +374,6 @@ export const updateProperty = async (id: number, newProperty: FormData): Promise
   try {
     const token = authStore.getState().token?.token
 
-    if (!id) {
-      throw new Error('Property ID is required for editing.')
-    }
-
     const response = await fetch(`${baseUrl}/${id}`, {
       method: 'PUT',
       headers: {
@@ -387,8 +383,6 @@ export const updateProperty = async (id: number, newProperty: FormData): Promise
     })
 
     const data = await response.json()
-    console.log(data)
-    console.log(data?.message)
 
     if (!response.ok) {
       return {
@@ -410,10 +404,15 @@ export const updateProperty = async (id: number, newProperty: FormData): Promise
   }
 }
 
-export const deleteProperty = async (id: string): Promise<IApiResponse<IProperty>> => {
+export const deleteProperty = async (id: number): Promise<IApiResponse<IProperty>> => {
   try {
+    const token = authStore.getState().token?.token
+
     const response = await fetch(`${baseUrl}/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     })
 
     if (!response.ok) {
@@ -423,11 +422,9 @@ export const deleteProperty = async (id: string): Promise<IApiResponse<IProperty
       }
     }
 
-    const data = await response.json()
     return {
       status: 'success',
-      message: MESSAGE.property.DELETE_SUCCESS,
-      data
+      message: MESSAGE.property.DELETE_SUCCESS
     }
   } catch (error: unknown) {
     return {
