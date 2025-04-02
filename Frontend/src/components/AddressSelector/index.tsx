@@ -52,7 +52,7 @@ const AddressSelector = <T extends FieldValues>({
   const debouncedStreetNameChange = useCallback(
     debounce((value: string) => {
       onStreetNameChange?.(value)
-    }, 1500),
+    }, 10000),
     [onStreetNameChange]
   )
 
