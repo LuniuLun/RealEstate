@@ -51,6 +51,10 @@ const MESSAGE = {
   coordinates: {
     GET_SUCCESS: 'Lấy toạ độ thành công',
     GET_FAILED: 'Không tồn tại vị trí này'
+  },
+  payment: {
+    GET_SUCCESS: 'Khởi tạo cổng thanh toán thành công',
+    GET_FAILED: 'Không thể khởi tạo cổng thanh toán'
   }
 }
 
