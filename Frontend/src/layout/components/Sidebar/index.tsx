@@ -10,8 +10,7 @@ import {
   PersonalIcon,
   PostIcon,
   ProfileIcon,
-  TransactionIcon,
-  UpgradeIcon
+  TransactionIcon
 } from '@assets/icons'
 import { useSidebar } from '@hooks'
 import { authStore } from '@stores'
@@ -24,7 +23,6 @@ const iconMap: Record<string, ElementType> = {
   posts: PostIcon,
   personal: ProfileIcon,
   myPosts: PostIcon,
-  upgrade: UpgradeIcon,
   transactions: TransactionIcon
 }
 

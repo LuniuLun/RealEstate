@@ -48,7 +48,6 @@ export const ADMIN_NAV_ITEMS = [
 export const USER_NAV_ITEMS = [
   { path: '', id: 'personal', title: 'Thông tin cá nhân' },
   { path: 'my-posts', id: 'myPosts', title: 'Bài viết của tôi' },
-  { path: 'upgrade', id: 'upgrade', title: 'Nâng cấp' },
   { path: 'transactions', id: 'transactions', title: 'Lịch sử giao dịch' }
 ]
 
