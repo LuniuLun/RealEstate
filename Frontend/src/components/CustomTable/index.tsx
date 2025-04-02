@@ -34,7 +34,7 @@ const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, ...props }: ICus
   if (!data || (data.length === 0 && isLoaded)) {
     return (
       <Heading variant='secondary' color='brand.red'>
-        No data found
+        Dữ liệu không tồn tại
       </Heading>
     )
   }
