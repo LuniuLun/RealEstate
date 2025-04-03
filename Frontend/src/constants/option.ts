@@ -1,4 +1,5 @@
 import { ISelectOption } from '@components/CustomSelect'
+import { PropertyStatus } from '@type/models'
 
 export const SORT_USER_OPTION: ISelectOption<string>[] = [
   { value: 'firstName', label: 'Name' },
@@ -60,6 +61,11 @@ export const USER_NAV_ITEMS = [
 export const ITEM_PER_PAGE = [5, 10, 12, 20, 50]
 
 export const FILTER_OPTION = {
+  status: [
+    { value: PropertyStatus.PENDING, label: 'Chờ duyệt' },
+    { value: PropertyStatus.APPROVAL, label: 'Đã duyệt' },
+    { value: PropertyStatus.CANCELED, label: 'Đã đóng' }
+  ],
   location: [{ value: '43', label: 'Đà Nẵng' }],
   category: [
     { value: 1, label: 'Đất' },
