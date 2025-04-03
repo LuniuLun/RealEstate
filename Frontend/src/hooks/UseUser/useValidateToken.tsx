@@ -7,7 +7,7 @@ const useValidateToken = (): (() => boolean) => {
   const { showToast } = useCustomToast()
 
   return () => {
-    if (!token || !token.user) {
+    if (!token || !token.user || !token.user.id) {
       showToast({ status: 'error', title: MESSAGE.common.REQUIRE_USER })
       return false
     }
