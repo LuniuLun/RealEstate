@@ -459,3 +459,37 @@ export const deleteProperty = async (id: number): Promise<IApiResponse<IProperty
     }
   }
 }
+
+export const updateStatusProperty = async (id: number, status: PropertyStatus): Promise<IApiResponse<IProperty>> => {
+  try {
+    const token = authStore.getState().token?.token
+
+    const response = await fetch(`${baseUrl}/properties/${id}/status?status=${encodeURIComponent(status)}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      return {
+        status: 'error',
+        message: MESSAGE.property.EDIT_FAILED
+      }
+    }
+
+    return {
+      status: 'success',
+      message: MESSAGE.property.EDIT_SUCCESS,
+      data
+    }
+  } catch (error: unknown) {
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
+    }
+  }
+}
