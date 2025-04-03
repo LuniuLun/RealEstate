@@ -17,6 +17,7 @@ export { default as useGetPropertyByUser } from './UseProperty/useGetPropertyByU
 export { default as useGetPropertyById } from './UseProperty/useGetPropertyById'
 export { default as useUpdateProperty } from './UseProperty/useUpdateProperty'
 export { default as useDeleteProperty } from './UseProperty/useDeleteProperty'
+export { default as usePropertyByUserStatistic } from './UseProperty/usePropertyByUserStatistic'
 
 export { default as useVNPayMutation } from './UsePayment/useGetVNPayUrl'
 
