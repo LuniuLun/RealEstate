@@ -1,16 +1,21 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query'
 import { updateUser } from '@services/user'
 import { IUser } from '@type/models'
 import { useCustomToast } from '@hooks'
 import useAuthStore from '@stores/Authentication'
 import MESSAGE from '@constants/message'
+import { IApiResponse } from '@type/apiResponse'
 
-const useEditProfile = () => {
+interface UseUpdateProfileReturn {
+  updateProfileMutation: UseMutationResult<IApiResponse<IUser>, Error, IUser>
+}
+
+const useUpdateProfile = (): UseUpdateProfileReturn => {
   const queryClient = useQueryClient()
   const { showToast } = useCustomToast()
   const storeToken = useAuthStore((state) => state.storeToken)
 
-  return useMutation({
+  const updateProfileMutation = useMutation({
     mutationFn: (userData: IUser) => updateUser(userData),
     onSuccess: (response) => {
       if (response.status === 'success' && response.data) {
@@ -42,6 +47,8 @@ const useEditProfile = () => {
       })
     }
   })
+
+  return { updateProfileMutation }
 }
 
-export default useEditProfile
+export default useUpdateProfile

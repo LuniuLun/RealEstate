@@ -10,7 +10,7 @@ const Profile = () => {
   const { data, isLoading, isError } = useGetCurrentUser()
   const { showToast } = useCustomToast()
   const [defaultUser, setDefaultUser] = useState<IUser | undefined>()
-  const editProfileMutation = useUpdateProfile()
+  const { updateProfileMutation } = useUpdateProfile()
 
   const {
     register,
@@ -43,7 +43,7 @@ const Profile = () => {
       return
     }
 
-    editProfileMutation.mutate(formData)
+    updateProfileMutation.mutate(formData)
   }
 
   if ((isError || !data) && !isLoading) {
@@ -63,7 +63,7 @@ const Profile = () => {
           </FormLabel>
           <TextField
             isLoaded={!isLoading}
-            isDisabled={editProfileMutation.isPending}
+            isDisabled={updateProfileMutation.isPending}
             id='fullName'
             size='md'
             placeholder='Họ và tên'
@@ -104,7 +104,7 @@ const Profile = () => {
           </FormLabel>
           <TextField
             isLoaded={!isLoading}
-            isDisabled={editProfileMutation.isPending}
+            isDisabled={updateProfileMutation.isPending}
             id='email'
             size='md'
             placeholder='Email'
@@ -121,7 +121,7 @@ const Profile = () => {
           </FormLabel>
           <TextField
             isLoaded={!isLoading}
-            isDisabled={editProfileMutation.isPending}
+            isDisabled={updateProfileMutation.isPending}
             id='phone'
             size='md'
             placeholder='Số điện thoại'
@@ -149,7 +149,7 @@ const Profile = () => {
         maxW='200px'
         alignSelf='flex-end'
         isDisabled={isLoading}
-        isLoading={isSubmitting || editProfileMutation.isPending}
+        isLoading={isSubmitting || updateProfileMutation.isPending}
       >
         Lưu thay đổi
       </Button>
