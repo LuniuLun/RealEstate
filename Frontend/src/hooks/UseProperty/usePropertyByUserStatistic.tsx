@@ -8,7 +8,7 @@ interface UsePropertyStatisticReturn {
   isError: boolean
 }
 
-const usePropertyStatistic = (userId: number | undefined): UsePropertyStatisticReturn => {
+const usePropertyByUserStatistic = (userId: number | undefined): UsePropertyStatisticReturn => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['propertyStatistics', userId],
     queryFn: async () => {
@@ -25,4 +25,4 @@ const usePropertyStatistic = (userId: number | undefined): UsePropertyStatisticR
   }
 }
 
-export default usePropertyStatistic
+export default usePropertyByUserStatistic
