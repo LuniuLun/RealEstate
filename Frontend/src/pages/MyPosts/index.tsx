@@ -9,14 +9,15 @@ import { propertySummaryTable } from '@utils'
 import { useNavigate } from 'react-router-dom'
 
 const MyPosts = () => {
-  const { itemsPerPage, currentPage } = personalPropertyFilterStore(
+  const { itemsPerPage, currentPage, searchQuery, sortBy } = personalPropertyFilterStore(
     useShallow((state) => ({
       itemsPerPage: state.itemsPerPage,
-      currentPage: state.currentPage
+      currentPage: state.currentPage,
+      searchQuery: state.searchQuery,
+      sortBy: state.sortBy
     }))
   )
-  const { setItemsPerPage, setCurrentPage, searchQuery, sortBy, setSearchQuery, setSortBy } =
-    personalPropertyFilterStore()
+  const { setItemsPerPage, setCurrentPage, setSearchQuery, setSortBy } = personalPropertyFilterStore()
   const { properties, propertiesQuery, totalProperties, isError, infinitePropertyQueryKey } = useGetPropertyByUser()
   const { deletePropertyMutation } = useDeleteProperty(infinitePropertyQueryKey)
   const { isOpen: isWarningModalOpen, onOpen: onOpenWarningModal, onClose: onCloseWarningModal } = useDisclosure()
