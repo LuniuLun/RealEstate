@@ -117,6 +117,22 @@ public class PropertyController {
     }
   }
 
+  @GetMapping("/counts/user/{userId}")
+  public ResponseEntity<?> getPropertyCountsByUser(@PathVariable int userId) {
+    try {
+      Map<String, Long> counts = new HashMap<>();
+      counts.put("pending", propertyService.getCountPropertiesByUserAndStatus(userId, PropertyStatus.PENDING));
+      counts.put("approved", propertyService.getCountPropertiesByUserAndStatus(userId, PropertyStatus.APPROVAL));
+      counts.put("canceled", propertyService.getCountPropertiesByUserAndStatus(userId, PropertyStatus.CANCELED));
+
+      return ResponseEntity.ok(counts);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+  }
+
   /**
    * API endpoint để lấy số lượng bài viết theo trạng thái cụ thể
    * 
