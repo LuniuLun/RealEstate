@@ -370,4 +370,9 @@ public class PropertyService {
     return propertyRepository.countByStatusAndCategory_id(status, categoryId);
   }
 
+  public long getCountPropertiesByUserAndStatus(int userId, PropertyStatus status) {
+    userService.getUserById(userId);
+    return propertyRepository.countByUser_idAndStatus(userId, status);
+  }
+
 }
