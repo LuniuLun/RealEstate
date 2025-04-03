@@ -72,31 +72,31 @@ export const fetchProperties = async (
         calledUrl.searchParams.append('maxArea', propertyFilterCriteria.maxArea.toString())
       }
 
-      if (propertyFilterCriteria.bedrooms !== undefined) {
+      if (propertyFilterCriteria.bedrooms) {
         calledUrl.searchParams.append('bedrooms', propertyFilterCriteria.bedrooms.toString())
       }
 
-      if (propertyFilterCriteria.direction !== undefined) {
+      if (propertyFilterCriteria.direction) {
         calledUrl.searchParams.append('direction', propertyFilterCriteria.direction.toString())
       }
 
-      if (propertyFilterCriteria.category !== undefined && propertyFilterCriteria.category > 0) {
+      if (propertyFilterCriteria.category && propertyFilterCriteria.category > 0) {
         calledUrl.searchParams.append('category', propertyFilterCriteria.category.toString())
       }
 
-      if (propertyFilterCriteria.furnishedStatus !== undefined) {
+      if (propertyFilterCriteria.furnishedStatus) {
         calledUrl.searchParams.append('furnishedStatus', propertyFilterCriteria.furnishedStatus.toString())
       }
 
-      if (propertyFilterCriteria.status !== undefined) {
+      if (propertyFilterCriteria.status) {
         calledUrl.searchParams.append('status', propertyFilterCriteria.status.toString())
       }
 
-      if (propertyFilterCriteria.landType !== undefined) {
+      if (propertyFilterCriteria.landType) {
         calledUrl.searchParams.append('landType', propertyFilterCriteria.landType.toString())
       }
 
-      if (propertyFilterCriteria.houseType !== undefined) {
+      if (propertyFilterCriteria.houseType) {
         calledUrl.searchParams.append('houseType', propertyFilterCriteria.houseType.toString())
       }
 
