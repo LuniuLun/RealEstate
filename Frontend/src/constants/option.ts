@@ -45,9 +45,10 @@ export const MODULE_PERMISSION = [
 ]
 
 export const ADMIN_NAV_ITEMS = [
-  { path: '/dashboard', id: 'dashboard', title: 'Thống kê' },
-  { path: '/users', id: 'users', title: 'Tài khoản' },
-  { path: '/posts', id: 'posts', title: 'Bài viết' }
+  { path: '', id: 'personal', title: 'Thông tin cá nhân' },
+  { path: 'posts', id: 'posts', title: 'Bài viết' },
+  { path: 'users', id: 'users', title: 'Tài khoản' },
+  { path: 'dashboard', id: 'dashboard', title: 'Thống kê' }
 ]
 
 export const USER_NAV_ITEMS = [
