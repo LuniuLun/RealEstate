@@ -54,7 +54,19 @@ const MESSAGE = {
   },
   payment: {
     GET_SUCCESS: 'Khởi tạo cổng thanh toán thành công',
-    GET_FAILED: 'Không thể khởi tạo cổng thanh toán'
+    GET_FAILED: 'Không thể khởi tạo cổng thanh toán',
+    PAY_SUCCESS: 'Thanh toán thành công',
+    PAY_FAILED: 'Thanh toán không thành công'
+  },
+  transaction: {
+    ADD_SUCCESS: 'Tạo giao dịch thành công',
+    ADD_FAILED: 'Tạo giao dịch thất bại',
+    UPDATE_SUCCESS: 'Cập nhật giao dịch thành công',
+    UPDATE_FAILED: 'Cập nhật giao dịch thất bại',
+    DELETE_SUCCESS: 'Xóa giao dịch thành công',
+    DELETE_FAILED: 'Xóa giao dịch thất bại',
+    GET_SUCCESS: 'Lấy danh sách giao dịch thành công',
+    GET_FAILED: 'Không thể tải danh sách giao dịch'
   }
 }
 
