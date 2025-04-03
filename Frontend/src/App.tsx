@@ -15,6 +15,7 @@ import Profile from '@pages/Profile'
 import MyPosts from '@pages/MyPosts'
 import Upgrade from '@pages/Upgrade'
 import TransactionHistory from '@pages/TransactionHistory'
+import AllPosts from '@pages/AllPosts'
 
 function App() {
   const { token } = authStore()
@@ -47,7 +48,7 @@ function App() {
           <ProtectedRoute
             isAllowed={!!token}
             userRoles={token?.user?.role?.name}
-            requiredRole={[RoleName.CUSTOMER, RoleName.BROKER]}
+            requiredRole={[RoleName.CUSTOMER, RoleName.BROKER, RoleName.ADMIN]}
             redirectPath='/'
           />
         }
@@ -56,6 +57,18 @@ function App() {
           <Route index element={<Profile />} />
           <Route path='my-posts' element={<MyPosts />} />
           <Route path='transactions' element={<TransactionHistory />} />
+          <Route
+            element={
+              <ProtectedRoute
+                isAllowed={!!token}
+                userRoles={token?.user?.role?.name}
+                requiredRole={[RoleName.ADMIN]}
+                redirectPath='/'
+              />
+            }
+          >
+            <Route path='posts' element={<AllPosts />} />
+          </Route>
           <Route
             element={
               <ProtectedRoute
