@@ -1,11 +1,11 @@
 import React, { ReactNode, useState, useCallback, memo, useMemo } from 'react'
-import { Box, Flex } from '@chakra-ui/react'
+import { Flex, FlexProps } from '@chakra-ui/react'
 import { CustomSelect, TextField } from '@components'
-import { FilterIcon, SearchIcon } from '@assets/icons'
+import { SearchIcon } from '@assets/icons'
 import { debounce } from '@utils'
 import { ISelectOption } from '@components/CustomSelect'
 
-interface IFilterProps {
+interface IFilterProps extends FlexProps {
   children?: ReactNode
   isLoaded?: boolean
   sortOptions: ISelectOption<string | number>[]
@@ -22,7 +22,8 @@ const Filter = ({
   sortBy,
   setSearchQuery,
   setSortBy,
-  children
+  children,
+  ...props
 }: IFilterProps) => {
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery)
 
@@ -53,7 +54,7 @@ const Filter = ({
   )
 
   return (
-    <Flex gap={8} alignItems='center' flexDirection={{ base: 'column', md: 'row' }}>
+    <Flex gap={8} alignItems='center' flexDirection={{ base: 'column', md: 'row' }} {...props}>
       <TextField
         icon={<SearchIcon />}
         variant='outline'
@@ -77,9 +78,6 @@ const Filter = ({
           aria-label='sort'
           bgColor='brand.white'
         />
-        <Box w='19px'>
-          <FilterIcon />
-        </Box>
       </Flex>
     </Flex>
   )
