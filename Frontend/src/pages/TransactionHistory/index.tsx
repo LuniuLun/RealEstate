@@ -1,5 +1,5 @@
 import MESSAGE from '@constants/message'
-import { useAddTransaction, useCustomToast, useGetTransactionByUser, useValidateToken } from '@hooks'
+import { useAddTransaction, useCustomToast, useGetTransactionByUser, useUpgradeUser, useValidateToken } from '@hooks'
 import { VnpayPaymentStatus } from '@type/vnpayPaymentStatus'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useShallow } from 'zustand/shallow'
@@ -27,6 +27,7 @@ const TransactionHistory = () => {
   )
   const { setItemsPerPage, setCurrentPage, setSearchQuery, setSortBy } = transactionFilterStore()
   const { transactions, transactionsQuery, totalTransactions, isError } = useGetTransactionByUser()
+  const { upgradeUserMutation } = useUpgradeUser()
   const { addTransactionMutation } = useAddTransaction()
   const navigate = useNavigate()
   const location = useLocation()
@@ -43,26 +44,43 @@ const TransactionHistory = () => {
       hasProcessedTransaction.current = true
 
       if (isSuccess) {
+        const userId = token?.user?.id
         const newTransaction: TPostTransaction = {
           user: token?.user as IUser,
           transactionType: TransactionType.UPGRADE,
           amount: Number(amount) / 100
         }
 
-        addTransactionMutation.mutate(newTransaction, {
-          onSuccess: () => {
+        Promise.all([
+          new Promise((resolve, reject) => {
+            addTransactionMutation.mutate(newTransaction, {
+              onSuccess: resolve,
+              onError: reject
+            })
+          }),
+          new Promise((resolve, reject) => {
+            if (userId) {
+              upgradeUserMutation.mutate(userId, {
+                onSuccess: resolve,
+                onError: reject
+              })
+            } else {
+              reject(new Error('Người dùng không tồn tại'))
+            }
+          })
+        ])
+          .then(() => {
             showToast({
               status: 'success',
               title: MESSAGE.payment.PAY_SUCCESS
             })
-          },
-          onError: () => {
+          })
+          .catch(() => {
             showToast({
               status: 'error',
               title: MESSAGE.payment.PAY_FAILED
             })
-          }
-        })
+          })
       } else {
         showToast({
           status: 'error',
@@ -97,7 +115,7 @@ const TransactionHistory = () => {
         setSortBy={setSortBy}
       />
       <Box>
-        <CustomTable data={dataTable} title='Lịch sử giao dịch của tôi' isLoaded={!transactionsQuery.isFetching} />
+        <CustomTable data={dataTable} title='Giao dịch của tôi' isLoaded={!transactionsQuery.isFetching} />
 
         <Flex justifyContent='center' mt={4}>
           <Pagination
