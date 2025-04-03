@@ -70,7 +70,7 @@ export const FILTER_OPTION = {
   category: [
     { value: 1, label: 'Đất' },
     { value: 2, label: 'Nhà' },
-    { value: -1, label: 'Tất cả' }
+    { value: null, label: 'Tất cả' }
   ],
   landType: [
     { value: 1, label: 'Đất thổ cư' },
@@ -92,7 +92,8 @@ export const FILTER_OPTION = {
     { value: 5, label: 'Đông Bắc' },
     { value: 6, label: 'Đông Nam' },
     { value: 7, label: 'Tây Bắc' },
-    { value: 8, label: 'Tây Nam' }
+    { value: 8, label: 'Tây Nam' },
+    { value: null, label: 'Tất cả' }
   ],
   landCharacteristics: [
     { value: 1, label: 'Mặt tiền' },

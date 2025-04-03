@@ -80,7 +80,7 @@ export const fetchProperties = async (
         calledUrl.searchParams.append('direction', propertyFilterCriteria.direction.toString())
       }
 
-      if (propertyFilterCriteria.category && propertyFilterCriteria.category > 0) {
+      if (propertyFilterCriteria.category) {
         calledUrl.searchParams.append('category', propertyFilterCriteria.category.toString())
       }
 
