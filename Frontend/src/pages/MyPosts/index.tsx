@@ -89,6 +89,13 @@ const MyPosts = () => {
 
   return (
     <Stack mt={6} gap={6}>
+      <Filter
+        sortOptions={SORT_PROPERTY_OPTION}
+        searchQuery={searchQuery}
+        sortBy={sortBy}
+        setSearchQuery={setSearchQuery}
+        setSortBy={setSortBy}
+      />
       <Flex gap={4} flexDirection={{ base: 'column', md: 'row' }}>
         <Flex gap={4} w='100%'>
           <StatisticCard label='Chờ duyệt' value={propertyStatistics?.pending || 0} isLoaded={!isLoadingStats} />
@@ -99,14 +106,6 @@ const MyPosts = () => {
           <StatisticCard label='Tổng bài viết' value={totalProperties} isLoaded={!propertiesQuery.isFetching} />
         </Flex>
       </Flex>
-
-      <Filter
-        sortOptions={SORT_PROPERTY_OPTION}
-        searchQuery={searchQuery}
-        sortBy={sortBy}
-        setSearchQuery={setSearchQuery}
-        setSortBy={setSortBy}
-      />
       <Box>
         <CustomTable
           data={dataTable}
