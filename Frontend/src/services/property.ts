@@ -271,6 +271,32 @@ export const fetchPropertyCounts = async (): Promise<IApiResponse<IPropertyStati
   }
 }
 
+export const fetchPropertyByUserCounts = async (userId: number): Promise<IApiResponse<IPropertyStatistic>> => {
+  try {
+    const response = await fetch(`${baseUrl}/counts/user/${userId}`)
+
+    if (!response.ok) {
+      return {
+        status: 'error',
+        message: MESSAGE.property.GET_FAILED
+      }
+    }
+
+    const data = await response.json()
+
+    return {
+      status: 'success',
+      message: MESSAGE.property.GET_SUCCESS,
+      data
+    }
+  } catch (error: unknown) {
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
+    }
+  }
+}
+
 export const fetchPropertyCountsByCategoryAndStatus = async (
   status: PropertyStatus,
   categoryId: number
