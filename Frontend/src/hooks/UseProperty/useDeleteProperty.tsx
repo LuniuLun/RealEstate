@@ -4,6 +4,7 @@ import { IProperty } from '@type/models'
 import { IApiResponse } from '@type/apiResponse'
 import { updateInfiniteCache } from '@utils'
 import removeItemFromArray from '@utils/RemoveItemFromArray'
+import useAuthStore from '@stores/Authentication'
 
 interface PropertyPageData {
   properties: IProperty[]
@@ -12,7 +13,7 @@ interface PropertyPageData {
 
 const useDeleteProperty = (queryKey: unknown[]) => {
   const queryClient = useQueryClient()
-
+  const { token } = useAuthStore()
   const deletePropertyMutation = useMutation<IApiResponse<IProperty>, Error, number>({
     mutationFn: deleteProperty,
     onSuccess: (response, id) => {
@@ -27,6 +28,11 @@ const useDeleteProperty = (queryKey: unknown[]) => {
             }
           }
         })
+        if (token) {
+          queryClient.invalidateQueries({
+            queryKey: ['propertyStatistics', token.user.id]
+          })
+        }
       }
     }
   })
