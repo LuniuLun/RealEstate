@@ -1,4 +1,4 @@
-import { IProperty } from '@type/models' // Import IProperty interface
+import { IProperty } from '@type/models'
 import { FILTER_OPTION } from '@constants/option'
 import { transformPriceUnit } from '@utils'
 
@@ -10,7 +10,7 @@ const propertySummaryTable = (property: IProperty) => ({
   'Diện tích': property.area,
   Giá: transformPriceUnit(property.price),
   'Trạng thái': property.status,
-  'Cập nhập': new Date(property.createdAt).toLocaleDateString()
+  'Cập nhập': new Date(property.updatedAt).toLocaleDateString()
 })
 
 export default propertySummaryTable
