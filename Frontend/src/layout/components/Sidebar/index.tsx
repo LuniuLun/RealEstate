@@ -29,7 +29,7 @@ const iconMap: Record<string, ElementType> = {
 const Sidebar = () => {
   const [activeNavItem, setActiveNavItem] = useState<string>('personal')
   const { isSidebarOpen, closeSidebar } = useSidebar()
-  const { token } = authStore()
+  const { token, logout } = authStore()
   const sidebarRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
   const isTablet = useBreakpointValue({ base: true, xl: false })
@@ -107,6 +107,7 @@ const Sidebar = () => {
         size='sm'
         color='brand.red'
         _hover={{ bg: 'transparent' }}
+        onClick={logout}
       >
         Đăng xuất
       </Button>
