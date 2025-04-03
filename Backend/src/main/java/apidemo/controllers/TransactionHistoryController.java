@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -36,9 +35,9 @@ public class TransactionHistoryController {
         filters.remove("typeOfSort");
       }
 
-      List<TransactionHistory> transactions = transactionService.getAllTransactions(
+      Map<String, Object> response = transactionService.getAllTransactions(
           limit, page, sortBy, typeOfSort, filters);
-      return ResponseEntity.ok(transactions);
+      return ResponseEntity.ok(response);
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
@@ -73,9 +72,9 @@ public class TransactionHistoryController {
         filters.remove("typeOfSort");
       }
 
-      List<TransactionHistory> transactions = transactionService.getTransactionsByUserId(userId, limit, page, sortBy,
-          typeOfSort, filters);
-      return ResponseEntity.ok(transactions);
+      Map<String, Object> response = transactionService.getTransactionsByUserId(
+          userId, limit, page, sortBy, typeOfSort, filters);
+      return ResponseEntity.ok(response);
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
@@ -114,6 +113,7 @@ public class TransactionHistoryController {
     try {
       transactionService.deleteTransaction(id);
       Map<String, String> response = new HashMap<>();
+      response.put("message", "Transaction deleted successfully");
       return ResponseEntity.ok(response);
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
