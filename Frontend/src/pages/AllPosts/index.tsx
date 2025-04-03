@@ -1,23 +1,27 @@
 import { Box, Flex, Heading, Stack, useDisclosure } from '@chakra-ui/react'
-import { ITEM_PER_PAGE, SORT_PROPERTY_OPTION } from '@constants/option'
+import { FILTER_OPTION, ITEM_PER_PAGE, SORT_PROPERTY_OPTION } from '@constants/option'
 import { useCustomToast, useDeleteProperty, useGetProperty, usePropertyStatistic } from '@hooks'
 import { propertyFilterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { CustomTable, Filter, Pagination, WarningModal, StatisticCard } from '@components'
+import { CustomTable, Filter, Pagination, WarningModal, StatisticCard, CustomSelect } from '@components'
 import { propertySummaryTable } from '@utils'
 import { useNavigate } from 'react-router-dom'
+import { PropertyStatus } from '@type/models'
+import { FilterIcon } from '@assets/icons'
 
 const AllPosts = () => {
-  const { itemsPerPage, currentPage, searchQuery, sortBy } = propertyFilterStore(
+  const { itemsPerPage, currentPage, searchQuery, sortBy, propertyFilterCriteria } = propertyFilterStore(
     useShallow((state) => ({
       itemsPerPage: state.itemsPerPage,
       currentPage: state.currentPage,
       searchQuery: state.searchQuery,
-      sortBy: state.sortBy
+      sortBy: state.sortBy,
+      propertyFilterCriteria: state.propertyFilterCriteria
     }))
   )
-  const { setItemsPerPage, setCurrentPage, setSearchQuery, setSortBy } = propertyFilterStore()
+  const { setItemsPerPage, setCurrentPage, setSearchQuery, setSortBy, setPropertyFilterCriteria } =
+    propertyFilterStore()
   const { properties, propertiesQuery, totalProperties, isError, infinitePropertyQueryKey } = useGetProperty()
   const { deletePropertyMutation } = useDeleteProperty(infinitePropertyQueryKey)
   const { isOpen: isWarningModalOpen, onOpen: onOpenWarningModal, onClose: onCloseWarningModal } = useDisclosure()
@@ -31,6 +35,12 @@ const AllPosts = () => {
       setCurrentPage(0)
     }
   }, [])
+
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPropertyFilterCriteria({
+      status: e.target.value as PropertyStatus
+    })
+  }
 
   const handleEdit = (propertyId: number) => {
     navigate(`/my-posts/update/${propertyId}`)
@@ -87,6 +97,31 @@ const AllPosts = () => {
 
   return (
     <Stack mt={6} gap={6}>
+      <Flex align='center' gap={4}>
+        <Filter
+          sortOptions={SORT_PROPERTY_OPTION}
+          searchQuery={searchQuery}
+          sortBy={sortBy}
+          setSearchQuery={setSearchQuery}
+          setSortBy={setSortBy}
+          w='100%'
+        />
+        <CustomSelect
+          options={FILTER_OPTION.status}
+          placeholder={
+            FILTER_OPTION.status.find((option) => option.value === propertyFilterCriteria.status)?.label ||
+            'Chọn trạng thái'
+          }
+          value={propertyFilterCriteria.status?.toString() || ''}
+          onChange={handleStatusChange}
+          w='unset'
+          bgColor='brand.white'
+        />
+        <Box w='19px'>
+          <FilterIcon />
+        </Box>
+      </Flex>
+
       <Flex gap={4} flexDirection={{ base: 'column', md: 'row' }}>
         <Flex gap={4} w='100%'>
           <StatisticCard label='Chờ duyệt' value={propertyStatistics?.pending || 0} isLoaded={!isLoadingStats} />
@@ -97,14 +132,6 @@ const AllPosts = () => {
           <StatisticCard label='Tổng bài viết' value={totalProperties} isLoaded={!propertiesQuery.isFetching} />
         </Flex>
       </Flex>
-
-      <Filter
-        sortOptions={SORT_PROPERTY_OPTION}
-        searchQuery={searchQuery}
-        sortBy={sortBy}
-        setSearchQuery={setSearchQuery}
-        setSortBy={setSortBy}
-      />
       <Box>
         <CustomTable
           data={dataTable}
