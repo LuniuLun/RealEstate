@@ -109,7 +109,7 @@ export const fetchAllUsers = async (property?: string, value?: string): Promise<
   }
 }
 
-export const fetchUserById = async (id: string): Promise<IApiResponse<IUser>> => {
+export const fetchUserById = async (id: number): Promise<IApiResponse<IUser>> => {
   try {
     const token = authStore.getState().token?.token
     if (!token) {
@@ -253,7 +253,7 @@ export const updateUser = async (newUser: IUser): Promise<IApiResponse<IUser>> =
   }
 }
 
-export const deleteUser = async (id: string): Promise<IApiResponse<IUser>> => {
+export const deleteUser = async (id: number): Promise<IApiResponse<IUser>> => {
   try {
     const token = authStore.getState().token?.token
     if (!token) {
@@ -288,7 +288,7 @@ export const deleteUser = async (id: string): Promise<IApiResponse<IUser>> => {
   }
 }
 
-export const upgradeUser = async (id: string): Promise<IApiResponse<IUser>> => {
+export const upgradeUser = async (id: number): Promise<IApiResponse<IUser>> => {
   try {
     const token = authStore.getState().token?.token
     if (!token) {
