@@ -1,12 +1,13 @@
 import { Box, Flex, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { ITEM_PER_PAGE, SORT_PROPERTY_OPTION } from '@constants/option'
-import { useCustomToast, useDeleteProperty, useGetPropertyByUser } from '@hooks'
+import { useCustomToast, useDeleteProperty, useGetPropertyByUser, usePropertyByUserStatistic } from '@hooks'
 import { personalPropertyFilterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { CustomTable, Filter, Pagination, WarningModal } from '@components'
+import { CustomTable, Filter, Pagination, WarningModal, StatisticCard } from '@components'
 import { propertySummaryTable } from '@utils'
 import { useNavigate } from 'react-router-dom'
+import useAuthStore from '@stores/Authentication'
 
 const MyPosts = () => {
   const { itemsPerPage, currentPage, searchQuery, sortBy } = personalPropertyFilterStore(
@@ -23,6 +24,8 @@ const MyPosts = () => {
   const { isOpen: isWarningModalOpen, onOpen: onOpenWarningModal, onClose: onCloseWarningModal } = useDisclosure()
   const [currentId, setCurrentId] = useState<number | null>(null)
   const { showToast } = useCustomToast()
+  const { token } = useAuthStore()
+  const { propertyStatistics, isLoading: isLoadingStats } = usePropertyByUserStatistic(token?.user.id)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -86,6 +89,17 @@ const MyPosts = () => {
 
   return (
     <Stack mt={6} gap={6}>
+      <Flex gap={4} flexDirection={{ base: 'column', md: 'row' }}>
+        <Flex gap={4} w='100%'>
+          <StatisticCard label='Chờ duyệt' value={propertyStatistics?.pending || 0} isLoaded={!isLoadingStats} />
+          <StatisticCard label='Đã duyệt' value={propertyStatistics?.approved || 0} isLoaded={!isLoadingStats} />
+        </Flex>
+        <Flex gap={4} w='100%'>
+          <StatisticCard label='Bị hủy' value={propertyStatistics?.canceled || 0} isLoaded={!isLoadingStats} />
+          <StatisticCard label='Tổng bài viết' value={totalProperties} isLoaded={!propertiesQuery.isFetching} />
+        </Flex>
+      </Flex>
+
       <Filter
         sortOptions={SORT_PROPERTY_OPTION}
         searchQuery={searchQuery}
