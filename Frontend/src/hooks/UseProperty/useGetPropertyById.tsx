@@ -10,13 +10,14 @@ interface UseGetPropertyByIdReturn {
 }
 
 const useGetPropertyById = (
-  id: number,
+  id: number | undefined,
   queryClient?: QueryClient | null,
   queryString?: string
 ): UseGetPropertyByIdReturn => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['property', id],
     queryFn: async () => {
+      if (!id) return
       if (queryClient && id && queryString) {
         const cacheProperty = findPropertyInCache(queryClient, id, queryString)
         if (cacheProperty) return { data: cacheProperty }
