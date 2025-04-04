@@ -64,13 +64,14 @@ export const FILTER_OPTION = {
   status: [
     { value: PropertyStatus.PENDING, label: 'Chờ duyệt' },
     { value: PropertyStatus.APPROVAL, label: 'Đã duyệt' },
-    { value: PropertyStatus.CANCELED, label: 'Đã đóng' }
+    { value: PropertyStatus.CANCELED, label: 'Đã đóng' },
+    { value: PropertyStatus.ALL, label: 'Tất cả' }
   ],
   location: [{ value: '43', label: 'Đà Nẵng' }],
   category: [
     { value: 1, label: 'Đất' },
     { value: 2, label: 'Nhà' },
-    { value: null, label: 'Tất cả' }
+    { value: -1, label: 'Tất cả' }
   ],
   landType: [
     { value: 1, label: 'Đất thổ cư' },
@@ -93,7 +94,7 @@ export const FILTER_OPTION = {
     { value: 6, label: 'Đông Nam' },
     { value: 7, label: 'Tây Bắc' },
     { value: 8, label: 'Tây Nam' },
-    { value: null, label: 'Tất cả' }
+    { value: -1, label: 'Tất cả' }
   ],
   landCharacteristics: [
     { value: 1, label: 'Mặt tiền' },

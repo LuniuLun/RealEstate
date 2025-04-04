@@ -76,11 +76,11 @@ export const fetchProperties = async (
         calledUrl.searchParams.append('bedrooms', propertyFilterCriteria.bedrooms.toString())
       }
 
-      if (propertyFilterCriteria.direction) {
+      if (propertyFilterCriteria.direction && propertyFilterCriteria.direction > 0) {
         calledUrl.searchParams.append('direction', propertyFilterCriteria.direction.toString())
       }
 
-      if (propertyFilterCriteria.category) {
+      if (propertyFilterCriteria.category && propertyFilterCriteria.category > 0) {
         calledUrl.searchParams.append('category', propertyFilterCriteria.category.toString())
       }
 
@@ -88,7 +88,7 @@ export const fetchProperties = async (
         calledUrl.searchParams.append('furnishedStatus', propertyFilterCriteria.furnishedStatus.toString())
       }
 
-      if (propertyFilterCriteria.status) {
+      if (propertyFilterCriteria.status && propertyFilterCriteria.status !== PropertyStatus.ALL) {
         calledUrl.searchParams.append('status', propertyFilterCriteria.status.toString())
       }
 
