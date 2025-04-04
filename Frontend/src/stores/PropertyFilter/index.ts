@@ -47,7 +47,7 @@ const initialPropertyFilterCriteria: PropertyFilterCriteria = {
   bedrooms: undefined,
   toilets: undefined,
   direction: undefined,
-  category: -1,
+  category: undefined,
   furnishedStatus: undefined,
   status: undefined,
   landType: undefined,
