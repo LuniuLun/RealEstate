@@ -464,7 +464,7 @@ export const updateStatusProperty = async (id: number, status: PropertyStatus): 
   try {
     const token = authStore.getState().token?.token
 
-    const response = await fetch(`${baseUrl}/properties/${id}/status?status=${encodeURIComponent(status)}`, {
+    const response = await fetch(`${baseUrl}/${id}/status?status=${encodeURIComponent(status)}`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
