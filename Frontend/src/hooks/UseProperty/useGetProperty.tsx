@@ -15,8 +15,13 @@ interface UseGetPropertyReturn {
   isError: boolean
 }
 
+export interface PropertyPageData {
+  properties: IProperty[]
+  total: number
+}
+
 interface PropertyResponse {
-  data: { properties: IProperty[]; total: number }
+  data: PropertyPageData
 }
 
 const useGetProperty = (): UseGetPropertyReturn => {

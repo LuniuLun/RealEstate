@@ -5,11 +5,7 @@ import { IApiResponse } from '@type/apiResponse'
 import { updateInfiniteCache } from '@utils'
 import removeItemFromArray from '@utils/RemoveItemFromArray'
 import useAuthStore from '@stores/Authentication'
-
-interface PropertyPageData {
-  properties: IProperty[]
-  total: number
-}
+import { PropertyPageData } from './useGetProperty'
 
 const useDeleteProperty = (queryKey: unknown[]) => {
   const queryClient = useQueryClient()
