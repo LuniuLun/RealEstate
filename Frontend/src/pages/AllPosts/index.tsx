@@ -1,12 +1,18 @@
 import { Box, Flex, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { FILTER_OPTION, ITEM_PER_PAGE, SORT_PROPERTY_OPTION } from '@constants/option'
-import { useCustomToast, useDeleteProperty, useGetProperty, usePropertyStatistic } from '@hooks'
+import {
+  useCustomToast,
+  useDeleteProperty,
+  useGetProperty,
+  usePropertyStatistic,
+  useGetPropertyById,
+  useUpdateStatusProperty
+} from '@hooks'
 import { propertyFilterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { CustomTable, Filter, Pagination, WarningModal, StatisticCard, CustomSelect } from '@components'
+import { CustomTable, Filter, Pagination, WarningModal, StatisticCard, CustomSelect, PropertyModal } from '@components'
 import { propertySummaryTable } from '@utils'
-import { useNavigate } from 'react-router-dom'
 import { PropertyStatus } from '@type/models'
 import { FilterIcon } from '@assets/icons'
 
@@ -25,10 +31,13 @@ const AllPosts = () => {
   const { properties, propertiesQuery, totalProperties, isError, infinitePropertyQueryKey } = useGetProperty()
   const { deletePropertyMutation } = useDeleteProperty(infinitePropertyQueryKey)
   const { isOpen: isWarningModalOpen, onOpen: onOpenWarningModal, onClose: onCloseWarningModal } = useDisclosure()
-  const [currentId, setCurrentId] = useState<number | null>(null)
+  const { isOpen: isPropertyModalOpen, onOpen: onOpenPropertyModal, onClose: onClosePropertyModal } = useDisclosure()
+  const [currentId, setCurrentId] = useState<number | undefined>(undefined)
   const { showToast } = useCustomToast()
   const { propertyStatistics, isLoading: isLoadingStats } = usePropertyStatistic()
-  const navigate = useNavigate()
+  const { property, isLoading: isLoadingProperty, isError: isErrorProperty } = useGetPropertyById(currentId)
+  const { updateStatusPropertyMutation, isLoading: isUpdatingStatus } =
+    useUpdateStatusProperty(infinitePropertyQueryKey)
 
   useEffect(() => {
     if (currentPage !== 0) {
@@ -43,7 +52,47 @@ const AllPosts = () => {
   }
 
   const handleEdit = (propertyId: number) => {
-    navigate(`/my-posts/update/${propertyId}`)
+    setCurrentId(propertyId)
+    onOpenPropertyModal()
+  }
+
+  const handleClosePropertyModal = () => {
+    setCurrentId(undefined)
+    onClosePropertyModal()
+  }
+
+  const handleRefuseProperty = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    if (!currentId) {
+      showToast({ status: 'error', title: 'Bài viết không tồn tại' })
+      return
+    }
+
+    updateStatusPropertyMutation.mutate(
+      { id: currentId, status: PropertyStatus.CANCELED },
+      {
+        onSuccess: () => {
+          handleClosePropertyModal()
+        }
+      }
+    )
+  }
+
+  const handleApprovalProperty = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!currentId) {
+      showToast({ status: 'error', title: 'Bài viết không tồn tại' })
+      return
+    }
+
+    updateStatusPropertyMutation.mutate(
+      { id: currentId, status: PropertyStatus.APPROVAL },
+      {
+        onSuccess: () => {
+          handleClosePropertyModal()
+        }
+      }
+    )
   }
 
   const handleDelete = (propertyId: number) => {
@@ -52,7 +101,7 @@ const AllPosts = () => {
   }
 
   const handleCloseWarningModal = () => {
-    setCurrentId(null)
+    setCurrentId(undefined)
     onCloseWarningModal()
   }
 
@@ -90,9 +139,13 @@ const AllPosts = () => {
   if (isError) {
     return (
       <Heading variant='secondary' color='brand.red' p={10}>
-        Không tìm thấy bài viết cá nhân
+        Không tìm thấy bài viết
       </Heading>
     )
+  }
+
+  if (isErrorProperty) {
+    showToast({ status: 'error', title: 'Không tìm thấy bài viết' })
   }
 
   return (
@@ -164,6 +217,19 @@ const AllPosts = () => {
         handleSubmit={handleWarningSubmit}
         isSubmitting={deletePropertyMutation.isPending}
       />
+
+      {property && (
+        <PropertyModal
+          isModalOpen={isPropertyModalOpen}
+          onClose={handleClosePropertyModal}
+          title='Duyệt bài viết'
+          property={property}
+          handleSubmit={handleApprovalProperty}
+          handleClose={handleRefuseProperty}
+          isSubmitting={isUpdatingStatus || deletePropertyMutation.isPending}
+          isLoading={isLoadingProperty}
+        />
+      )}
     </Stack>
   )
 }
