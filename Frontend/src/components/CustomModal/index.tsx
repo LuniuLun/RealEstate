@@ -15,10 +15,33 @@ import { memo } from 'react'
 interface ICustomModalProps extends ModalProps {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
   title: string
+  titleSubmitButton?: string
+  titleCancelButton?: string
   isSubmitting?: boolean
+  handleClose?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
-const CustomModal = ({ isOpen, onClose, handleSubmit, title, isSubmitting, children, ...props }: ICustomModalProps) => {
+const CustomModal = ({
+  isOpen,
+  onClose,
+  handleSubmit,
+  title,
+  titleSubmitButton,
+  titleCancelButton,
+  isSubmitting,
+  handleClose,
+  children,
+  ...props
+}: ICustomModalProps) => {
+  const handleCloseModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (handleClose) {
+      e.preventDefault()
+      handleClose(e)
+      return
+    }
+    onClose()
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -40,10 +63,10 @@ const CustomModal = ({ isOpen, onClose, handleSubmit, title, isSubmitting, child
             {children}
             <ModalFooter gap={4} marginTop={10}>
               <Button variant='primary' type='submit' aria-label='submit' isLoading={isSubmitting}>
-                Submit
+                {titleSubmitButton || 'Đồng ý'}
               </Button>
-              <Button variant='secondary' onClick={onClose} aria-label='cancel' disabled={isSubmitting}>
-                Cancel
+              <Button variant='secondary' onClick={handleCloseModal} aria-label='cancel' disabled={isSubmitting}>
+                {titleCancelButton || 'Đóng'}
               </Button>
             </ModalFooter>
           </form>
