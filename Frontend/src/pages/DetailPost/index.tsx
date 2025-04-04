@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { Box, Flex, Heading, Text, Stack, IconButton, Spinner, Badge } from '@chakra-ui/react'
-import { HeartIcon, LocationIcon } from '@assets/icons'
+import { Box, Flex, Heading, Text, Stack, Spinner, Badge } from '@chakra-ui/react'
 import { ContactInfo, PropertyDetails } from '@components'
 import { useEstimatePropertyPrice } from '@hooks/UseProperty/useEstimatePropertyPrice'
 import { useEffect, useState } from 'react'
@@ -50,7 +49,7 @@ const DetailPost = () => {
   }
 
   const propertyImages = property.images?.split(',') ?? []
-  const address = [property.streetName, property.wardName, property.region].filter(Boolean).join(', ')
+
   const contactInfo = {
     name: property.user?.fullName ?? 'Chưa cập nhật',
     role: property.user?.role?.name ?? 'Chưa cập nhật',
@@ -61,21 +60,7 @@ const DetailPost = () => {
     <Flex maxW='1000px' w='100%' mx='auto' my={5}>
       <Stack px={4} flex='2'>
         <ImageGallery images={propertyImages} alt={property.title} />
-
         <Box bg='white' p={5} shadow='md' mt={4} borderRadius='lg'>
-          <Box mb={4}>
-            <Flex justify='space-between' align='flex-start'>
-              <Heading variant='primary'>{property.title}</Heading>
-              <IconButton size='sm' icon={<HeartIcon />} aria-label='save' bg='brand.white' borderRadius='full' />
-            </Flex>
-            <Flex mt={2} align='center' gap={2}>
-              <LocationIcon />
-              <Text fontSize='sm' color='brand.blackTextPrimary'>
-                {address}
-              </Text>
-            </Flex>
-          </Box>
-
           <Box mb={4}>
             <PropertyDetails property={property} />
 
@@ -97,11 +82,6 @@ const DetailPost = () => {
                 )}
               </Flex>
             </Box>
-
-            <Heading variant='secondary' my={2}>
-              Mô tả chi tiết
-            </Heading>
-            <Text>{property.description}</Text>
           </Box>
         </Box>
       </Stack>
