@@ -1,4 +1,4 @@
-import { Box, Button, Flex } from '@chakra-ui/react'
+import { Box, List, ListItem } from '@chakra-ui/react'
 import { LogoutIcon, ProfileIcon, UpgradeIcon, UserIcon } from '@assets/icons'
 import { UserCard } from '@components'
 import { IToken } from '@type/models'
@@ -37,26 +37,25 @@ const UserMenu = ({ token, navigationHandlers }: UserMenuProps) => {
         border='1px'
         borderColor='gray.200'
       >
-        <Flex as='ul' direction='column' w='100%' justifyContent='flex-start'>
+        <List display='flex' w='100%' justifyContent='flex-start' flexDirection='column'>
           {userMenuItems.map((item, index) => (
-            <Button
-              as='li'
+            <ListItem
               key={index}
-              variant='ghost'
-              size='md'
+              display='flex'
               justifyContent='flex-start'
               py={2}
               px={4}
               _hover={{ bgColor: 'gray.200' }}
-              leftIcon={item.icon}
               fontSize='sm'
               color='brand.blackTextPrimary'
               onClick={item.onClick}
+              gap={2}
             >
+              {item.icon}
               {item.label}
-            </Button>
+            </ListItem>
           ))}
-        </Flex>
+        </List>
       </Box>
     </Box>
   )

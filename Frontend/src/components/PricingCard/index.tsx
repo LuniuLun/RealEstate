@@ -1,5 +1,5 @@
 import { CloseIcon } from '@assets/icons'
-import { Box, Button, Divider, Flex, Heading, Text, VStack, Badge, Icon } from '@chakra-ui/react'
+import { Box, Button, Divider, Flex, Heading, Text, VStack, Badge, Icon, List, ListItem } from '@chakra-ui/react'
 import { PricingPlan } from '@type/upgradePackage'
 import { formatCurrency } from '@utils'
 
@@ -100,9 +100,9 @@ const PricingCard = ({
 
       <Divider my={6} />
 
-      <VStack spacing={3} align='start'>
+      <List display='flex' spacing={3} flexDirection='column'>
         {features.list.map((feature, index) => (
-          <Flex key={index} align='flex-start'>
+          <ListItem display='flex' key={index}>
             <Icon
               as={feature.available ? undefined : CloseIcon}
               color={feature.available ? 'orange.500' : 'brand.blackTextSecondary'}
@@ -112,9 +112,9 @@ const PricingCard = ({
               mt={1}
             />
             <Text color={feature.available ? 'inherit' : 'brand.blackTextSecondary'}>{feature.text}</Text>
-          </Flex>
+          </ListItem>
         ))}
-      </VStack>
+      </List>
     </Box>
   )
 }
