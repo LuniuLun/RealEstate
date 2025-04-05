@@ -46,6 +46,7 @@ export interface IFavouriteProperty {
   id: number
   user: IUser
   property: IProperty
+  createdAt: string
 }
 
 export interface IPropertyStatistic {
