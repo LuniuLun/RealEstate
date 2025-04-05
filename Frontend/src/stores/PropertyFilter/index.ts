@@ -1,3 +1,5 @@
+import { DEFAULT_VALUES_FILTER } from '@constants/defaultFilter'
+import { BaseFilterState } from '@type/baseFilterState'
 import { PropertyStatus } from '@type/models'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
@@ -24,19 +26,10 @@ export interface PropertyFilterCriteria {
   }
 }
 
-export interface PropertyFilterState {
-  searchQuery: string
-  sortBy: string
-  itemsPerPage: number
-  currentPage: number
+export interface PropertyFilterState extends BaseFilterState {
   propertyFilterCriteria: PropertyFilterCriteria
 
-  setCurrentPage: (currentPage: number) => void
-  setItemsPerPage: (itemsPerPage: number) => void
-  setSearchQuery: (query: string) => void
-  setSortBy: (sort: string) => void
   setPropertyFilterCriteria: (criteria: Partial<PropertyFilterCriteria>) => void
-  resetFilters: () => void
 }
 
 const initialPropertyFilterCriteria: PropertyFilterCriteria = {
@@ -64,10 +57,8 @@ const initialPropertyFilterCriteria: PropertyFilterCriteria = {
 const propertyFilterStore = create<PropertyFilterState>()(
   persist(
     (set) => ({
-      searchQuery: '',
-      sortBy: '',
+      ...DEFAULT_VALUES_FILTER,
       itemsPerPage: 12,
-      currentPage: 0,
       propertyFilterCriteria: initialPropertyFilterCriteria,
 
       setCurrentPage: (currentPage: number) => set(() => ({ currentPage })),
