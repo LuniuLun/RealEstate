@@ -5,12 +5,14 @@ import { useLocation } from 'react-router-dom'
 import { ADMIN_NAV_ITEMS, USER_NAV_ITEMS } from '@constants/option'
 import {
   DashboardIcon,
+  HeartIcon,
   LeaderboardIcon,
   LogoutIcon,
   PersonalIcon,
   PostIcon,
   ProfileIcon,
-  TransactionIcon
+  TransactionIcon,
+  UpgradeIcon
 } from '@assets/icons'
 import { useSidebar } from '@hooks'
 import { authStore } from '@stores'
@@ -22,8 +24,10 @@ const iconMap: Record<string, ElementType> = {
   users: LeaderboardIcon,
   posts: PostIcon,
   personal: ProfileIcon,
+  upgrade: UpgradeIcon,
   myPosts: PostIcon,
-  transactions: TransactionIcon
+  transactions: TransactionIcon,
+  savedPosts: HeartIcon
 }
 
 const Sidebar = () => {
@@ -89,7 +93,7 @@ const Sidebar = () => {
           return (
             <NavItem
               key={item.id}
-              icon={<Icon />}
+              icon={<Icon height='24px' width='24px' />}
               title={item.title}
               isActive={activeNavItem === item.id}
               to={`/personal/${item.path}`}
