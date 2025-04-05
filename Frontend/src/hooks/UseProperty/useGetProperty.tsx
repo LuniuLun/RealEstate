@@ -5,7 +5,7 @@ import { IProperty } from '@type/models'
 import { propertyFilterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
 
-interface UseGetPropertyReturn {
+export interface UseGetPropertyReturn {
   properties: IProperty[] | undefined
   propertiesQuery: ReturnType<typeof useInfiniteQuery>
   totalProperties: number

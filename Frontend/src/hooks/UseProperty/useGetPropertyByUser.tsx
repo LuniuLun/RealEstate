@@ -4,16 +4,7 @@ import { fetchPersonalProperties } from '@services/property'
 import { IProperty } from '@type/models'
 import { authStore, personalPropertyFilterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
-
-interface UseGetPropertyReturn {
-  properties: IProperty[] | undefined
-  propertiesQuery: ReturnType<typeof useInfiniteQuery>
-  totalProperties: number
-  infinitePropertyQueryKey: (string | number | object)[]
-  reCallQuery: () => void
-  isLoading: boolean
-  isError: boolean
-}
+import { UseGetPropertyReturn } from './useGetProperty'
 
 interface PropertyResponse {
   data: { properties: IProperty[]; total: number }
