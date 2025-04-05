@@ -16,6 +16,7 @@ import MyPosts from '@pages/MyPosts'
 import Upgrade from '@pages/Upgrade'
 import TransactionHistory from '@pages/TransactionHistory'
 import AllPosts from '@pages/AllPosts'
+import SavedPost from '@pages/SavedPosts'
 
 function App() {
   const { token } = authStore()
@@ -38,7 +39,7 @@ function App() {
         >
           <Route path='new-property' element={<PropertyForm />} />
           <Route path='my-posts/update/:id' element={<PropertyForm />} />
-          <Route path='upgrade' element={<Upgrade />} />
+          <Route path='personal/upgrade' element={<Upgrade />} />
         </Route>
       </Route>
       <Route path='register' element={<Register />} />
@@ -57,6 +58,7 @@ function App() {
           <Route index element={<Profile />} />
           <Route path='my-posts' element={<MyPosts />} />
           <Route path='transactions' element={<TransactionHistory />} />
+          <Route path='saved-posts' element={<SavedPost />} />
           <Route
             element={
               <ProtectedRoute
