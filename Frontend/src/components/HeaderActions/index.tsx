@@ -1,37 +1,35 @@
 import { Box, Button, Flex } from '@chakra-ui/react'
 import { NotificationIcon } from '@assets/icons'
-import { IToken } from '@type/models'
 import { UserMenu } from '@components'
+import { authStore } from '@stores'
+import { useNavigate } from 'react-router-dom'
 
-interface HeaderActionsProps {
-  token: IToken | null
-  navigationHandlers: {
-    login: () => void
-    newProperty: () => void
-    profile: () => void
-    upgrade: () => void
-    logout: () => void
-  }
-}
+const HeaderActions = () => {
+  const { token } = authStore()
+  const navigate = useNavigate()
 
-const HeaderActions = ({ token, navigationHandlers }: HeaderActionsProps) => (
-  <Flex alignItems='center' gap={5}>
-    {token ? (
-      <Flex alignItems='center' gap={6}>
-        <Box height='100%'>
-          <NotificationIcon />
-        </Box>
-        <UserMenu token={token} navigationHandlers={navigationHandlers} />
-      </Flex>
-    ) : (
-      <Button onClick={navigationHandlers.login} colorScheme='brand' variant='tertiary'>
-        Đăng nhập
+  const handleLogin = () => navigate('/login')
+  const handleNewProperty = () => navigate('/new-property')
+
+  return (
+    <Flex alignItems='center' gap={5}>
+      {token ? (
+        <Flex alignItems='center' gap={6}>
+          <Box height='100%'>
+            <NotificationIcon />
+          </Box>
+          <UserMenu />
+        </Flex>
+      ) : (
+        <Button onClick={handleLogin} colorScheme='brand' variant='tertiary'>
+          Đăng nhập
+        </Button>
+      )}
+      <Button colorScheme='brand' variant='tertiary' onClick={handleNewProperty}>
+        Đăng tin
       </Button>
-    )}
-    <Button colorScheme='brand' variant='tertiary' onClick={navigationHandlers.newProperty}>
-      Đăng tin
-    </Button>
-  </Flex>
-)
+    </Flex>
+  )
+}
 
 export default HeaderActions
