@@ -6,8 +6,13 @@ import { useShallow } from 'zustand/shallow'
 import { UseGetPropertyReturn } from '@hooks/UseProperty/useGetProperty'
 import { fetchFavouriteProperties } from '@services/favouriteProperties'
 
-interface PropertyResponse {
-  data: { favouriteProperties: IFavouriteProperty[]; total: number }
+export interface FavouritePropertyPageData {
+  favouriteProperties: IFavouriteProperty[]
+  total: number
+}
+
+export interface FavouritePropertyResponse {
+  data: FavouritePropertyPageData
 }
 
 interface UseGetFavouritePropertyReturn extends Omit<UseGetPropertyReturn, 'properties'> {
@@ -37,7 +42,7 @@ const useGetFavouriteProperty = (): UseGetFavouritePropertyReturn => {
         value: searchQuery,
         sortBy,
         typeOfSort: 'desc'
-      })) as unknown as PropertyResponse
+      })) as unknown as FavouritePropertyResponse
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) => {
