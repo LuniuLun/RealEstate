@@ -33,7 +33,7 @@ interface ICustomTableProps extends TableProps {
 const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, ...props }: ICustomTableProps) => {
   if (!data || (data.length === 0 && isLoaded)) {
     return (
-      <Heading variant='secondary' color='brand.red'>
+      <Heading variant='secondary' color='brand.red' textAlign='center' mt={10}>
         Dữ liệu không tồn tại
       </Heading>
     )
