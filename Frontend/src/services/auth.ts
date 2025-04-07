@@ -1,6 +1,6 @@
 import { IApiResponse } from '@type/apiResponse'
 import MESSAGE from '@constants/message'
-import { IToken, IUser, TLoginUserRequest, TRegisterUserRequest } from '@type/models'
+import { IUser, TLoginUserRequest, TLoginUserResponse, TRegisterUserRequest } from '@type/models'
 
 const baseUrl = `${import.meta.env.VITE_APP_BASE_URL}${import.meta.env.VITE_APP_AUTH_ENDPOINT}`
 
@@ -33,7 +33,7 @@ export const registerUser = async (newUser: TRegisterUserRequest): Promise<IApiR
   }
 }
 
-export const login = async (newUser: TLoginUserRequest): Promise<IApiResponse<IToken>> => {
+export const login = async (newUser: TLoginUserRequest): Promise<IApiResponse<TLoginUserResponse>> => {
   try {
     const response = await fetch(`${baseUrl}/login`, {
       method: 'POST',
