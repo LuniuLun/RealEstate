@@ -3,6 +3,7 @@ import InfoGroup from '@components/InfoGroup'
 import defaultImage from '@assets/images/default-image.jpg'
 import { memo, useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import FavouritePropertyIcon from '@components/FavouritePropertyIcon'
 
 interface IPropertyCardProps {
   id: number
@@ -29,6 +30,7 @@ const PropertyCard = ({ id, imageUrl, title, description, price, areaInfo, locat
 
   return (
     <Box
+      position='relative'
       display='flex'
       alignItems='flex-end'
       border='1px solid #E2E8F0'
@@ -45,6 +47,9 @@ const PropertyCard = ({ id, imageUrl, title, description, price, areaInfo, locat
       cursor='pointer'
     >
       <img src={imageUrl} alt='' style={{ display: 'none' }} onError={() => setBgSrc(defaultImage)} />
+      <Box position='absolute' top='10px' right='10px'>
+        <FavouritePropertyIcon propertyId={id} />
+      </Box>
       <Stack
         justifyContent='space-between'
         spacing={2}
@@ -58,7 +63,6 @@ const PropertyCard = ({ id, imageUrl, title, description, price, areaInfo, locat
         boxShadow='sm'
       >
         <InfoGroup heading={title} description={description} size='md' />
-
         <Stack>
           <Flex align='center' justify='space-between'>
             <Text fontSize='lg' fontWeight='bold' color='brand.red'>
