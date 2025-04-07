@@ -41,9 +41,6 @@ public class FavouritePropertyController {
   public ResponseEntity<?> toggleFavourite(@PathVariable Integer userId, @PathVariable Integer propertyId) {
     try {
       FavouriteProperty favourite = favouritePropertyService.toggleFavouriteProperty(userId, propertyId);
-      if (favourite == null) {
-        return ResponseEntity.ok().build();
-      }
       return ResponseEntity.ok(favourite);
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
