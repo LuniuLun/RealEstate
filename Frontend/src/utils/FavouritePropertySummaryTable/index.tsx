@@ -3,7 +3,7 @@ import { FILTER_OPTION } from '@constants/option'
 import { transformPriceUnit } from '@utils'
 
 const favouritePropertySummaryTable = (favouriteProperty: IFavouriteProperty) => ({
-  id: favouriteProperty.id,
+  id: favouriteProperty.property.id,
   'Loại hình': FILTER_OPTION.category[favouriteProperty.property.category.id - 1].label,
   'Tiêu đề': favouriteProperty.property.title,
   'Vị trí': `${favouriteProperty.property.streetName}, ${favouriteProperty.property.wardName}, ${favouriteProperty.property.districtName}, ${favouriteProperty.property.region}`,
