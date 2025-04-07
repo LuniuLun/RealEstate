@@ -1,6 +1,6 @@
-import { Box, Flex, Heading, Text, Stack, IconButton } from '@chakra-ui/react'
-import { PriceIcon, AreaIcon, WidthIcon, PaperIcon, DirectionIcon, LocationIcon, HeartIcon } from '@assets/icons'
-import { HouseDetails, LandDetails, PropertyDetailItem } from '@components'
+import { Box, Flex, Heading, Text, Stack } from '@chakra-ui/react'
+import { PriceIcon, AreaIcon, WidthIcon, PaperIcon, DirectionIcon, LocationIcon } from '@assets/icons'
+import { FavouritePropertyIcon, HouseDetails, LandDetails, PropertyDetailItem } from '@components'
 import { transformPriceUnit, calculatePricePerSquareMeter } from '@utils'
 import { FILTER_OPTION } from '@constants/option'
 import { IProperty } from '@type/models'
@@ -27,7 +27,7 @@ const BasePropertyDetails = ({ property }: BasePropertyDetailsProps) => {
       <Box mb={4}>
         <Flex justify='space-between' align='flex-start'>
           <Heading variant='primary'>{property.title}</Heading>
-          <IconButton size='sm' icon={<HeartIcon />} aria-label='save' bg='brand.white' borderRadius='full' />
+          <FavouritePropertyIcon propertyId={property.id} />
         </Flex>
         <Flex mt={2} align='center' gap={2}>
           <LocationIcon />
