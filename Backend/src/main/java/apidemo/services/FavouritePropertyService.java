@@ -75,6 +75,17 @@ public class FavouritePropertyService {
     return favouritePropertyRepository.findByUserId(userId);
   }
 
+  public List<Integer> getFavouritePropertyIdsByUserId(Integer userId) {
+    userRepository.findById(userId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+    List<FavouriteProperty> favouriteProperties = favouritePropertyRepository.findByUserId(userId);
+
+    return favouriteProperties.stream()
+        .map(fp -> fp.getProperty().getId())
+        .toList();
+  }
+
   public FavouriteProperty toggleFavouriteProperty(Integer userId, Integer propertyId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
@@ -87,7 +98,7 @@ public class FavouritePropertyService {
 
     if (existingFavourite.isPresent()) {
       favouritePropertyRepository.delete(existingFavourite.get());
-      return null;
+      return existingFavourite.get();
     } else {
       FavouriteProperty newFavourite = new FavouriteProperty();
       newFavourite.setUser(user);
