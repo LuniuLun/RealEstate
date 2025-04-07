@@ -27,6 +27,10 @@ const MESSAGE = {
     ESTIMATE_FAILED: 'Dự đoán giá thất bại',
     ESTIMATE_SUCCESS: 'Dự đoán giá thành công'
   },
+  favouriteProperty: {
+    EDIT_SUCCESS: 'Cập nhật danh sách yêu thích thành công',
+    EDIT_FAILED: 'Cập nhật danh sách yêu thích thất bại'
+  },
   common: {
     ERROR_EVENT: 'Chức năng chưa được hỗ trợ',
     UNKNOWN_ERROR: 'Đã xảy ra lỗi không xác định',
