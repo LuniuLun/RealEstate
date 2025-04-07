@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import apidemo.models.FavouriteProperty;
 import apidemo.models.LoginRequest;
 import apidemo.models.LogoutRequest;
 import apidemo.models.Token;
