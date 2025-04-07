@@ -7,7 +7,6 @@ import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CustomTable, Filter, Pagination, WarningModal, StatisticCard } from '@components'
 import { propertySummaryTable } from '@utils'
 import { useNavigate } from 'react-router-dom'
-import useAuthStore from '@stores/Authentication'
 
 const MyPosts = () => {
   const { itemsPerPage, currentPage, searchQuery, sortBy } = personalPropertyFilterStore(
@@ -24,8 +23,7 @@ const MyPosts = () => {
   const { isOpen: isWarningModalOpen, onOpen: onOpenWarningModal, onClose: onCloseWarningModal } = useDisclosure()
   const [currentId, setCurrentId] = useState<number | null>(null)
   const { showToast } = useCustomToast()
-  const { token } = useAuthStore()
-  const { propertyStatistics, isLoading: isLoadingStats } = usePropertyByUserStatistic(token?.user.id)
+  const { propertyStatistics, isLoading: isLoadingStats } = usePropertyByUserStatistic()
   const navigate = useNavigate()
 
   useEffect(() => {
