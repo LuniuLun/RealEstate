@@ -19,7 +19,7 @@ import AllPosts from '@pages/AllPosts'
 import SavedPost from '@pages/SavedPosts'
 
 function App() {
-  const { token } = authStore()
+  const token = authStore((state) => state.token)
 
   return (
     <Routes>

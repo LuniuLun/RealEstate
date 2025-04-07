@@ -5,7 +5,7 @@ import { authStore } from '@stores'
 import { useNavigate } from 'react-router-dom'
 
 const HeaderActions = () => {
-  const { token } = authStore()
+  const token = authStore((state) => state.token)
   const navigate = useNavigate()
 
   const handleLogin = () => navigate('/login')

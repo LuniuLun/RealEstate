@@ -20,7 +20,7 @@ interface TransactionResponse {
 }
 
 const useGetTransactionByUser = (): UseGetTransactionReturn => {
-  const { token } = authStore()
+  const token = authStore((state) => state.token)
   const { searchQuery, sortBy, itemsPerPage } = transactionFilterStore(
     useShallow((state) => ({
       searchQuery: state.searchQuery,

@@ -10,7 +10,7 @@ interface UseConvertPropertyDataReturn {
 }
 
 export const useConvertPropertyData = (): UseConvertPropertyDataReturn => {
-  const { token } = authStore()
+  const token = authStore((state) => state.token)
   const validateToken = useValidateToken()
   const convertLandData = (formData: TLandFormData): (TPostProperty & { images: string; land: ILand }) | null => {
     if (!validateToken()) return null

@@ -3,7 +3,7 @@ import { useCustomToast } from '@hooks'
 import { authStore } from '@stores'
 
 const useValidateToken = (): (() => boolean) => {
-  const { token } = authStore()
+  const token = authStore((state) => state.token)
   const { showToast } = useCustomToast()
 
   return () => {
