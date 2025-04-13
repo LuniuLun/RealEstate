@@ -7,7 +7,7 @@ import org.jpmml.evaluator.*;
 import java.io.File;
 import java.util.*;
 
-public class PropertyMLService {
+public class PropertyValuationService {
   private static final Set<String> REQUIRED_FEATURES = Set.of(
       "Longitude", "Latitude", "Area (m²)", "Floors", "Rooms", "Toilets", "Length (m)");
 
@@ -19,7 +19,7 @@ public class PropertyMLService {
   private final Set<String> sqrtFeatures = Set.of("Longitude", "Latitude", "Area (m²)", "Floors", "Rooms", "Toilets");
   private final Set<String> zscoreFeatures = Set.of("Length (m)");
 
-  public PropertyMLService() {
+  public PropertyValuationService() {
     try {
       File modelFile = new File(getClass().getClassLoader().getResource("random_forest_model.pmml").toURI());
       this.modelEvaluator = new LoadingModelEvaluatorBuilder().load(modelFile).build();
