@@ -29,7 +29,7 @@ public class PropertyService {
   private final CategoryService categoryService;
   private final PropertyLegalDocumentService propertyLegalDocumentService;
   private final UserService userService;
-  private final PropertyMLService propertyMLService;
+  private final PropertyValuationService propertyMLService;
   private final LandService landService;
   private final HouseService houseService;
   private final Filter filter = new Filter();
@@ -46,7 +46,7 @@ public class PropertyService {
     this.userService = userService;
     this.landService = landService;
     this.houseService = houseService;
-    this.propertyMLService = new PropertyMLService();
+    this.propertyMLService = new PropertyValuationService();
   }
 
   public double getEstimatedPrice(Property property) {
