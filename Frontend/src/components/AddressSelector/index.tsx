@@ -24,10 +24,12 @@ interface AddressSelectorProps<T extends FieldValues> {
   control: Control<T>
   cityName: Path<T>
   districtName: Path<T>
-  wardName: Path<T>
-  streetName: Path<T>
+  wardName?: Path<T>
+  streetName?: Path<T>
   isLoading?: boolean
   onStreetNameChange?: (streetName: string) => void
+  showWard?: boolean
+  showStreet?: boolean
 }
 
 const AddressSelector = <T extends FieldValues>({
@@ -37,7 +39,9 @@ const AddressSelector = <T extends FieldValues>({
   wardName,
   streetName,
   isLoading,
-  onStreetNameChange
+  onStreetNameChange,
+  showWard = true,
+  showStreet = true
 }: AddressSelectorProps<T>) => {
   const [cities, setCities] = useState<City[]>([])
   const [districts, setDistricts] = useState<District[]>([])
@@ -47,7 +51,8 @@ const AddressSelector = <T extends FieldValues>({
   const [currentWard, setCurrentWard] = useState<string>()
   const cityValue = useWatch({ control, name: cityName })
   const districtValue = useWatch({ control, name: districtName })
-  const wardValue = useWatch({ control, name: wardName })
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const wardValue = wardName ? useWatch({ control, name: wardName }) : undefined
 
   const debouncedStreetNameChange = useCallback(
     debounce((value: string) => {
@@ -69,7 +74,7 @@ const AddressSelector = <T extends FieldValues>({
             if (districtValue) {
               const selectedDistrict = selectedCity.Districts.find((district) => district.Name === districtValue)
               setCurrentDistrict(selectedDistrict?.Id)
-              if (selectedDistrict) {
+              if (selectedDistrict && showWard && wardName && wardValue) {
                 setWards(selectedDistrict.Wards)
                 const selectedWard = selectedDistrict.Wards.find((ward) => ward.Name === wardValue)
                 setCurrentWard(selectedWard?.Id)
@@ -139,60 +144,66 @@ const AddressSelector = <T extends FieldValues>({
         )}
       />
 
-      <Controller
-        name={wardName}
-        control={control}
-        rules={{ required: 'Vui lòng chọn phường xã' }}
-        render={({ field, fieldState: { error } }) => (
-          <FormControl isInvalid={!!error}>
-            <CustomSelect
-              {...field}
-              value={currentWard}
-              sx={{ width: '100%' }}
-              borderRadius='md'
-              border='full'
-              placeholder='Chọn phường xã'
-              onChange={(e) => {
-                const wardId = e.target.value
-                const selected = wards.find((ward) => ward.Id === wardId)
-                field.onChange(selected?.Name || '')
-                setCurrentWard(selected?.Id)
-              }}
-              options={wards.map((ward) => ({ value: ward.Id, label: ward.Name }))}
-              isDisabled={wards.length === 0 || isLoading}
-            />
-            <FormErrorMessage>{error && error.message}</FormErrorMessage>
-          </FormControl>
-        )}
-      />
+      {showWard && wardName && (
+        <Controller
+          name={wardName}
+          control={control}
+          rules={{ required: showWard ? 'Vui lòng chọn phường xã' : false }}
+          render={({ field, fieldState: { error } }) => (
+            <FormControl isInvalid={!!error}>
+              <CustomSelect
+                {...field}
+                value={currentWard}
+                sx={{ width: '100%' }}
+                borderRadius='md'
+                border='full'
+                placeholder='Chọn phường xã'
+                onChange={(e) => {
+                  const wardId = e.target.value
+                  const selected = wards.find((ward) => ward.Id === wardId)
+                  field.onChange(selected?.Name || '')
+                  setCurrentWard(selected?.Id)
+                }}
+                options={wards.map((ward) => ({ value: ward.Id, label: ward.Name }))}
+                isDisabled={wards.length === 0 || isLoading}
+              />
+              <FormErrorMessage>{error && error.message}</FormErrorMessage>
+            </FormControl>
+          )}
+        />
+      )}
 
-      <Controller
-        name={streetName}
-        control={control}
-        rules={{
-          required: 'Vui lòng nhập số nhà, tên đường',
-          validate: (value) => {
-            return value.trim() !== '' || 'Số nhà, tên đường không được để trống'
-          }
-        }}
-        render={({ field, fieldState: { error } }) => (
-          <FormControl isInvalid={!!error}>
-            <TextField
-              {...field}
-              variant='outline'
-              size='md'
-              placeholder='Nhập số nhà, tên đường'
-              isDisabled={isLoading}
-              onChange={(e) => {
-                const value = e.target.value
-                field.onChange(e)
-                debouncedStreetNameChange(value)
-              }}
-            />
-            <FormErrorMessage>{error && error.message}</FormErrorMessage>
-          </FormControl>
-        )}
-      />
+      {showStreet && streetName && (
+        <Controller
+          name={streetName}
+          control={control}
+          rules={{
+            required: showStreet ? 'Vui lòng nhập số nhà, tên đường' : false,
+            validate: showStreet
+              ? (value) => {
+                  return value.trim() !== '' || 'Số nhà, tên đường không được để trống'
+                }
+              : undefined
+          }}
+          render={({ field, fieldState: { error } }) => (
+            <FormControl isInvalid={!!error}>
+              <TextField
+                {...field}
+                variant='outline'
+                size='md'
+                placeholder='Nhập số nhà, tên đường'
+                isDisabled={isLoading}
+                onChange={(e) => {
+                  const value = e.target.value
+                  field.onChange(e)
+                  debouncedStreetNameChange(value)
+                }}
+              />
+              <FormErrorMessage>{error && error.message}</FormErrorMessage>
+            </FormControl>
+          )}
+        />
+      )}
     </Stack>
   )
 }
