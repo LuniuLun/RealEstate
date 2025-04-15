@@ -17,6 +17,7 @@ import Upgrade from '@pages/Upgrade'
 import TransactionHistory from '@pages/TransactionHistory'
 import AllPosts from '@pages/AllPosts'
 import SavedPost from '@pages/SavedPosts'
+import ForecastLand from '@pages/ForecastLand'
 
 function App() {
   const token = authStore((state) => state.token)
@@ -59,6 +60,7 @@ function App() {
           <Route path='my-posts' element={<MyPosts />} />
           <Route path='transactions' element={<TransactionHistory />} />
           <Route path='saved-posts' element={<SavedPost />} />
+          <Route path='forecast' element={<ForecastLand />} />
           <Route
             element={
               <ProtectedRoute
