@@ -57,6 +57,7 @@ export const USER_NAV_ITEMS = [
   { path: 'my-posts', id: 'myPosts', title: 'Bài viết của tôi' },
   { path: 'saved-posts', id: 'savedPosts', title: 'Bài viết đã lưu' },
   { path: 'upgrade', id: 'upgrade', title: 'Nâng cấp' },
+  { path: 'forecast', id: 'forecast', title: 'Dự đoán' },
   { path: 'transactions', id: 'transactions', title: 'Lịch sử giao dịch' }
 ]
 
