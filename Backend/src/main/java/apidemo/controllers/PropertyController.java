@@ -210,13 +210,6 @@ public class PropertyController {
   @PostMapping("/estimate-price")
   public ResponseEntity<?> estimatePropertyPrice(@RequestBody Property property) {
     try {
-      User currentUser = getCurrentUser();
-
-      if (currentUser.getRole().getName() == RoleName.CUSTOMER) {
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "Upgrade your account before using this feature");
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
-      }
 
       double estimatedPrice = propertyService.getEstimatedPrice(property);
       return ResponseEntity.ok(Map.of("estimatedPrice", estimatedPrice));
