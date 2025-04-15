@@ -20,7 +20,7 @@ const FavouritePropertyIcon = ({ propertyId }: IFavouritePropertyIcon) => {
     e.stopPropagation()
 
     if (!token) {
-      showToast({ status: 'error', title: 'Không thể xác định người dùng' })
+      showToast({ status: 'error', title: 'Hãy đăng nhập để lưu bài viết' })
       return
     }
 

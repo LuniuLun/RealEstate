@@ -25,7 +25,7 @@ const MESSAGE = {
     FILTER_SUCCESS: 'Lọc bất động sản thành công',
     FILTER_FAILED: 'Lọc bất động sản thất bại',
     ESTIMATE_FAILED: 'Dự đoán giá thất bại',
-    ESTIMATE_SUCCESS: 'Dự đoán giá thành công'
+    ESTIMATE_SUCCESS: 'Định giá thành công'
   },
   favouriteProperty: {
     EDIT_SUCCESS: 'Cập nhật danh sách yêu thích thành công',
