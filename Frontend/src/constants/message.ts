@@ -71,6 +71,10 @@ const MESSAGE = {
     DELETE_FAILED: 'Xóa giao dịch thất bại',
     GET_SUCCESS: 'Lấy danh sách giao dịch thành công',
     GET_FAILED: 'Không thể tải danh sách giao dịch'
+  },
+  forecast: {
+    FORECAST_SUCCESS: 'Dự đoán giá thành công',
+    FORECAST_FAILED: 'Dự đoán giá thất bại'
   }
 }
 
