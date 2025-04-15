@@ -224,13 +224,6 @@ public class PropertyController {
   @PostMapping("/estimate-price")
   public ResponseEntity<?> estimatePropertyPrice(@RequestBody Property property) {
     try {
-      User currentUser = getCurrentUser();
-
-      if (currentUser.getRole().getName() == RoleName.CUSTOMER) {
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "Nâng cấp tài khoản của bạn để dùng chức năng này");
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
-      }
 
       double estimatedPrice = propertyService.getEstimatedPrice(property);
       return ResponseEntity.ok(Map.of("estimatedPrice", estimatedPrice));
