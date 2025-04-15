@@ -46,7 +46,8 @@ const useGetFavouriteProperty = (): UseGetFavouritePropertyReturn => {
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) => {
-      if (!lastPage.data.favouriteProperties || lastPage.data.favouriteProperties.length === 0) return undefined
+      if (!lastPage.data || !lastPage.data.favouriteProperties || lastPage.data.favouriteProperties.length === 0)
+        return undefined
       const totalPages = Math.ceil(lastPage.data.total / itemsPerPage)
       return lastPageParam < totalPages ? lastPageParam + 1 : undefined
     },
@@ -65,7 +66,7 @@ const useGetFavouriteProperty = (): UseGetFavouritePropertyReturn => {
 
   const totalProperties = useMemo(() => {
     if (!propertiesQuery.data || propertiesQuery.data.pages.length === 0) return 0
-    return propertiesQuery.data.pages[0].data.total || 0
+    return propertiesQuery.data.pages[0].data?.total || 0
   }, [propertiesQuery.data])
 
   const reCallQuery = () => {

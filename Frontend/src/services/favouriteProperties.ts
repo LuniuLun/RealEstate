@@ -19,7 +19,12 @@ export const fetchFavouriteProperties = async (
 
     const calledUrl = new URL(`${baseUrl}/${userId}`)
     const token = authStore.getState().token?.token
-
+    if (!token) {
+      return {
+        status: 'error',
+        message: MESSAGE.auth.REQUIRE
+      }
+    }
     calledUrl.searchParams.append('page', page)
     calledUrl.searchParams.append('limit', limit)
 
