@@ -3,16 +3,13 @@ import { Box, Flex, Heading, Text, Stack, Spinner, Badge } from '@chakra-ui/reac
 import { ContactInfo, PropertyDetails } from '@components'
 import { useEstimatePropertyPrice } from '@hooks/UseProperty/useEstimatePropertyPrice'
 import { useEffect, useState } from 'react'
-import { RoleName } from '@type/models'
 import { formatCurrency } from '@utils'
 import useGetPropertyById from '@hooks/UseProperty/useGetPropertyById'
 import ImageGallery from '@components/ImageGallery'
-import useAuthStore from '@stores/Authentication'
 
 const DetailPost = () => {
   const { id } = useParams()
   const { property, isLoading, isError } = useGetPropertyById(Number(id))
-  const { token } = useAuthStore()
   const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null)
 
   const {
@@ -22,7 +19,7 @@ const DetailPost = () => {
   } = useEstimatePropertyPrice()
 
   useEffect(() => {
-    if (property && token && (token.user.role.name === RoleName.BROKER || token.user.role.name === RoleName.ADMIN)) {
+    if (property) {
       estimatePropertyPriceMutation.mutate(property, {
         onSuccess: (response) => {
           if (response.data) {
@@ -32,7 +29,7 @@ const DetailPost = () => {
         }
       })
     }
-  }, [property, token])
+  }, [property])
 
   if (isLoading || isError || !property) {
     return (
@@ -67,18 +64,16 @@ const DetailPost = () => {
             <Box mb={4} p={2} borderRadius='md' bg='gray.50'>
               <Flex align='center' gap={2}>
                 <Text fontWeight='bold'>Hệ thống định giá:</Text>
-                {token?.user.role.name === RoleName.BROKER || token?.user.role.name === RoleName.ADMIN ? (
-                  isEstimateLoading ? (
-                    <Text>Hệ thống đang định giá...</Text>
-                  ) : estimatedPrice ? (
-                    <Badge colorScheme='red' fontSize='md' p={1}>
-                      {formatCurrency(estimatedPrice)} VNĐ
-                    </Badge>
-                  ) : isErrorEstimate ? (
-                    <Text color='red.500'>Lỗi định giá</Text>
-                  ) : null
+                {isEstimateLoading ? (
+                  <Text>Hệ thống đang định giá...</Text>
+                ) : estimatedPrice ? (
+                  <Badge colorScheme='red' fontSize='md' p={1}>
+                    {formatCurrency(estimatedPrice)} VNĐ
+                  </Badge>
+                ) : isErrorEstimate ? (
+                  <Text color='red.500'>Lỗi định giá</Text>
                 ) : (
-                  <Text>Nâng cấp tài khoản để sử dụng chức năng này</Text>
+                  <></>
                 )}
               </Flex>
             </Box>
