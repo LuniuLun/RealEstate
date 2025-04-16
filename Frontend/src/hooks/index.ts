@@ -30,3 +30,4 @@ export { default as useGetFavouriteProperty } from './UseFavouriteProperty/useGe
 export { default as useToggleFavouriteProperty } from './UseFavouriteProperty/useToggleFavouriteProperty'
 
 export { default as useForecastLandPrice } from './UseForecastPrice/useForecastLandPrice'
+export { default as useTransformForecastedData } from './UseForecastPrice/useTransformForecastedData'
