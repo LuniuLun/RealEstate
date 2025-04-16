@@ -9,15 +9,15 @@ import java.util.*;
 
 public class PropertyValuationService {
   private static final Set<String> REQUIRED_FEATURES = Set.of(
-      "Longitude", "Latitude", "Area (m²)", "Floors", "Rooms", "Toilets", "Length (m)");
+      "Longitude", "Latitude", "Area", "Floors", "Rooms", "Toilets", "Length");
 
   private final Evaluator modelEvaluator;
   private final FeatureZscore featureZscore;
   private final FeatureRootTransform featureRootTransform;
   private final Map<String, double[]> scalerParams;
 
-  private final Set<String> sqrtFeatures = Set.of("Longitude", "Latitude", "Area (m²)", "Floors", "Rooms", "Toilets");
-  private final Set<String> zscoreFeatures = Set.of("Length (m)");
+  private final Set<String> sqrtFeatures = Set.of("Longitude", "Latitude", "Area", "Floors", "Rooms", "Toilets");
+  private final Set<String> zscoreFeatures = Set.of("Length");
 
   public PropertyValuationService() {
     try {
