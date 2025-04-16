@@ -23,9 +23,9 @@ public class PropertyFieldConverter {
     // Property fields
     mlModelInput.put("Longitude", property.getLongitude());
     mlModelInput.put("Latitude", property.getLatitude());
-    mlModelInput.put("Area (m²)", property.getArea());
-    mlModelInput.put("Width (m)", property.getWidth());
-    mlModelInput.put("Length (m)", property.getLength());
+    mlModelInput.put("Area", property.getArea());
+    mlModelInput.put("Width ", property.getWidth());
+    mlModelInput.put("Length", property.getLength());
     mlModelInput.put("House Direction", property.getDirection().doubleValue());
 
     // Set default values for house characteristics
