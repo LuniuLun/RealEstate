@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom'
 import { ADMIN_NAV_ITEMS, USER_NAV_ITEMS } from '@constants/option'
 import {
   DashboardIcon,
+  ForecastIcon,
   HeartIcon,
   LeaderboardIcon,
   LogoutIcon,
@@ -25,6 +26,7 @@ const iconMap: Record<string, ElementType> = {
   posts: PostIcon,
   personal: ProfileIcon,
   upgrade: UpgradeIcon,
+  forecast: ForecastIcon,
   myPosts: PostIcon,
   transactions: TransactionIcon,
   savedPosts: HeartIcon

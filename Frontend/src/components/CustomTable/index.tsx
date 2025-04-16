@@ -47,8 +47,8 @@ const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, ...props }: ICus
   const hasActions = Boolean(onEdit || onDelete)
 
   return (
-    <Box overflowX='auto'>
-      <Table borderRadius='lg' {...props}>
+    <Box overflowX='auto' maxH='500px' overflowY='auto'>
+      <Table borderRadius='lg' {...props} position='relative'>
         {title && (
           <TableCaption
             placement='top'
@@ -67,14 +67,18 @@ const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, ...props }: ICus
           <Tr bgColor='brand.secondary'>
             {filteredHeaders.map((header, index) => (
               <Th
+                position='sticky'
+                top={0}
                 key={header}
-                borderBottom={`2px solid $'brand.secondary'`}
+                borderBottom='2px solid'
+                borderColor='brand.secondary'
                 padding={5}
                 minW='150px'
                 fontSize='md'
                 textTransform='capitalize'
                 textAlign={index === 0 ? 'left' : 'center'}
                 color='brand.blackTextSecondary'
+                bgColor='brand.secondary'
               >
                 <Skeleton isLoaded={isLoaded} startColor='gray.100' endColor='gray.300'>
                   {header.replace(/([a-z])([A-Z])/g, '$1 $2')}

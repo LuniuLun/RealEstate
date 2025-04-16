@@ -24,6 +24,18 @@ export const ROLE_OPTION: ISelectOption<string>[] = [
   { value: 'USER', label: 'USER' }
 ]
 
+export const PERIOD_OPTION = [
+  { value: 30, label: '1 tháng' },
+  { value: 90, label: '3 tháng' },
+  { value: 180, label: '6 tháng' },
+  { value: 365, label: '1 năm' }
+]
+
+export const VIEW_MODE_CHART_OPTION = [
+  { value: 'daily', label: 'Giá theo ngày' },
+  { value: 'monthly', label: 'Giá theo tháng' }
+]
+
 export const MODULE_PERMISSION = [
   {
     modulePermission: 'ADMIN',
@@ -57,6 +69,7 @@ export const USER_NAV_ITEMS = [
   { path: 'my-posts', id: 'myPosts', title: 'Bài viết của tôi' },
   { path: 'saved-posts', id: 'savedPosts', title: 'Bài viết đã lưu' },
   { path: 'upgrade', id: 'upgrade', title: 'Nâng cấp' },
+  { path: 'forecast', id: 'forecast', title: 'Dự đoán' },
   { path: 'transactions', id: 'transactions', title: 'Lịch sử giao dịch' }
 ]
 
