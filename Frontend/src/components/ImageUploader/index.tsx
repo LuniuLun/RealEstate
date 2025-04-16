@@ -2,25 +2,28 @@ import { useState, useEffect } from 'react'
 import { Box, Button, Flex, Grid, Heading, IconButton, Image, Input, Stack, useToast } from '@chakra-ui/react'
 import { CloseIcon } from '@assets/icons'
 import { REGEX } from '@constants/regex'
-import colors from '@styles/variables/colors'
+import { parseImagesString } from '@utils'
 
 interface IImageUploaderProps {
   label: string
-  onUpload?: (files: File[]) => void
-  initialImages?: string[]
+  onUpload?: (files: File[], remainingInitialImages: string) => void
+  initialImages?: string
   isLoading?: boolean
 }
 
-const ImageUploader = ({ label, onUpload, initialImages = [], isLoading }: IImageUploaderProps) => {
+const ImageUploader = ({ label, onUpload, initialImages = '', isLoading }: IImageUploaderProps) => {
   const toast = useToast()
-  const [images, setImages] = useState<string[]>(initialImages)
-  const [files, setFiles] = useState<File[]>([])
+  const parsedInitialImages = parseImagesString(initialImages)
+  const [remainingInitialImages, setRemainingInitialImages] = useState<string[]>(parsedInitialImages)
+  const [newFiles, setNewFiles] = useState<File[]>([])
+  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([])
 
   useEffect(() => {
     if (onUpload) {
-      onUpload(files)
+      const remainingImagesString = remainingInitialImages.join(',')
+      onUpload(newFiles, remainingImagesString)
     }
-  }, [files, onUpload])
+  }, [newFiles, remainingInitialImages, onUpload])
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputFiles = event.target.files
@@ -37,19 +40,27 @@ const ImageUploader = ({ label, onUpload, initialImages = [], isLoading }: IImag
       return
     }
 
-    const newImagePreviews = fileArray.map((file) => URL.createObjectURL(file))
-
-    setImages((prev) => [...prev, ...newImagePreviews])
-    setFiles((prev) => [...prev, ...fileArray])
+    const newPreviews = fileArray.map((file) => URL.createObjectURL(file))
+    setNewImagePreviews((prev) => [...prev, ...newPreviews])
+    setNewFiles((prev) => [...prev, ...fileArray])
   }
 
   const handleRemoveImage = (index: number) => {
-    setImages((prevImages) => prevImages.filter((_, i) => i !== index))
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
+    const initialImagesCount = remainingInitialImages.length
+
+    if (index < initialImagesCount) {
+      setRemainingInitialImages((prevImages) => prevImages.filter((_, i) => i !== index))
+    } else {
+      const newIndex = index - initialImagesCount
+      setNewFiles((prevFiles) => prevFiles.filter((_, i) => i !== newIndex))
+      setNewImagePreviews((prevPreviews) => prevPreviews.filter((_, i) => i !== newIndex))
+    }
   }
 
+  const allImages = [...remainingInitialImages, ...newImagePreviews]
+
   return (
-    <Stack gap={5} p={4} border='1px dashed' borderColor={colors.brand.primary} borderRadius='md'>
+    <Stack gap={5} p={4} border='1px dashed' borderColor='brand.primary' borderRadius='md'>
       <Input
         type='file'
         multiple
@@ -65,7 +76,7 @@ const ImageUploader = ({ label, onUpload, initialImages = [], isLoading }: IImag
         </Button>
       </Flex>
       <Grid templateColumns='repeat(auto-fill, minmax(100px, 1fr))' gap={4}>
-        {images.map((src, index) => (
+        {allImages.map((src, index) => (
           <Box
             key={index}
             position='relative'
@@ -84,12 +95,13 @@ const ImageUploader = ({ label, onUpload, initialImages = [], isLoading }: IImag
               right='2px'
               onClick={() => handleRemoveImage(index)}
               aria-label='Remove'
+              isDisabled={isLoading}
             />
           </Box>
         ))}
       </Grid>
       <Box color='gray.500' fontSize='sm'>
-        {`${images.length}/10 images uploaded`}
+        {`${allImages.length}/10 images uploaded`}
       </Box>
     </Stack>
   )

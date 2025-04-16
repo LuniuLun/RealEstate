@@ -1,42 +1,37 @@
-import { useMemo, useEffect } from 'react'
+import { useMemo } from 'react'
 import { Stack, Flex, Spinner, Text, Center, Heading } from '@chakra-ui/react'
 import { PropertyCard, Pagination } from '@components'
-import { filterStore } from '@stores'
+import { propertyFilterStore } from '@stores'
 import { FILTER_OPTION, ITEM_PER_PAGE } from '@constants/option'
 import { useGetProperty, useCustomToast } from '@hooks'
 import { useShallow } from 'zustand/shallow'
-import colors from '@styles/variables/colors'
 import { calculatePricePerSquareMeter, transformPriceUnit } from '@utils'
 
 const ListingProperty = () => {
   const { showToast } = useCustomToast()
-  const { itemsPerPage, currentPage } = filterStore(
+  const { itemsPerPage, currentPage } = propertyFilterStore(
     useShallow((state) => ({
       itemsPerPage: state.itemsPerPage,
       currentPage: state.currentPage
     }))
   )
-
+  const { setItemsPerPage, setCurrentPage } = propertyFilterStore()
   const { properties, propertiesQuery, totalProperties, isLoading, isError } = useGetProperty()
-
-  useEffect(() => {
-    if (isError) {
-      showToast({
-        status: 'error',
-        title: 'Không thể tải dữ liệu, vui lòng thử lại!'
-      })
-    }
-  }, [isError, showToast])
 
   const paginatedProperties = useMemo(() => {
     if (!properties) return []
     return properties.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
   }, [properties, currentPage, itemsPerPage])
-
+  if (isError) {
+    showToast({
+      status: 'error',
+      title: 'Không thể tải dữ liệu, vui lòng thử lại!'
+    })
+  }
   return (
     <Stack my={10} mb={20}>
       <Stack justifyContent='center' alignItems='center' gap={6}>
-        <Heading size='2xl' color={colors.brand.yellowHeading}>
+        <Heading size='2xl' color='brand.yellowHeading'>
           Mua Bán Nhà Đất Chính Chủ, Giá Rẻ
         </Heading>
 
@@ -95,6 +90,10 @@ const ListingProperty = () => {
               hasNextPage={propertiesQuery.hasNextPage}
               itemsPerPageOptions={ITEM_PER_PAGE}
               isLoaded={!propertiesQuery.isFetching || !propertiesQuery.isFetchingNextPage}
+              currentPage={currentPage}
+              setCurrentPage={setItemsPerPage}
+              itemsPerPage={itemsPerPage}
+              setItemsPerPage={setCurrentPage}
             />
           </Flex>
         )}

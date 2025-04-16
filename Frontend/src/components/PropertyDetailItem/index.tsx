@@ -1,5 +1,4 @@
 import { Text, Badge, Stack, Flex } from '@chakra-ui/react'
-import colors from '@styles/variables/colors'
 import { memo, ReactNode } from 'react'
 
 interface PropertyDetailItemProps {
@@ -15,7 +14,7 @@ const PropertyDetailItem = ({ label, value, icon, highlight, badge }: PropertyDe
     <Stack align='flex-start'>
       <Flex alignItems='center' gap={2}>
         {icon}
-        <Text color={colors.brand.blackTextPrimary} fontSize='sm'>
+        <Text color='brand.blackTextPrimary' fontSize='sm'>
           {label}
         </Text>
         {badge ? (
@@ -26,7 +25,7 @@ const PropertyDetailItem = ({ label, value, icon, highlight, badge }: PropertyDe
           <Text
             fontWeight={highlight ? 'bold' : 'normal'}
             fontSize='md'
-            color={highlight ? colors.brand.red : colors.brand.blackTextPrimary}
+            color={highlight ? 'brand.red' : 'brand.blackTextPrimary'}
           >
             {value}
           </Text>

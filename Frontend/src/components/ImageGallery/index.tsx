@@ -1,8 +1,7 @@
 import { useState, useCallback, memo } from 'react'
 import { Box, Flex, Image, IconButton, HStack, useBreakpointValue } from '@chakra-ui/react'
-import { LeftIcon, RightIcon, HeartIcon } from '@assets/icons'
+import { LeftIcon, RightIcon } from '@assets/icons'
 import defaultImage from '@assets/images/default-image.jpg'
-import colors from '@styles/variables/colors'
 
 interface IImageGalleryProps {
   images: string[]
@@ -11,7 +10,6 @@ interface IImageGalleryProps {
 
 const ImageGallery = ({ images, alt = 'Bất động sản' }: IImageGalleryProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [isFavorite, setIsFavorite] = useState(false)
   const totalImages = images.length
   const thumbnailSize = useBreakpointValue({ base: '60px', md: '80px' })
 
@@ -25,10 +23,6 @@ const ImageGallery = ({ images, alt = 'Bất động sản' }: IImageGalleryProp
 
   const handleThumbnailClick = useCallback((index: number) => {
     setCurrentImageIndex(index)
-  }, [])
-
-  const toggleFavorite = useCallback(() => {
-    setIsFavorite((prev) => !prev)
   }, [])
 
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -68,7 +62,7 @@ const ImageGallery = ({ images, alt = 'Bất động sản' }: IImageGalleryProp
           position='absolute'
           left='10px'
           top='50%'
-          bg={colors.brand.blackTextSecondary}
+          bg='brand.blackTextSecondary'
           borderRadius='full'
           size='sm'
           onClick={handlePrevImage}
@@ -80,23 +74,11 @@ const ImageGallery = ({ images, alt = 'Bất động sản' }: IImageGalleryProp
           position='absolute'
           right='10px'
           top='50%'
-          bg={colors.brand.blackTextSecondary}
+          bg='brand.blackTextSecondary'
           borderRadius='full'
           size='sm'
           onClick={handleNextImage}
         />
-
-        <HStack position='absolute' top='10px' right='10px' spacing='2'>
-          <IconButton
-            aria-label='Add to favorites'
-            icon={<HeartIcon />}
-            bg='white'
-            color={isFavorite ? 'red.500' : 'gray.600'}
-            borderRadius='full'
-            size='sm'
-            onClick={toggleFavorite}
-          />
-        </HStack>
       </Box>
 
       <HStack mt='3' spacing='2' overflowX='auto' py='2'>

@@ -1,7 +1,6 @@
 import React from 'react'
 import { Alert, AlertTitle, AlertDescription, Button, Image, Flex } from '@chakra-ui/react'
 import errorImage from '@assets/images/error-message.png'
-import colors from '@styles/variables/colors'
 
 interface IErrorBoundaryProps {
   children: React.ReactNode
@@ -46,10 +45,10 @@ class ErrorBoundary extends React.Component<IErrorBoundaryProps, IErrorBoundaryS
           >
             <Image src={errorImage} alt='Error' maxH='300px' maxW='300px' />
             <Flex flexDirection='column' gap={4}>
-              <AlertTitle color={colors.brand.blackTextPrimary} fontSize='3xl'>
+              <AlertTitle color='brand.blackTextPrimary' fontSize='3xl'>
                 Woops!
               </AlertTitle>
-              <AlertTitle color={colors.brand.blackTextSecondary} fontSize='2xl'>
+              <AlertTitle color='brand.blackTextSecondary' fontSize='2xl'>
                 Something went wrong :(
               </AlertTitle>
               <AlertDescription>{this.state.error?.message || 'An unexpected error occurred'}</AlertDescription>

@@ -1,6 +1,5 @@
 import { Avatar, Box, Flex } from '@chakra-ui/react'
 import InfoGroup from '@components/InfoGroup'
-import colors from '@styles/variables/colors'
 import React, { memo, ReactElement } from 'react'
 
 interface IUserCardProps {
@@ -31,7 +30,7 @@ const UserCard = ({ name, role, avatar }: IUserCardProps) => {
           alignItems='center'
           justifyContent='center'
           border='1px solid'
-          borderColor={colors.brand.black}
+          borderColor='brand.black'
           borderRadius='50%'
           p={2}
         >

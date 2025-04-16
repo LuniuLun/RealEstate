@@ -1,7 +1,9 @@
-
 package apidemo.models;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "favourite_properties")
@@ -19,6 +21,15 @@ public class FavouriteProperty {
   @ManyToOne
   @JoinColumn(name = "property_id", nullable = false)
   private Property property;
+
+  @Column(name = "created_at")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private LocalDateTime createdAt;
+
+  @PrePersist
+  protected void onCreate() {
+    this.createdAt = LocalDateTime.now();
+  }
 
   // Getters and Setters
   public Integer getId() {
@@ -43,5 +54,13 @@ public class FavouriteProperty {
 
   public void setProperty(Property property) {
     this.property = property;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 }

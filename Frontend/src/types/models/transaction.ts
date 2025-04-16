@@ -9,3 +9,5 @@ export interface ITransaction {
   createdAt: Date
   updatedAt: Date
 }
+
+export type TPostTransaction = Omit<ITransaction, 'transactionId' | 'createdAt' | 'updatedAt'>

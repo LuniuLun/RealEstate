@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import apidemo.models.User;
+import apidemo.models.Role.RoleName;
 import apidemo.services.UserService;
 
 import java.util.HashMap;
@@ -75,6 +76,12 @@ public class UserController {
   @PostMapping
   public ResponseEntity<?> createUser(@RequestBody User user) {
     try {
+      User currentUser = getCurrentUser();
+      if (currentUser.getRole().getName() != RoleName.ADMIN) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "You are not authorized to update this user");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+      }
       User createdUser = userService.createUser(user);
       return ResponseEntity.ok(createdUser);
     } catch (RuntimeException e) {
@@ -91,7 +98,7 @@ public class UserController {
 
       // Only allow users to update their own profile (or admin users if you have that
       // role)
-      if (!currentUser.getId().equals(id)) {
+      if (!currentUser.getId().equals(id) && currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "You are not authorized to update this user");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
@@ -113,7 +120,7 @@ public class UserController {
 
       // Only allow users to update their own profile (or admin users if you have that
       // role)
-      if (!currentUser.getId().equals(id)) {
+      if (!currentUser.getId().equals(id) && currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "You are not authorized to update this user");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
@@ -135,7 +142,7 @@ public class UserController {
 
       // Only allow users to delete their own account (or admin users if you have that
       // role)
-      if (!currentUser.getId().equals(id)) {
+      if (!currentUser.getId().equals(id) && currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "You are not authorized to delete this user");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);

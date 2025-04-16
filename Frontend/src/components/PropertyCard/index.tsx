@@ -1,9 +1,9 @@
 import { Box, Text, Stack, Flex } from '@chakra-ui/react'
 import InfoGroup from '@components/InfoGroup'
 import defaultImage from '@assets/images/default-image.jpg'
-import colors from '@styles/variables/colors'
 import { memo, useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import FavouritePropertyIcon from '@components/FavouritePropertyIcon'
 
 interface IPropertyCardProps {
   id: number
@@ -30,6 +30,7 @@ const PropertyCard = ({ id, imageUrl, title, description, price, areaInfo, locat
 
   return (
     <Box
+      position='relative'
       display='flex'
       alignItems='flex-end'
       border='1px solid #E2E8F0'
@@ -46,31 +47,33 @@ const PropertyCard = ({ id, imageUrl, title, description, price, areaInfo, locat
       cursor='pointer'
     >
       <img src={imageUrl} alt='' style={{ display: 'none' }} onError={() => setBgSrc(defaultImage)} />
+      <Box position='absolute' top='10px' right='10px'>
+        <FavouritePropertyIcon propertyId={id} />
+      </Box>
       <Stack
         justifyContent='space-between'
         spacing={2}
-        bgColor={colors.brand.white}
+        bgColor='brand.white'
         p={4}
         borderRadius='xl'
         h='160px'
         w='100%'
         border='1px solid'
-        borderColor={colors.brand.grey}
+        borderColor='brand.grey'
         boxShadow='sm'
       >
         <InfoGroup heading={title} description={description} size='md' />
-
         <Stack>
           <Flex align='center' justify='space-between'>
-            <Text fontSize='lg' fontWeight='bold' color={colors.brand.red}>
+            <Text fontSize='lg' fontWeight='bold' color='brand.red'>
               {price}
             </Text>
-            <Text fontSize='sm' color={colors.brand.blackTextSecondary}>
+            <Text fontSize='sm' color='brand.blackTextSecondary'>
               {areaInfo}
             </Text>
           </Flex>
 
-          <Flex fontSize='sm' color={colors.brand.blackTextPrimary}>
+          <Flex fontSize='sm' color='brand.blackTextPrimary'>
             <Text>
               {location} • {time}
             </Text>

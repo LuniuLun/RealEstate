@@ -40,7 +40,7 @@ public class ForecastController {
 
     User currentUser = getCurrentUser();
 
-    if (currentUser.getRole().getName() == RoleName.CUSTOMER) {
+    if (currentUser.getRole().getName() == RoleName.BROKER && currentUser.getRole().getName() != RoleName.ADMIN) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN)
           .body(Map.of("message", "Nâng cấp tài khoản trước để dùng chức năng này"));
     }

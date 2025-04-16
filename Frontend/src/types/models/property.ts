@@ -40,22 +40,21 @@ export interface IProperty {
   land?: ILand | null
 }
 
-export type TPostProperty = Omit<
-  IProperty,
-  'id' | 'createdAt' | 'updatedAt' | 'status' | 'images' | 'house' | 'land'
-> & {
-  house?: Omit<IHouse, 'id'> | null
-  land?: Omit<ILand, 'id'> | null
-}
+export type TPostProperty = Omit<IProperty, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'images' | 'house' | 'land'>
 
 export interface IFavouriteProperty {
   id: number
   user: IUser
   property: IProperty
+  createdAt: string
 }
 
 export interface IPropertyStatistic {
   approved: number
   canceled: number
   pending: number
+}
+
+export interface IEstimatePropertyResult {
+  estimatedPrice: number
 }

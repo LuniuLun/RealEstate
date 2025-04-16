@@ -22,4 +22,6 @@ public interface PropertyRepository extends JpaRepository<Property, Integer>, Jp
   long countByStatusAndCategory_id(PropertyStatus status, int categoryId);
 
   long countByStatusAndUser_id(PropertyStatus status, int userId);
+
+  long countByUser_idAndStatus(int userId, PropertyStatus status);
 }

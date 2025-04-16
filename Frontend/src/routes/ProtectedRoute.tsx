@@ -4,17 +4,17 @@ import { Navigate, Outlet } from 'react-router-dom'
 type ProtectedRouteProps = {
   isAllowed: boolean
   redirectPath?: string
-  requiredRole?: string
+  requiredRole?: RoleName[]
   userRoles?: RoleName
 }
 
 const ProtectedRoute = ({
   isAllowed,
   redirectPath = '/',
-  requiredRole,
-  userRoles = RoleName.CUSTOMER
+  requiredRole = [RoleName.CUSTOMER],
+  userRoles
 }: ProtectedRouteProps) => {
-  if (!isAllowed || (requiredRole && !userRoles.includes(requiredRole))) {
+  if (!isAllowed || (requiredRole && !requiredRole.includes(userRoles!))) {
     return <Navigate to={redirectPath} replace />
   }
 

@@ -28,10 +28,7 @@ const NavItem = ({ icon, title, isActive, to, onClick }: INavItemProps) => {
             })}
           </Box>
         )}
-        <Text
-          fontWeight={isActive ? 'bold' : 'normal'}
-          color={isActive ? colors.brand.primary : colors.brand.blackTextPrimary}
-        >
+        <Text fontWeight={isActive ? 'bold' : 'normal'} color={isActive ? 'brand.primary' : 'brand.blackTextPrimary'}>
           {title}
         </Text>
       </Flex>

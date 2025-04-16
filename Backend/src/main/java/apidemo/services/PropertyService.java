@@ -73,6 +73,32 @@ public class PropertyService {
     return response;
   }
 
+  public Map<String, Object> getPropertiesByUser(Integer userId, Integer limit, Integer page,
+      String sortBy, String typeOfSort, Map<String, String> filters) {
+
+    if (page != null && page < 1) {
+      throw new IllegalArgumentException("Page index must be greater than zero");
+    }
+
+    userService.getUserById(userId);
+    Pageable pageRequest = filter.createPageRequest(limit, page, sortBy, typeOfSort);
+
+    if (filters == null) {
+      filters = new HashMap<>();
+    }
+    filters.put("userId", userId.toString());
+
+    Specification<Property> spec = buildPropertySpecification(filters);
+    long total = propertyRepository.count(spec);
+    List<Property> properties = propertyRepository.findAll(spec, pageRequest).getContent();
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("properties", properties);
+    response.put("total", total);
+
+    return response;
+  }
+
   public Specification<Property> buildPropertySpecification(Map<String, String> filters) {
     return (root, query, cb) -> {
       List<Predicate> predicates = new ArrayList<>();
@@ -95,6 +121,7 @@ public class PropertyService {
       CriteriaBuilder cb, Root<Property> root) {
     applyStringFilter(predicates, filters, "status",
         value -> cb.equal(root.get("status"), PropertyStatus.valueOf(value)), false);
+    applyIntFilter(predicates, filters, "userId", value -> cb.equal(root.get("user").get("id"), value));
     applyIntFilter(predicates, filters, "category", value -> cb.equal(root.get("category").get("id"), value));
     applyIntFilter(predicates, filters, "direction", value -> cb.equal(root.get("direction"), value));
     applyStringFilter(predicates, filters, "region", value -> cb.like(root.get("region"), "%" + value + "%"), true);
@@ -151,7 +178,7 @@ public class PropertyService {
         .orElseThrow(() -> new RuntimeException("Property does not exist"));
   }
 
-  public List<Property> getPropertiesById(int userId) {
+  public List<Property> getPropertiesByUserId(int userId) {
     return propertyRepository.findByUser_id(userId);
   }
 
@@ -251,6 +278,7 @@ public class PropertyService {
     property.setTitle(propertyDetails.getTitle());
     property.setDescription(propertyDetails.getDescription());
     property.setRegion(propertyDetails.getRegion());
+    property.setDistrictName(propertyDetails.getDistrictName());
     property.setWardName(propertyDetails.getWardName());
     property.setStreetName(propertyDetails.getStreetName());
     property.setLongitude(propertyDetails.getLongitude());
@@ -294,6 +322,7 @@ public class PropertyService {
     requiredFields.put("Title", property.getTitle());
     requiredFields.put("Description", property.getDescription());
     requiredFields.put("Region", property.getRegion());
+    requiredFields.put("District name", property.getDistrictName());
     requiredFields.put("Ward name", property.getWardName());
     requiredFields.put("Street name", property.getStreetName());
     requiredFields.put("Longitude", property.getLongitude());
@@ -341,7 +370,9 @@ public class PropertyService {
     return propertyRepository.countByStatusAndCategory_id(status, categoryId);
   }
 
-  public long getCountPropertiesByStatusAndUser(PropertyStatus status, int userId) {
-    return propertyRepository.countByStatusAndUser_id(status, userId);
+  public long getCountPropertiesByUserAndStatus(int userId, PropertyStatus status) {
+    userService.getUserById(userId);
+    return propertyRepository.countByUser_idAndStatus(userId, status);
   }
+
 }

@@ -2,10 +2,10 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { fetchProperties } from '@services/property'
 import { IProperty } from '@type/models'
-import { filterStore } from '@stores'
+import { propertyFilterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
 
-interface UseGetPropertyReturn {
+export interface UseGetPropertyReturn {
   properties: IProperty[] | undefined
   propertiesQuery: ReturnType<typeof useInfiniteQuery>
   totalProperties: number
@@ -15,23 +15,34 @@ interface UseGetPropertyReturn {
   isError: boolean
 }
 
+export interface PropertyPageData {
+  properties: IProperty[]
+  total: number
+}
+
 interface PropertyResponse {
-  data: { properties: IProperty[]; total: number }
+  data: PropertyPageData
 }
 
 const useGetProperty = (): UseGetPropertyReturn => {
-  const { searchQuery, sortBy, itemsPerPage, filterCriteria } = filterStore(
+  const { searchQuery, sortBy, itemsPerPage, propertyFilterCriteria } = propertyFilterStore(
     useShallow((state) => ({
       searchQuery: state.searchQuery,
       sortBy: state.sortBy,
       itemsPerPage: state.itemsPerPage,
-      filterCriteria: state.filterCriteria
+      propertyFilterCriteria: state.propertyFilterCriteria
     }))
   )
 
   const queryClient = useQueryClient()
 
-  const infinitePropertyQueryKey = ['properties', itemsPerPage, searchQuery, sortBy, JSON.stringify(filterCriteria)]
+  const infinitePropertyQueryKey = [
+    'properties',
+    itemsPerPage,
+    searchQuery,
+    sortBy,
+    JSON.stringify(propertyFilterCriteria)
+  ]
 
   const propertiesQuery = useInfiniteQuery({
     queryKey: infinitePropertyQueryKey,
@@ -43,7 +54,7 @@ const useGetProperty = (): UseGetPropertyReturn => {
         value: searchQuery,
         sortBy,
         typeOfSort: 'desc',
-        filterCriteria
+        propertyFilterCriteria
       })) as unknown as PropertyResponse
     },
     initialPageParam: 1,

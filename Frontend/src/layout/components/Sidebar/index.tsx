@@ -1,48 +1,53 @@
 import { ElementType, useEffect, useRef, useState } from 'react'
-import { Stack, useBreakpointValue } from '@chakra-ui/react'
-import { Logo, NavItem } from '@components'
+import { Button, Stack, useBreakpointValue } from '@chakra-ui/react'
+import { NavItem } from '@components'
 import { useLocation } from 'react-router-dom'
-import { NAV_ITEMS } from '@constants/option'
+import { ADMIN_NAV_ITEMS, USER_NAV_ITEMS } from '@constants/option'
 import {
   DashboardIcon,
+  HeartIcon,
   LeaderboardIcon,
-  DocumentIcon,
-  GalleryIcon,
-  HelpIcon,
-  HierarchyIcon,
-  MessageIcon,
-  SettingIcon,
-  LogoIcon
+  LogoutIcon,
+  PersonalIcon,
+  PostIcon,
+  ProfileIcon,
+  TransactionIcon,
+  UpgradeIcon
 } from '@assets/icons'
 import { useSidebar } from '@hooks'
+import { authStore } from '@stores'
+import { RoleName } from '@type/models'
+import colors from '@styles/variables/colors'
 
 const iconMap: Record<string, ElementType> = {
   dashboard: DashboardIcon,
   users: LeaderboardIcon,
-  documents: DocumentIcon,
-  photos: GalleryIcon,
-  hierarchy: HierarchyIcon,
-  message: MessageIcon,
-  help: HelpIcon,
-  setting: SettingIcon
+  posts: PostIcon,
+  personal: ProfileIcon,
+  upgrade: UpgradeIcon,
+  myPosts: PostIcon,
+  transactions: TransactionIcon,
+  savedPosts: HeartIcon
 }
 
 const Sidebar = () => {
-  const [activeNavItem, setActiveNavItem] = useState<string>('dashboard')
+  const [activeNavItem, setActiveNavItem] = useState<string>('personal')
   const { isSidebarOpen, closeSidebar } = useSidebar()
+  const { token, logout } = authStore()
   const sidebarRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
   const isTablet = useBreakpointValue({ base: true, xl: false })
+  const NAV_ITEMS = token?.user?.role?.name === RoleName.ADMIN ? ADMIN_NAV_ITEMS : USER_NAV_ITEMS
 
   useEffect(() => {
-    const currentPath = location.pathname
-    const normalizedCurrentPath = currentPath.replace(/\/$/, '')
+    const currentPath = location.pathname.replace(/\/$/, '')
 
     const matchedItem = NAV_ITEMS.find((item) => {
-      return normalizedCurrentPath === item.path || normalizedCurrentPath.startsWith(item.path + '/')
+      const itemPath = `/personal/${item.path}`.replace('//', '/')
+      return currentPath === itemPath || currentPath.startsWith(itemPath + '/')
     })
 
-    setActiveNavItem(matchedItem ? matchedItem.id : 'dashboard')
+    setActiveNavItem(matchedItem ? matchedItem.id : 'personal')
   }, [location.pathname])
 
   useEffect(() => {
@@ -73,13 +78,14 @@ const Sidebar = () => {
         xl: 'translateX(0)'
       }}
       zIndex={1000}
-      width='254px'
       minH='100vh'
-      padding='40px 0 40px'
+      w='100%'
+      maxW='238px'
+      padding='20px 0 40px'
       bgColor='white'
     >
-      <Stack paddingLeft='32px'>
-        <Logo icon={<LogoIcon />} src='/' />
+      <Stack alignItems='center' justify='center'>
+        <PersonalIcon />
       </Stack>
       <Stack gap={2}>
         {NAV_ITEMS.map((item) => {
@@ -87,15 +93,28 @@ const Sidebar = () => {
           return (
             <NavItem
               key={item.id}
-              icon={<Icon />}
+              icon={<Icon height='24px' width='24px' />}
               title={item.title}
               isActive={activeNavItem === item.id}
-              to={item.path}
+              to={`/personal/${item.path}`}
               onClick={() => closeSidebar()}
             />
           )
         })}
       </Stack>
+      <Button
+        aria-label='log out'
+        leftIcon={<LogoutIcon fill={colors.brand.red} />}
+        alignSelf='flex-start'
+        bg='transparent'
+        borderRadius='full'
+        size='sm'
+        color='brand.red'
+        _hover={{ bg: 'transparent' }}
+        onClick={logout}
+      >
+        Đăng xuất
+      </Button>
     </Stack>
   )
 }

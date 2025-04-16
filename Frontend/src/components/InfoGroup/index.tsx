@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import { Text, Stack, BoxProps } from '@chakra-ui/react'
 import { TSizeInfoGroup } from '@type/variant'
-import colors from '@styles/variables/colors'
 
 interface IInfoGroupProps extends BoxProps {
   heading: string
@@ -15,7 +14,7 @@ const InfoGroup = ({ heading, description, size = 'sm', ...props }: IInfoGroupPr
       <Text
         fontWeight='500'
         fontSize={size === 'sm' ? '0.875rem' : size === 'md' ? '1rem' : '1.5rem'}
-        color={colors.brand.black}
+        color='brand.black'
         maxW='inherit'
         sx={{
           display: '-webkit-box',
@@ -29,7 +28,7 @@ const InfoGroup = ({ heading, description, size = 'sm', ...props }: IInfoGroupPr
       <Text
         fontWeight='400'
         fontSize={size === 'sm' ? '0.75rem' : size === 'md' ? '0.875rem' : '1rem'}
-        color={colors.brand.blackTextSecondary}
+        color='brand.blackTextSecondary'
         maxW='inherit'
         sx={{
           display: '-webkit-box',

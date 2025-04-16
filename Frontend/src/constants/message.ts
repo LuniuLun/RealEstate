@@ -23,7 +23,13 @@ const MESSAGE = {
     GET_SUCCESS: 'Lấy danh sách bất động sản thành công',
     GET_FAILED: 'Không thể tải danh sách bất động sản',
     FILTER_SUCCESS: 'Lọc bất động sản thành công',
-    FILTER_FAILED: 'Lọc bất động sản thất bại'
+    FILTER_FAILED: 'Lọc bất động sản thất bại',
+    ESTIMATE_FAILED: 'Dự đoán giá thất bại',
+    ESTIMATE_SUCCESS: 'Định giá thành công'
+  },
+  favouriteProperty: {
+    EDIT_SUCCESS: 'Cập nhật danh sách yêu thích thành công',
+    EDIT_FAILED: 'Cập nhật danh sách yêu thích thất bại'
   },
   common: {
     ERROR_EVENT: 'Chức năng chưa được hỗ trợ',
@@ -45,6 +51,26 @@ const MESSAGE = {
     WEAK_PASSWORD: 'Mật khẩu phải có ít nhất 8 ký tự, chứa ít nhất 1 chữ hoa và 1 ký tự đặc biệt',
     MISMATCH_PASSWORD: 'Mật khẩu không khớp',
     TERMREQUIRED: 'Bạn cần đồng ý với điều khoản dịch vụ'
+  },
+  coordinates: {
+    GET_SUCCESS: 'Lấy toạ độ thành công',
+    GET_FAILED: 'Không tồn tại vị trí này'
+  },
+  payment: {
+    GET_SUCCESS: 'Khởi tạo cổng thanh toán thành công',
+    GET_FAILED: 'Không thể khởi tạo cổng thanh toán',
+    PAY_SUCCESS: 'Thanh toán thành công',
+    PAY_FAILED: 'Thanh toán không thành công'
+  },
+  transaction: {
+    ADD_SUCCESS: 'Tạo giao dịch thành công',
+    ADD_FAILED: 'Tạo giao dịch thất bại',
+    UPDATE_SUCCESS: 'Cập nhật giao dịch thành công',
+    UPDATE_FAILED: 'Cập nhật giao dịch thất bại',
+    DELETE_SUCCESS: 'Xóa giao dịch thành công',
+    DELETE_FAILED: 'Xóa giao dịch thất bại',
+    GET_SUCCESS: 'Lấy danh sách giao dịch thành công',
+    GET_FAILED: 'Không thể tải danh sách giao dịch'
   }
 }
 

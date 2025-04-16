@@ -19,6 +19,10 @@ export interface IUser {
 
 export type TRegisterUserRequest = Omit<IUser, 'id' | 'createdAt' | 'updatedAt'>
 export type TLoginUserRequest = Pick<TRegisterUserRequest, 'phone' | 'password'>
+export type TLoginUserResponse = {
+  token: IToken
+  favouritePropertyIds: number[]
+}
 
 export interface IToken {
   id: number

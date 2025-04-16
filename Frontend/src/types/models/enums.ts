@@ -1,7 +1,8 @@
 export enum PropertyStatus {
   PENDING = 'PENDING',
   APPROVAL = 'APPROVAL',
-  CANCELED = 'CANCELED'
+  CANCELED = 'CANCELED',
+  ALL = 'ALL'
 }
 
 export enum CategoryName {

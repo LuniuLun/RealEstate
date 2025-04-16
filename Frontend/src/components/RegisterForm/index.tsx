@@ -1,7 +1,6 @@
 import { Button, Checkbox, Divider, Flex, Stack, Text, useToast, Box, Heading } from '@chakra-ui/react'
 import { GoogleIcon } from '@assets/icons'
 import { TextField } from '@components'
-import colors from '@styles/variables/colors'
 import { Link } from 'react-router-dom'
 import { useForm, SubmitHandler, Controller } from 'react-hook-form'
 import { useRegisterUser } from '@hooks'
@@ -62,12 +61,12 @@ const RegisterForm = () => {
   }
   return (
     <Stack gap={5} maxW='500px' w='100%' as='form' onSubmit={handleSubmit(onSubmit)}>
-      <Heading fontSize='2xl' color={colors.brand.blackTextPrimary} mb={5} alignSelf='flex-start' maxW='500px'>
+      <Heading fontSize='2xl' color='brand.blackTextPrimary' mb={5} alignSelf='flex-start' maxW='500px'>
         Đăng ký JustHome
       </Heading>
       <Button
         variant='primary'
-        bgColor={colors.brand.blue}
+        bgColor='brand.blue'
         px='unset'
         w='300px'
         height={10}
@@ -83,7 +82,7 @@ const RegisterForm = () => {
 
       <Flex align='center' gap={4}>
         <Divider my={5} border='1px solid #D9D9D9' />
-        <Text color={colors.brand.yellowHeading}>Hoặc</Text>
+        <Text color='brand.yellowHeading'>Hoặc</Text>
         <Divider my={5} border='1px solid #D9D9D9' />
       </Flex>
 
@@ -216,11 +215,11 @@ const RegisterForm = () => {
             ref={ref}
           >
             Bằng việc tạo tài khoản, bạn đồng ý với{' '}
-            <Text as='span' color={colors.brand.yellowHeading}>
+            <Text as='span' color='brand.yellowHeading'>
               Điều khoản dịch vụ{' '}
             </Text>
             và{' '}
-            <Text as='span' color={colors.brand.yellowHeading}>
+            <Text as='span' color='brand.yellowHeading'>
               Chính sách bảo mật
             </Text>
             .
@@ -243,7 +242,7 @@ const RegisterForm = () => {
       <Text mt={3}>
         Đã có tài khoản?{' '}
         <Link to='/login'>
-          <Text as='span' color={colors.brand.yellowHeading}>
+          <Text as='span' color='brand.yellowHeading'>
             Đăng nhập
           </Text>
         </Link>

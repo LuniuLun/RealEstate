@@ -2,14 +2,14 @@ import { Flex, Heading, Stack } from '@chakra-ui/react'
 import BaseHeader from '../Base'
 import ThumnailImage from '@assets/images/just-home-thumnail.png'
 import { CheckboxPopover, CustomSelect, Filter, RangeFilter } from '@components'
-import colors from '@styles/variables/colors'
 import { FILTER_OPTION, SORT_PROPERTY_OPTION } from '@constants/option'
-import { filterStore } from '@stores'
+import { propertyFilterStore } from '@stores'
 import { CategoryName, Unit } from '@type/models'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const ClientHeader = () => {
-  const { filterCriteria, setFilterCriteria, resetFilters } = filterStore()
+  const { propertyFilterCriteria, setPropertyFilterCriteria, resetFilters } = propertyFilterStore()
+  const { searchQuery, sortBy, setSearchQuery, setSortBy } = propertyFilterStore()
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -34,7 +34,7 @@ const ClientHeader = () => {
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     resetFilters()
-    setFilterCriteria({
+    setPropertyFilterCriteria({
       category: Number.parseInt(e.target.value)
     })
     ensureOnPropertyListings()
@@ -44,21 +44,21 @@ const ClientHeader = () => {
     const numericValue = Number.parseInt(value)
     const currentFeatures =
       filterType === CategoryName.LAND
-        ? filterCriteria.landCharacteristics || []
-        : filterCriteria.houseCharacteristics || []
+        ? propertyFilterCriteria.landCharacteristics || []
+        : propertyFilterCriteria.houseCharacteristics || []
 
     const newFeatures = currentFeatures.includes(numericValue)
       ? currentFeatures.filter((id) => id !== numericValue)
       : [...currentFeatures, numericValue]
 
-    setFilterCriteria({
+    setPropertyFilterCriteria({
       [filterType === CategoryName.LAND ? 'landCharacteristics' : 'houseCharacteristics']: newFeatures
     })
     ensureOnPropertyListings()
   }
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterCriteria({
+    setPropertyFilterCriteria({
       location: {
         province: e.target.value
       }
@@ -67,28 +67,28 @@ const ClientHeader = () => {
   }
 
   const handleDirectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterCriteria({
+    setPropertyFilterCriteria({
       direction: Number.parseInt(e.target.value)
     })
     ensureOnPropertyListings()
   }
 
   const handleLandTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterCriteria({
+    setPropertyFilterCriteria({
       landType: Number.parseInt(e.target.value)
     })
     ensureOnPropertyListings()
   }
 
   const handleHouseTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterCriteria({
+    setPropertyFilterCriteria({
       houseType: Number.parseInt(e.target.value)
     })
     ensureOnPropertyListings()
   }
 
   const handleBedroomsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterCriteria({
+    setPropertyFilterCriteria({
       bedrooms: Number.parseInt(e.target.value)
     })
     ensureOnPropertyListings()
@@ -106,16 +106,22 @@ const ClientHeader = () => {
     >
       <BaseHeader />
       <Stack alignItems='center' justifyContent='center' gap={4} height='100%'>
-        <Heading variant='primary' color={colors.brand.white}>
+        <Heading variant='primary' color='brand.white'>
           Đặt niềm tin vào chúng tôi
         </Heading>
-        <Filter sortOptions={SORT_PROPERTY_OPTION} />
+        <Filter
+          sortOptions={SORT_PROPERTY_OPTION}
+          searchQuery={searchQuery}
+          sortBy={sortBy}
+          setSearchQuery={setSearchQuery}
+          setSortBy={setSortBy}
+        />
         <Flex gap={2} mt={4} flexWrap='wrap' justifyContent='center'>
           <CustomSelect
             {...selectConfig}
             options={FILTER_OPTION.location}
             placeholder='Đà Nẵng'
-            value={filterCriteria.location?.province || ''}
+            value={propertyFilterCriteria.location?.province || ''}
             onChange={handleLocationChange}
           />
 
@@ -123,9 +129,10 @@ const ClientHeader = () => {
             {...selectConfig}
             options={FILTER_OPTION.category}
             placeholder={
-              FILTER_OPTION.category.find((option) => option.value === filterCriteria.category)?.label || 'Chọn loại'
+              FILTER_OPTION.category.find((option) => option.value === propertyFilterCriteria.category)?.label ||
+              'Chọn loại'
             }
-            value={filterCriteria.category?.toString() || ''}
+            value={propertyFilterCriteria.category?.toString() || ''}
             onChange={handleCategoryChange}
           />
 
@@ -133,32 +140,32 @@ const ClientHeader = () => {
             {...selectConfig}
             label='Giá'
             unit={Unit.BILLION}
-            values={{ min: filterCriteria?.minPrice, max: filterCriteria.maxPrice }}
-            onRangeChange={(values) => setFilterCriteria({ minPrice: values.min, maxPrice: values.max })}
+            values={{ min: propertyFilterCriteria?.minPrice, max: propertyFilterCriteria.maxPrice }}
+            onRangeChange={(values) => setPropertyFilterCriteria({ minPrice: values.min, maxPrice: values.max })}
           />
 
           <RangeFilter
             {...selectConfig}
             label='Diện tích'
             unit={Unit.SQUARE_METERS}
-            values={{ min: filterCriteria.minArea, max: filterCriteria.maxArea }}
-            onRangeChange={(values) => setFilterCriteria({ minArea: values.min, maxArea: values.max })}
+            values={{ min: propertyFilterCriteria.minArea, max: propertyFilterCriteria.maxArea }}
+            onRangeChange={(values) => setPropertyFilterCriteria({ minArea: values.min, maxArea: values.max })}
           />
 
           <CustomSelect
             {...selectConfig}
             options={FILTER_OPTION.direction}
             placeholder='Hướng'
-            value={filterCriteria.direction?.toString() || ''}
+            value={propertyFilterCriteria.direction?.toString() || ''}
             onChange={handleDirectionChange}
           />
 
-          {filterCriteria.category === 1 ? (
+          {propertyFilterCriteria.category === 1 ? (
             <>
               <CheckboxPopover
                 {...selectConfig}
                 options={FILTER_OPTION.landCharacteristics}
-                selectedValues={filterCriteria.landCharacteristics?.map((id) => id.toString()) || []}
+                selectedValues={propertyFilterCriteria.landCharacteristics?.map((id) => id.toString()) || []}
                 filterType={CategoryName.LAND}
                 title='Đặc điểm đất'
                 onValueChange={handleFilterFeatureChange}
@@ -168,17 +175,17 @@ const ClientHeader = () => {
                 {...selectConfig}
                 options={FILTER_OPTION.landType}
                 placeholder='Loại đất'
-                value={filterCriteria.landType?.toString() || ''}
+                value={propertyFilterCriteria.landType?.toString() || ''}
                 onChange={handleLandTypeChange}
               />
             </>
-          ) : filterCriteria.category === 2 ? (
+          ) : propertyFilterCriteria.category === 2 ? (
             <>
               <CustomSelect
                 {...selectConfig}
                 options={FILTER_OPTION.houseType}
                 placeholder='Loại nhà'
-                value={filterCriteria.houseType?.toString() || ''}
+                value={propertyFilterCriteria.houseType?.toString() || ''}
                 onChange={handleHouseTypeChange}
               />
 
@@ -186,7 +193,7 @@ const ClientHeader = () => {
                 {...selectConfig}
                 options={FILTER_OPTION.bedrooms}
                 placeholder='Số phòng ngủ'
-                value={filterCriteria.bedrooms?.toString() || ''}
+                value={propertyFilterCriteria.bedrooms?.toString() || ''}
                 onChange={handleBedroomsChange}
               />
 
@@ -194,14 +201,14 @@ const ClientHeader = () => {
                 {...selectConfig}
                 options={FILTER_OPTION.toilets}
                 placeholder='Số phòng vệ sinh'
-                value={filterCriteria.toilets?.toString() || ''}
+                value={propertyFilterCriteria.toilets?.toString() || ''}
                 onChange={handleBedroomsChange}
               />
 
               <CheckboxPopover
                 options={FILTER_OPTION.houseCharacteristics}
                 selectedValues={
-                  filterCriteria.houseCharacteristics?.map(
+                  propertyFilterCriteria.houseCharacteristics?.map(
                     (id) => FILTER_OPTION.houseCharacteristics.find((opt) => opt.value === id)?.label || ''
                   ) || []
                 }

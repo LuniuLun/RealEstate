@@ -87,23 +87,27 @@ public class FirebaseFileService {
   }
 
   public List<String> updateMultiFile(String initFiles, String remainFile, MultipartFile[] files) {
-    List<String> finalImagesList = storeMultiFile(files);
-    // Add images to keep (if any)
-    if (remainFile != null && !remainFile.isEmpty()) {
-      String[] imagesToKeepArray = remainFile.split(",");
-      finalImagesList.addAll(Arrays.asList(imagesToKeepArray));
-    }
+    List<String> finalImagesList = new ArrayList<>();
 
     List<String> existingImages = new ArrayList<>();
     if (initFiles != null && !initFiles.isEmpty()) {
-      existingImages = Arrays.asList(initFiles.split(","));
+      existingImages = new ArrayList<>(Arrays.asList(initFiles.split(",")));
     }
 
-    // Find images to delete (images in existing but not in imagesToKeep)
+    List<String> imagesToKeep = new ArrayList<>();
+    if (remainFile != null && !remainFile.isEmpty()) {
+      imagesToKeep = new ArrayList<>(Arrays.asList(remainFile.split(",")));
+    }
+
     for (String existingImage : existingImages) {
-      if (!finalImagesList.contains(existingImage)) {
+      if (!imagesToKeep.contains(existingImage)) {
         deleteFile(existingImage);
       }
+    }
+    finalImagesList.addAll(imagesToKeep);
+
+    if (files != null && files.length > 0) {
+      finalImagesList.addAll(storeMultiFile(files));
     }
 
     return finalImagesList;

@@ -1,4 +1,5 @@
 import { ISelectOption } from '@components/CustomSelect'
+import { PropertyStatus } from '@type/models'
 
 export const SORT_USER_OPTION: ISelectOption<string>[] = [
   { value: 'firstName', label: 'Name' },
@@ -9,6 +10,11 @@ export const SORT_USER_OPTION: ISelectOption<string>[] = [
 export const SORT_PROPERTY_OPTION: ISelectOption<string>[] = [
   { value: 'price', label: 'Mệnh giá' },
   { value: 'area', label: 'Diện tích' },
+  { value: 'createdAt', label: 'Ngày giao dịch' }
+]
+
+export const SORT_TRANSACTION_OPTION: ISelectOption<string>[] = [
+  { value: 'amount', label: 'Mệnh giá' },
   { value: 'createdAt', label: 'Ngày tạo' }
 ]
 
@@ -39,16 +45,30 @@ export const MODULE_PERMISSION = [
   }
 ]
 
-export const NAV_ITEMS = [
-  { path: '/', id: 'dashboard', title: 'Dashboard' },
-  { path: '/users', id: 'users', title: 'Users' },
-  { path: '/posts', id: 'posts', title: 'Posts' },
-  { path: '/', id: 'setting', title: 'Setting' }
+export const ADMIN_NAV_ITEMS = [
+  { path: '', id: 'personal', title: 'Thông tin cá nhân' },
+  { path: 'posts', id: 'posts', title: 'Bài viết' },
+  { path: 'users', id: 'users', title: 'Tài khoản' },
+  { path: 'dashboard', id: 'dashboard', title: 'Thống kê' }
+]
+
+export const USER_NAV_ITEMS = [
+  { path: '', id: 'personal', title: 'Thông tin cá nhân' },
+  { path: 'my-posts', id: 'myPosts', title: 'Bài viết của tôi' },
+  { path: 'saved-posts', id: 'savedPosts', title: 'Bài viết đã lưu' },
+  { path: 'upgrade', id: 'upgrade', title: 'Nâng cấp' },
+  { path: 'transactions', id: 'transactions', title: 'Lịch sử giao dịch' }
 ]
 
 export const ITEM_PER_PAGE = [5, 10, 12, 20, 50]
 
 export const FILTER_OPTION = {
+  status: [
+    { value: PropertyStatus.PENDING, label: 'Chờ duyệt' },
+    { value: PropertyStatus.APPROVAL, label: 'Đã duyệt' },
+    { value: PropertyStatus.CANCELED, label: 'Đã đóng' },
+    { value: PropertyStatus.ALL, label: 'Tất cả' }
+  ],
   location: [{ value: '43', label: 'Đà Nẵng' }],
   category: [
     { value: 1, label: 'Đất' },
@@ -75,7 +95,8 @@ export const FILTER_OPTION = {
     { value: 5, label: 'Đông Bắc' },
     { value: 6, label: 'Đông Nam' },
     { value: 7, label: 'Tây Bắc' },
-    { value: 8, label: 'Tây Nam' }
+    { value: 8, label: 'Tây Nam' },
+    { value: -1, label: 'Tất cả' }
   ],
   landCharacteristics: [
     { value: 1, label: 'Mặt tiền' },
