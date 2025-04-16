@@ -11,7 +11,6 @@ import apidemo.models.Role.RoleName;
 import apidemo.services.UserService;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,8 +38,14 @@ public class UserController {
         filters.remove("sortBy");
         filters.remove("typeOfSort");
       }
+      User currentUser = getCurrentUser();
+      if (currentUser.getRole().getName() != RoleName.ADMIN) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Bạn không có quyền lấy thông tin người dùng");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+      }
 
-      List<User> users = userService.getAllUsers(limit, page, sortBy, typeOfSort, filters);
+      Map<String, Object> users = userService.getAllUsers(limit, page, sortBy, typeOfSort, filters);
       return ResponseEntity.ok(users);
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
@@ -52,6 +57,13 @@ public class UserController {
   @GetMapping("/{id}")
   public ResponseEntity<?> getUserById(@PathVariable Integer id) {
     try {
+      User currentUser = getCurrentUser();
+      if (currentUser.getRole().getName() != RoleName.ADMIN) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Bạn không có quyền lấy thông tin người dùng");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+      }
+
       User user = userService.getUserById(id);
       return ResponseEntity.ok(user);
     } catch (RuntimeException e) {
@@ -79,9 +91,10 @@ public class UserController {
       User currentUser = getCurrentUser();
       if (currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "You are not authorized to update this user");
+        errorResponse.put("message", "Bạn không có quyền tạo người dụng");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
+
       User createdUser = userService.createUser(user);
       return ResponseEntity.ok(createdUser);
     } catch (RuntimeException e) {
@@ -96,11 +109,9 @@ public class UserController {
     try {
       User currentUser = getCurrentUser();
 
-      // Only allow users to update their own profile (or admin users if you have that
-      // role)
       if (!currentUser.getId().equals(id) && currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "You are not authorized to update this user");
+        errorResponse.put("message", "Bạn không có quyền thay đổi người dùng này");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
 
@@ -118,8 +129,6 @@ public class UserController {
     try {
       User currentUser = getCurrentUser();
 
-      // Only allow users to update their own profile (or admin users if you have that
-      // role)
       if (!currentUser.getId().equals(id) && currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "You are not authorized to update this user");
@@ -140,8 +149,6 @@ public class UserController {
     try {
       User currentUser = getCurrentUser();
 
-      // Only allow users to delete their own account (or admin users if you have that
-      // role)
       if (!currentUser.getId().equals(id) && currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "You are not authorized to delete this user");

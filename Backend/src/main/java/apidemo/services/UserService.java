@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import apidemo.models.Property;
 import apidemo.models.Role;
 import apidemo.models.User;
 import apidemo.repositories.RoleRepository;
@@ -13,6 +14,7 @@ import apidemo.repositories.UserRepository;
 import apidemo.utils.Filter;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +33,7 @@ public class UserService {
     this.passwordEncoder = passwordEncoder;
   }
 
-  public List<User> getAllUsers(Integer limit, Integer page, String sortBy, String typeOfSort,
+  public Map<String, Object> getAllUsers(Integer limit, Integer page, String sortBy, String typeOfSort,
       Map<String, String> filters) {
     // Configure pagination and sorting
     Pageable pageRequest = filter.createPageRequest(limit, page, sortBy, typeOfSort);
@@ -47,7 +49,15 @@ public class UserService {
       return predicate;
     };
 
-    return userRepository.findAll(spec, pageRequest).getContent();
+    long total = userRepository.count(spec);
+
+    List<User> users = userRepository.findAll(spec, pageRequest).getContent();
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("users", users);
+    response.put("total", total);
+
+    return response;
   }
 
   public User getUserById(Integer userId) {
