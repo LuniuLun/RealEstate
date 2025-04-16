@@ -6,7 +6,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import apidemo.models.Property;
 import apidemo.models.Role;
 import apidemo.models.User;
 import apidemo.repositories.RoleRepository;
