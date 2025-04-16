@@ -2,7 +2,7 @@ import { FacebookIcon, InstagramIcon, LinkedInIcon, LogoIcon, TwitterIcon } from
 import { Box, Container, Flex, Text, VStack, HStack } from '@chakra-ui/react'
 import { Logo } from '@components'
 import { Link } from 'react-router-dom'
-import React from 'react'
+import React, { memo } from 'react'
 
 const Footer = () => {
   return (
@@ -39,4 +39,4 @@ const Footer = () => {
   )
 }
 
-export default Footer
+export default memo(Footer)

@@ -1,4 +1,4 @@
-import { ElementType, useEffect, useRef, useState } from 'react'
+import { ElementType, memo, useEffect, useRef, useState } from 'react'
 import { Button, Stack, useBreakpointValue } from '@chakra-ui/react'
 import { NavItem } from '@components'
 import { useLocation } from 'react-router-dom'
@@ -121,4 +121,4 @@ const Sidebar = () => {
   )
 }
 
-export default Sidebar
+export default memo(Sidebar)

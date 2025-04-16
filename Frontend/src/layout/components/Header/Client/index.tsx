@@ -6,6 +6,7 @@ import { FILTER_OPTION, SORT_PROPERTY_OPTION } from '@constants/option'
 import { propertyFilterStore } from '@stores'
 import { CategoryName, Unit } from '@type/models'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { memo } from 'react'
 
 const ClientHeader = () => {
   const { propertyFilterCriteria, setPropertyFilterCriteria, resetFilters } = propertyFilterStore()
@@ -226,4 +227,4 @@ const ClientHeader = () => {
   )
 }
 
-export default ClientHeader
+export default memo(ClientHeader)

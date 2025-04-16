@@ -1,6 +1,7 @@
 import { Flex } from '@chakra-ui/react'
 import { LogoIcon } from '@assets/icons'
 import { HeaderActions, Logo, NavItem } from '@components'
+import { memo } from 'react'
 
 const BaseHeader = () => {
   return (
@@ -26,4 +27,4 @@ const BaseHeader = () => {
   )
 }
 
-export default BaseHeader
+export default memo(BaseHeader)
