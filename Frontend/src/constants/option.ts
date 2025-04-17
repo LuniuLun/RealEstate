@@ -2,7 +2,7 @@ import { ISelectOption } from '@components/CustomSelect'
 import { PropertyStatus } from '@type/models'
 
 export const SORT_USER_OPTION: ISelectOption<string>[] = [
-  { value: 'firstName', label: 'Name' },
+  { value: 'fullName', label: 'Name' },
   { value: 'role', label: 'Role' },
   { value: 'createdAt', label: 'Created date' }
 ]
