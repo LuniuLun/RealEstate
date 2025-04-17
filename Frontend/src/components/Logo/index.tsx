@@ -15,7 +15,7 @@ const Logo = ({ src, icon, width = '24px', height = '36px' }: ILogoProps) => {
       <Flex alignItems='center' gap={3}>
         <Box borderRadius='50%'>{React.cloneElement(icon, { width, height })}</Box>
         <Heading variant='primary' color={icon.props.fill}>
-          JustHome
+          VinaHome
         </Heading>
       </Flex>
     </Link>

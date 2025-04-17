@@ -7,8 +7,8 @@ const Home = () => {
     <Stack spacing={8} px={6} py={10} justifyContent='center' alignItems='center' paddingY={10} gap={10}>
       <InfoGroup
         size='lg'
-        heading='Tại sao nêm mua bán bất động sách tại JustHome!'
-        description='JustHome kết nối bạn với những bất động sản tốt nhất – vị trí đẹp, giá tốt, sinh lời cao.'
+        heading='Tại sao nêm mua bán bất động sách tại VinaHome!'
+        description='VinaHome kết nối bạn với những bất động sản tốt nhất – vị trí đẹp, giá tốt, sinh lời cao.'
         alignItems='center'
         textAlign='center'
       />

@@ -39,7 +39,7 @@ const LoginForm = () => {
   return (
     <Stack gap={5} maxW='500px' w='100%' as='form' onSubmit={handleSubmit(onSubmit)}>
       <Heading fontSize='2xl' color='brand.blackTextPrimary' mb={5} alignSelf='flex-start' maxW='500px'>
-        Đăng nhập JustHome
+        Đăng nhập VinaHome
       </Heading>
 
       <Button
