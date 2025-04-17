@@ -9,17 +9,16 @@ export const PRICINGPLANS: PricingPlan[] = [
       savings: 'Tiết kiệm đến 1.720.000đ / tháng so với đăng tin lẻ',
       description: 'Dành cho môi giới BĐS có giỏ hàng nhỏ'
     },
-    period: '20 tin',
+    period: '30 tin',
     isPopular: true,
     features: {
-      summary: '20 tin đăng - hiển thị 15 ngày',
+      summary: '30 tin đăng',
       list: [
-        { text: '20 tin đăng - hiển thị 15 ngày', available: true },
         { text: 'Hiển thị tối đa 30 tin đăng', available: true },
         { text: 'Báo cáo hiệu suất tin đăng', available: false },
         { text: 'Thêm kênh liên hệ mới', available: false },
         { text: 'Công cụ quản lý khách hàng tiềm năng', available: false },
-        { text: 'Ưu đãi nâng cấp lên Tin nổi bật - nhiều hình ảnh', available: true },
+        { text: 'Công cụ dự đoán giá tương lai', available: true },
         { text: 'Duyệt tin nhanh dưới 5 phút', available: false }
       ]
     }
@@ -35,10 +34,9 @@ export const PRICINGPLANS: PricingPlan[] = [
     period: '50 tin',
     isAvailable: false,
     features: {
-      summary: '50 tin đăng - hiển thị 15 ngày',
+      summary: '50 tin đăng',
       list: [
-        { text: '50 tin đăng - hiển thị 15 ngày', available: true },
-        { text: 'Không giới hạn tin đăng', available: true },
+        { text: 'Hiển thị tối đa 50 tin đăng', available: true },
         { text: 'Báo cáo hiệu suất tin đăng', available: true },
         { text: 'Thêm kênh liên hệ mới', available: true },
         { text: 'Công cụ quản lý khách hàng tiềm năng', available: true },
@@ -55,13 +53,12 @@ export const PRICINGPLANS: PricingPlan[] = [
       savings: 'Độc quyền duyệt tin nhanh',
       description: 'Giải pháp trọn gói, lợi ích toàn diện cho môi giới BĐS chuyên nghiệp'
     },
-    period: '60 tin',
+    period: 'Không giới hạn tin',
     isPopular: false,
     isAvailable: false,
     features: {
-      summary: '60 tin đăng - hiển thị 15 ngày',
+      summary: 'Không giới hạn tin đăng',
       list: [
-        { text: '60 tin đăng - hiển thị 15 ngày', available: true },
         { text: 'Không giới hạn tin đăng', available: true },
         { text: 'Báo cáo hiệu suất tin đăng', available: true },
         { text: 'Thêm kênh liên hệ mới', available: true },
