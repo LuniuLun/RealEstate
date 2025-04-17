@@ -5,13 +5,15 @@ import { useForm } from 'react-hook-form'
 import { IUser } from '@type/models'
 import { useEffect, useState } from 'react'
 import { REGEX } from '@constants/regex'
+import { ROLE_OPTION } from '@constants/option'
 
 const Profile = () => {
   const { data, isLoading, isError } = useGetCurrentUser()
   const { showToast } = useCustomToast()
   const [defaultUser, setDefaultUser] = useState<IUser | undefined>()
   const { updateProfileMutation } = useUpdateProfile()
-
+  const roleValue = data?.role?.name
+  const roleLabel = ROLE_OPTION.find((option) => option.value === roleValue)?.label
   const {
     register,
     handleSubmit,
@@ -91,7 +93,7 @@ const Profile = () => {
             variant='flushed'
             borderBottom='1px solid'
             borderColor='brand.sliver'
-            value={data?.role.name.toString()}
+            value={roleLabel}
             isDisabled={true}
           />
         </FormControl>

@@ -15,7 +15,7 @@ import { UserCard } from '@components'
 import { authStore } from '@stores'
 import { useNavigate } from 'react-router-dom'
 import { RoleName } from '@type/models'
-import { ADMIN_NAV_ITEMS, USER_NAV_ITEMS } from '@constants/option'
+import { ADMIN_NAV_ITEMS, ROLE_OPTION, USER_NAV_ITEMS } from '@constants/option'
 
 const iconMap: Record<string, JSX.Element> = {
   personal: <ProfileIcon width='24px' height='24px' />,
@@ -32,9 +32,9 @@ const iconMap: Record<string, JSX.Element> = {
 const UserMenu = () => {
   const { token, logout } = authStore()
   const navigate = useNavigate()
-  const role = token?.user?.role?.name
-
-  const navItems = role === RoleName.ADMIN ? ADMIN_NAV_ITEMS : USER_NAV_ITEMS
+  const roleValue = token?.user?.role?.name
+  const roleLabel = roleValue === 'CUSTOMER' ? null : ROLE_OPTION.find((option) => option.value === roleValue)?.label
+  const navItems = roleValue === RoleName.ADMIN ? ADMIN_NAV_ITEMS : USER_NAV_ITEMS
 
   const userMenuItems = [
     ...navItems.map((item) => ({
@@ -54,7 +54,7 @@ const UserMenu = () => {
 
   return (
     <Box position='relative' cursor='pointer' _hover={{ div: { display: 'flex' } }}>
-      <UserCard name={token!.user.fullName} role={role!.toLowerCase()} avatar={<UserIcon />} />
+      <UserCard name={token!.user.fullName} role={roleLabel!} avatar={<UserIcon />} />
       <Box
         position='absolute'
         top='75%'

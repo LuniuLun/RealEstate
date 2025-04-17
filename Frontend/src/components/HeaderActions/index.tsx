@@ -1,5 +1,4 @@
-import { Box, Button, Flex } from '@chakra-ui/react'
-import { NotificationIcon } from '@assets/icons'
+import { Button, Flex } from '@chakra-ui/react'
 import { UserMenu } from '@components'
 import { authStore } from '@stores'
 import { useNavigate } from 'react-router-dom'
@@ -15,9 +14,6 @@ const HeaderActions = () => {
     <Flex alignItems='center' gap={5}>
       {token ? (
         <Flex alignItems='center' gap={6}>
-          <Box height='100%'>
-            <NotificationIcon />
-          </Box>
           <UserMenu />
         </Flex>
       ) : (
