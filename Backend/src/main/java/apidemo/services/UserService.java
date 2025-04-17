@@ -52,6 +52,8 @@ public class UserService {
 
     users.forEach(user -> user.setPassword(null));
 
+    users.forEach(user -> user.setPassword(null));
+
     Map<String, Object> response = new HashMap<>();
     response.put("users", users);
     response.put("total", total);
@@ -69,7 +71,6 @@ public class UserService {
   public User getUserByPhone(String username) {
     User user = userRepository.findByPhone(username)
         .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
-    user.setPassword(null);
     return user;
   }
 
