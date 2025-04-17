@@ -9,37 +9,46 @@ const findInCache = <T extends { id: number | string }>(
   if (!id) return null
 
   try {
-    const queryCache = queryClient.getQueryCache()
-    const queryKeys = queryCache
+    const cache = queryClient.getQueryCache()
+    const queries = cache
       .getAll()
-      .filter((query) => Array.isArray(query.queryKey) && (queryString ? query.queryKey.includes(queryString) : true))
+      .filter((q) => Array.isArray(q.queryKey) && (!queryString || q.queryKey.includes(queryString)))
 
-    for (const query of queryKeys) {
-      const queryData = queryClient.getQueryData<InfiniteData<unknown>>(query.queryKey)
-      if (!queryData?.pages) continue
+    for (const q of queries) {
+      const infData = queryClient.getQueryData<InfiniteData<Record<string, unknown>>>(q.queryKey)
+      if (!infData?.pages) continue
 
-      for (const page of queryData.pages) {
-        const pathParts = dataPath.split('.')
-        let dataContainer: unknown = page
+      for (const page of infData.pages) {
+        let container: unknown =
+          typeof page === 'object' && page !== null && 'data' in page ? (page as Record<string, unknown>).data : page
 
-        for (const part of pathParts) {
-          if (!dataContainer || typeof dataContainer !== 'object') break
-          dataContainer = (dataContainer as Record<string, unknown>)[part]
+        for (const part of dataPath.split('.')) {
+          if (typeof container === 'object' && container !== null && part in container) {
+            container = (container as Record<string, unknown>)[part]
+          } else {
+            container = undefined
+            break
+          }
         }
 
-        if (!Array.isArray(dataContainer)) continue
-
-        const found = dataContainer.find(
-          (item) => typeof item === 'object' && item !== null && 'id' in item && item.id === id
-        )
-
-        if (found) return found as T
+        if (Array.isArray(container)) {
+          for (const item of container) {
+            if (
+              typeof item === 'object' &&
+              item !== null &&
+              'id' in item &&
+              (item as Record<string, unknown>).id === id
+            ) {
+              return item as T
+            }
+          }
+        }
       }
     }
 
     return null
-  } catch (err) {
-    console.error('Error searching in cache:', err)
+  } catch (error) {
+    console.error('Error searching in cache:', error)
     return null
   }
 }
