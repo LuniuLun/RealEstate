@@ -33,6 +33,7 @@ const CustomSelect = forwardRef<HTMLSelectElement, ICustomSelectProps<string | n
 
     return (
       <Select
+        variant='outline'
         ref={ref}
         fontSize='sm'
         fontWeight='medium'

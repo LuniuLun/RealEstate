@@ -100,7 +100,6 @@ const AddressSelector = <T extends FieldValues>({
               isDisabled={isLoading}
               sx={{ width: '100%' }}
               borderRadius='md'
-              border='full'
               placeholder='Chọn tỉnh thành'
               onChange={(e) => {
                 const cityId = e.target.value
@@ -127,7 +126,6 @@ const AddressSelector = <T extends FieldValues>({
               value={currentDistrict}
               sx={{ width: '100%' }}
               borderRadius='md'
-              border='full'
               placeholder='Chọn quận huyện'
               onChange={(e) => {
                 const districtId = e.target.value
@@ -156,7 +154,6 @@ const AddressSelector = <T extends FieldValues>({
                 value={currentWard}
                 sx={{ width: '100%' }}
                 borderRadius='md'
-                border='full'
                 placeholder='Chọn phường xã'
                 onChange={(e) => {
                   const wardId = e.target.value

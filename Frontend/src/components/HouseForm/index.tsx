@@ -177,7 +177,6 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
                   options={FILTER_OPTION.houseType}
                   sx={{ width: '100%' }}
                   borderRadius='md'
-                  border='full'
                   placeholder='Chọn loại nhà ở'
                 />
               )}
@@ -199,7 +198,6 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
                     options={FILTER_OPTION.bedrooms}
                     sx={{ width: '100%' }}
                     borderRadius='md'
-                    border='full'
                     placeholder='Chọn số phòng ngủ'
                   />
                 )}
@@ -220,7 +218,6 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
                     options={FILTER_OPTION.toilets}
                     sx={{ width: '100%' }}
                     borderRadius='md'
-                    border='full'
                     placeholder='Chọn số nhà vệ sinh'
                   />
                 )}
@@ -243,7 +240,6 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
                     options={FILTER_OPTION.direction}
                     sx={{ width: '100%' }}
                     borderRadius='md'
-                    border='full'
                     placeholder='Chọn hướng'
                   />
                 )}
@@ -289,7 +285,6 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
                       options={FILTER_OPTION.propertyLegalDocuments}
                       sx={{ width: '100%' }}
                       borderRadius='md'
-                      border='full'
                       placeholder='Chọn loại giấy tờ'
                     />
                   )}
@@ -309,7 +304,6 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
                       options={FILTER_OPTION.furnishedStatus}
                       sx={{ width: '100%' }}
                       borderRadius='md'
-                      border='full'
                       placeholder='Tình trạng'
                       value={field.value}
                     />

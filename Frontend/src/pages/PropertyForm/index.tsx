@@ -98,7 +98,6 @@ const PropertyForm = () => {
             options={CATEGORY}
             sx={{ width: '100%' }}
             borderRadius='md'
-            border='full'
             borderColor='brand.sliver'
             placeholder='Chọn danh mục'
             onChange={handleCategoryChange}

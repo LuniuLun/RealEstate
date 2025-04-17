@@ -174,7 +174,6 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                   options={FILTER_OPTION.landType}
                   sx={{ width: '100%' }}
                   borderRadius='md'
-                  border='full'
                   placeholder='Chọn loại đất'
                 />
               )}
@@ -195,7 +194,6 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                   options={FILTER_OPTION.direction}
                   sx={{ width: '100%' }}
                   borderRadius='md'
-                  border='full'
                   placeholder='Chọn hướng đất'
                 />
               )}
@@ -220,7 +218,6 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                   options={FILTER_OPTION.propertyLegalDocuments}
                   sx={{ width: '100%' }}
                   borderRadius='md'
-                  border='full'
                   placeholder='Chọn loại giấy tờ'
                 />
               )}

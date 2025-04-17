@@ -47,7 +47,6 @@ const ForecastChart = ({
           <Flex>
             <CustomSelect
               options={VIEW_MODE_CHART_OPTION}
-              border='full'
               placeholder='Hiển thị theo'
               value={viewMode}
               onChange={(e) => onViewModeChange(e.target.value as ViewMode)}

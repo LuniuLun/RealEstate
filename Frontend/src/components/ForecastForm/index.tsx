@@ -63,7 +63,6 @@ const ForecastForm = ({ onSubmit, isLoading }: ForecastFormProps) => {
                   render={({ field }) => (
                     <CustomSelect
                       {...field}
-                      border='full'
                       placeholder='Chọn khoảng thời gian'
                       options={PERIOD_OPTION}
                       onChange={(e) => field.onChange(Number(e.target.value))}
