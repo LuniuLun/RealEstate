@@ -66,49 +66,6 @@ export const fetchUsers = async (
   }
 }
 
-export const fetchAllUsers = async (property?: string, value?: string): Promise<IApiResponse<IUser[]>> => {
-  try {
-    const token = authStore.getState().token?.token
-    if (!token) {
-      return {
-        status: 'error',
-        message: MESSAGE.auth.REQUIRE
-      }
-    }
-    const calledUrl = new URL(baseUrl)
-    if (property && value) {
-      calledUrl.searchParams.append(property, value)
-    }
-    calledUrl.searchParams.append('sortBy', 'createdAt')
-    calledUrl.searchParams.append('typeOfSort', 'desc')
-    const response = await fetch(calledUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    if (!response.ok) {
-      return {
-        status: 'error',
-        message: MESSAGE.user.GET_FAILED
-      }
-    }
-
-    const data = await response.json()
-
-    return {
-      status: 'success',
-      message: MESSAGE.user.GET_SUCCESS,
-      data
-    }
-  } catch (error: unknown) {
-    return {
-      status: 'error',
-      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
-    }
-  }
-}
-
 export const fetchUserById = async (id: number): Promise<IApiResponse<IUser>> => {
   try {
     const token = authStore.getState().token?.token
