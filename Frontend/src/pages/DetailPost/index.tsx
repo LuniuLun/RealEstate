@@ -6,10 +6,12 @@ import { useEffect, useState } from 'react'
 import { formatCurrency } from '@utils'
 import useGetPropertyById from '@hooks/UseProperty/useGetPropertyById'
 import ImageGallery from '@components/ImageGallery'
+import { useQueryClient } from '@tanstack/react-query'
 
 const DetailPost = () => {
+  const queryClient = useQueryClient()
   const { id } = useParams()
-  const { property, isLoading, isError } = useGetPropertyById(Number(id))
+  const { property, isLoading, isError } = useGetPropertyById(Number(id), queryClient, 'properties')
   const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null)
 
   const {
