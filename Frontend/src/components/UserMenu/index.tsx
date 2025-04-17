@@ -8,7 +8,7 @@ import {
   TransactionIcon,
   HeartIcon,
   DashboardIcon,
-  LeaderboardIcon,
+  UsersIcon,
   ForecastIcon
 } from '@assets/icons'
 import { UserCard } from '@components'
@@ -26,7 +26,7 @@ const iconMap: Record<string, JSX.Element> = {
   forecast: <ForecastIcon width='24px' height='24px' />,
   posts: <PostIcon width='24px' height='24px' />,
   dashboard: <DashboardIcon width='24px' height='24px' />,
-  users: <LeaderboardIcon width='24px' height='24px' />
+  users: <UsersIcon width='24px' height='24px' />
 }
 
 const UserMenu = () => {
