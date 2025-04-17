@@ -19,9 +19,9 @@ export const SORT_TRANSACTION_OPTION: ISelectOption<string>[] = [
 ]
 
 export const ROLE_OPTION: ISelectOption<string>[] = [
-  { value: 'ADMIN', label: 'ADMIN' },
-  { value: 'BROKER', label: 'BROKER' },
-  { value: 'USER', label: 'USER' }
+  { value: 'ADMIN', label: 'Admin' },
+  { value: 'BROKER', label: 'Môi giới' },
+  { value: 'USER', label: 'Khách hàng' }
 ]
 
 export const PERIOD_OPTION = [
