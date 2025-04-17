@@ -51,9 +51,13 @@ const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, ...props }: ICus
       <Table borderRadius='lg' {...props} position='relative'>
         {title && (
           <TableCaption
+            position='sticky'
+            top={0}
+            zIndex={1}
             placement='top'
             marginTop={0}
             padding={5}
+            height={16}
             textAlign='left'
             color='brand.blackTextPrimary'
             fontSize='1.0625rem'
@@ -68,7 +72,7 @@ const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, ...props }: ICus
             {filteredHeaders.map((header, index) => (
               <Th
                 position='sticky'
-                top={0}
+                top={16}
                 key={header}
                 borderBottom='2px solid'
                 borderColor='brand.secondary'
@@ -87,6 +91,9 @@ const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, ...props }: ICus
             ))}
             {hasActions && (
               <Th
+                position='sticky'
+                top={16}
+                zIndex={1}
                 textAlign='center'
                 minW='150px'
                 padding={5}
@@ -94,6 +101,7 @@ const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, ...props }: ICus
                 textTransform='capitalize'
                 borderBottom={`2px solid $'brand.secondary'`}
                 color='brand.blackTextSecondary'
+                bgColor='brand.secondary'
               >
                 <Skeleton isLoaded={isLoaded} startColor='gray.100' endColor='gray.300'>
                   Action
