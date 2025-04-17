@@ -1,12 +1,13 @@
 import { Flex, FormControl, Stack } from '@chakra-ui/react'
 import { CustomModal, CustomSelect, TextField } from '@components'
 import { ROLE_OPTION } from '@constants/option'
-import { IUser } from '@type/models'
+import { IRole, IUser, RoleName } from '@type/models'
 import { memo, useEffect } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 
-interface IUserFormData extends Omit<IUser, 'id'> {
+interface IUserFormData extends Omit<IUser, 'id' | 'role'> {
   confirmPassword?: string
+  role: string
 }
 
 interface IUserModalProps {
@@ -29,7 +30,7 @@ const UserModal = ({ selectedUser, isModalOpen, onClose, handleSubmit, isSubmitt
       fullName: selectedUser?.fullName || '',
       email: selectedUser?.email || '',
       phone: selectedUser?.phone || '',
-      role: selectedUser?.role
+      role: selectedUser?.role.name
     }
   })
 
@@ -38,18 +39,31 @@ const UserModal = ({ selectedUser, isModalOpen, onClose, handleSubmit, isSubmitt
       setValue('fullName', selectedUser.fullName)
       setValue('email', selectedUser.email)
       setValue('phone', selectedUser.phone)
-      setValue('role', selectedUser.role)
+      setValue('role', selectedUser.role.name)
     } else reset()
   }, [selectedUser])
 
   const handleFormSubmit: SubmitHandler<IUserFormData> = async (data) => {
     const userData = { ...data }
-    delete userData.confirmPassword
+    const selectedRoleOption = ROLE_OPTION.find((option) => option.value === userData.role)
+
+    if (!selectedRoleOption) {
+      console.error('Selected role not found in options')
+      return
+    }
+
+    const role: IRole = {
+      id: ROLE_OPTION.findIndex((option) => option.value === selectedRoleOption.value) + 1,
+      name: selectedRoleOption.value as RoleName
+    }
+
     const user: IUser = {
       ...userData,
       id: selectedUser?.id || -1,
+      role: role,
       createdAt: selectedUser?.createdAt || new Date().toISOString()
     }
+
     handleSubmit(user)
   }
 
