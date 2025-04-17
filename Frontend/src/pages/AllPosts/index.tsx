@@ -15,10 +15,8 @@ import { CustomTable, Filter, Pagination, WarningModal, StatisticCard, CustomSel
 import { propertySummaryTable } from '@utils'
 import { PropertyStatus } from '@type/models'
 import { FilterIcon } from '@assets/icons'
-import { useQueryClient } from '@tanstack/react-query'
 
 const AllPosts = () => {
-  const queryClient = useQueryClient()
   const { itemsPerPage, currentPage, searchQuery, sortBy, propertyFilterCriteria } = propertyFilterStore(
     useShallow((state) => ({
       itemsPerPage: state.itemsPerPage,
@@ -41,7 +39,7 @@ const AllPosts = () => {
     property,
     isLoading: isLoadingProperty,
     isError: isErrorProperty
-  } = useGetPropertyById(currentId, queryClient, 'properties')
+  } = useGetPropertyById(currentId, 'properties')
   const { updateStatusPropertyMutation, isLoading: isUpdatingStatus } =
     useUpdateStatusProperty(infinitePropertyQueryKey)
 

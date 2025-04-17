@@ -1,4 +1,4 @@
-import { useQuery, QueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchUserById } from '@services/user'
 import { IUser } from '@type/models'
 import { findInCache } from '@utils'
@@ -9,16 +9,13 @@ interface UseGetUserByIdReturn {
   isError: boolean
 }
 
-const useGetUserById = (
-  id: number | undefined,
-  queryClient?: QueryClient | null,
-  queryString?: string
-): UseGetUserByIdReturn => {
+const useGetUserById = (id: number | undefined, queryString?: string): UseGetUserByIdReturn => {
+  const queryClient = useQueryClient()
   const { data, isLoading, isError } = useQuery({
     queryKey: ['user', id],
     queryFn: async () => {
       if (!id) return
-      if (queryClient && id && queryString) {
+      if (id && queryString) {
         const cacheUser = findInCache(queryClient, id, queryString)
         if (cacheUser) return { data: cacheUser }
       }
