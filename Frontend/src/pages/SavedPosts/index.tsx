@@ -32,7 +32,7 @@ const SavedPosts = () => {
   }, [])
 
   const handleView = (propertyId: number) => {
-    navigate(`/properties/${propertyId}`)
+    navigate(`/property-detail/${propertyId}`)
   }
 
   const handleDelete = (propertyId: number) => {
