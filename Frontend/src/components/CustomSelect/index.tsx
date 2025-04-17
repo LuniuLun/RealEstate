@@ -1,7 +1,5 @@
 import { Select, SelectProps } from '@chakra-ui/react'
 import { useState, useEffect, memo } from 'react'
-import { TBorderDirection } from '@type/variant'
-import colors from '@styles/variables/colors'
 import React, { forwardRef } from 'react'
 
 export interface ISelectOption<T> {
@@ -11,16 +9,12 @@ export interface ISelectOption<T> {
 
 interface ICustomSelectProps<T> extends SelectProps {
   options: ISelectOption<T>[]
-  border?: TBorderDirection
   value?: string | number
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }
 
 const CustomSelect = forwardRef<HTMLSelectElement, ICustomSelectProps<string | number>>(
-  (
-    { border = 'none', options, placeholder, value, onChange, sx, ...props }: ICustomSelectProps<string | number>,
-    ref
-  ) => {
+  ({ options, placeholder, value, onChange, sx, ...props }: ICustomSelectProps<string | number>, ref) => {
     const [selectedValue, setSelectedValue] = useState<string | number>('')
 
     useEffect(() => {
@@ -44,13 +38,11 @@ const CustomSelect = forwardRef<HTMLSelectElement, ICustomSelectProps<string | n
         fontWeight='medium'
         value={selectedValue}
         onChange={handleChange}
-        variant={border === 'bottom' ? 'flushed' : 'filled'}
         borderRadius={20}
         cursor='pointer'
+        borderColor='brand.sliver'
         sx={{
           width: 'auto',
-          ...(border === 'full' && { border: `1px solid ${colors.brand.sliver}` }),
-          ...(border === 'bottom' && { borderBottom: `1px solid ${colors.brand.black}` }),
           _hover: { bgColor: 'brand.hoverBtnColor', borderColor: 'brand.hoverBtnColor', color: 'brand.white' },
           ...sx
         }}
