@@ -2,6 +2,7 @@ export { default as useSidebar } from './UseSidebar'
 export { default as useCustomToast } from './UseCustomToast'
 
 export { default as useGetUser } from './UseUser/useGetUser'
+export { default as useGetUserById } from './UseUser/useGetUserById'
 export { default as useUpdateUser } from './UseUser/useUpdateUser'
 export { default as useAddUser } from './UseUser/useAddUser'
 export { default as useDeleteUser } from './UseUser/useDeleteUser'
