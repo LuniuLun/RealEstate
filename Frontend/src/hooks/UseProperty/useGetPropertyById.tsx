@@ -1,7 +1,7 @@
 import { useQuery, QueryClient } from '@tanstack/react-query'
 import { fetchPropertyById } from '@services/property'
 import { IProperty } from '@type/models'
-import { findPropertyInCache } from '@utils'
+import { findInCache } from '@utils'
 
 interface UseGetPropertyByIdReturn {
   property: IProperty | undefined
@@ -19,7 +19,7 @@ const useGetPropertyById = (
     queryFn: async () => {
       if (!id) return
       if (queryClient && id && queryString) {
-        const cacheProperty = findPropertyInCache(queryClient, id, queryString)
+        const cacheProperty = findInCache(queryClient, id, queryString)
         if (cacheProperty) return { data: cacheProperty }
       }
       return await fetchPropertyById(id)
@@ -28,7 +28,7 @@ const useGetPropertyById = (
   })
 
   return {
-    property: data?.data,
+    property: data?.data as IProperty,
     isLoading,
     isError
   }
