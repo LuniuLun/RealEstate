@@ -34,7 +34,6 @@ public class UserService {
 
   public Map<String, Object> getAllUsers(Integer limit, Integer page, String sortBy, String typeOfSort,
       Map<String, String> filters) {
-    // Configure pagination and sorting
     Pageable pageRequest = filter.createPageRequest(limit, page, sortBy, typeOfSort);
 
     Specification<User> spec = (root, query, criteriaBuilder) -> {
@@ -52,6 +51,8 @@ public class UserService {
 
     List<User> users = userRepository.findAll(spec, pageRequest).getContent();
 
+    users.forEach(user -> user.setPassword(null));
+
     Map<String, Object> response = new HashMap<>();
     response.put("users", users);
     response.put("total", total);
@@ -60,13 +61,17 @@ public class UserService {
   }
 
   public User getUserById(Integer userId) {
-    return userRepository.findById(userId)
+    User user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("User does not exist"));
+    user.setPassword(null);
+    return user;
   }
 
   public User getUserByPhone(String username) {
-    return userRepository.findByPhone(username)
+    User user = userRepository.findByPhone(username)
         .orElseThrow(() -> new RuntimeException("User does not exist"));
+    user.setPassword(null);
+    return user;
   }
 
   public User createUser(User user) {
@@ -84,7 +89,9 @@ public class UserService {
     user.setCreatedAt(LocalDateTime.now());
     user.setUpdatedAt(LocalDateTime.now());
 
-    return userRepository.save(user);
+    User savedUser = userRepository.save(user);
+    savedUser.setPassword(null);
+    return savedUser;
   }
 
   public User upgradeUser(Integer userId) {
@@ -101,23 +108,32 @@ public class UserService {
     user.setRole(brokerRole);
     user.setUpdatedAt(LocalDateTime.now());
 
-    return userRepository.save(user);
+    User savedUser = userRepository.save(user);
+    savedUser.setPassword(null);
+    return savedUser;
   }
 
   public User updateUser(Integer userId, User updatedUser) {
     return userRepository.findById(userId).map(existingUser -> {
       existingUser.setFullName(updatedUser.getFullName());
       existingUser.setEmail(updatedUser.getEmail());
-      existingUser.setPassword(updatedUser.getPassword());
+
+      if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+        existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+      }
+
       existingUser.setPhone(updatedUser.getPhone());
-      existingUser.setRole(updatedUser.getRole());
       existingUser.setUpdatedAt(LocalDateTime.now());
 
-      Role role = roleRepository.findById(existingUser.getRole().getId())
-          .orElseThrow(() -> new RuntimeException("Role does not exist"));
-      existingUser.setRole(role);
+      if (updatedUser.getRole() != null && updatedUser.getRole().getId() != null) {
+        Role role = roleRepository.findById(updatedUser.getRole().getId())
+            .orElseThrow(() -> new RuntimeException("Role does not exist"));
+        existingUser.setRole(role);
+      }
 
-      return userRepository.save(existingUser);
+      User savedUser = userRepository.save(existingUser);
+      savedUser.setPassword(null);
+      return savedUser;
     }).orElseThrow(() -> new RuntimeException("User does not exist"));
   }
 
