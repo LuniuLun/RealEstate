@@ -7,7 +7,7 @@ import {
   DashboardIcon,
   ForecastIcon,
   HeartIcon,
-  LeaderboardIcon,
+  UsersIcon,
   LogoutIcon,
   PersonalIcon,
   PostIcon,
@@ -22,7 +22,7 @@ import colors from '@styles/variables/colors'
 
 const iconMap: Record<string, ElementType> = {
   dashboard: DashboardIcon,
-  users: LeaderboardIcon,
+  users: UsersIcon,
   posts: PostIcon,
   personal: ProfileIcon,
   upgrade: UpgradeIcon,
