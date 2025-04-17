@@ -72,17 +72,6 @@ function App() {
             }
           >
             <Route path='posts' element={<AllPosts />} />
-          </Route>
-          <Route
-            element={
-              <ProtectedRoute
-                isAllowed={!!token}
-                userRoles={token?.user?.role?.name}
-                requiredRole={[RoleName.ADMIN]}
-                redirectPath='/'
-              />
-            }
-          >
             <Route path='dashboard' element={<Dashboard />} />
             <Route path='users' element={<Users />} />
           </Route>
