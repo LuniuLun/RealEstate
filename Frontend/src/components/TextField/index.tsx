@@ -103,6 +103,7 @@ const TextField = forwardRef<HTMLInputElement, ITextFieldProps>(
             <Input
               errorBorderColor='red.300'
               paddingLeft={icon ? '50px' : '12px'}
+              paddingRight={type === 'password' ? '50px' : '12px'}
               ref={ref}
               placeholder={placeholder}
               variant={variant}
@@ -116,17 +117,15 @@ const TextField = forwardRef<HTMLInputElement, ITextFieldProps>(
           </Skeleton>
 
           {type === 'password' && (
-            <InputRightElement width='4.5rem' height='100%'>
-              <Skeleton isLoaded={isLoaded} startColor='gray.100' endColor='gray.300'>
-                <IconButton
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  icon={showPassword ? <EyeIcon /> : <CloseEyeIcon />}
-                  variant='link'
-                  onClick={togglePasswordVisibility}
-                  size='sm'
-                  color='gray.500'
-                />
-              </Skeleton>
+            <InputRightElement width='4.5rem' height='100%' position='absolute' right={-3}>
+              <IconButton
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                icon={showPassword ? <EyeIcon /> : <CloseEyeIcon />}
+                variant='link'
+                onClick={togglePasswordVisibility}
+                size='sm'
+                color='gray.500'
+              />
             </InputRightElement>
           )}
         </InputGroup>
