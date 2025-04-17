@@ -15,13 +15,13 @@ const Footer = () => {
 
           <Flex flexDirection={{ base: 'column', md: 'row' }} gap={8}>
             <VStack align='start'>
-              <Text fontWeight='bold'>Liên hệ tôi</Text>
-              <Text color='brand.blackTextSecondary'>nguyenducvan@gmail.com</Text>
-              <Text color='brand.blackTextSecondary'>0373 115 431</Text>
+              <Text fontWeight='bold'>Liên hệ</Text>
+              <Text color='brand.blackTextSecondary'>trogiup@vinahome.vn</Text>
+              <Text color='brand.blackTextSecondary'>0868 686 868</Text>
             </VStack>
 
             <VStack align='start'>
-              <Text fontWeight='bold'>Địa chỉ của tôi</Text>
+              <Text fontWeight='bold'>Địa chỉ</Text>
               <Text color='brand.blackTextSecondary'>79 Dương Bá Cung</Text>
               <Text color='brand.blackTextSecondary'>Hoà Xuân, Đà Nẵng</Text>
             </VStack>
