@@ -48,8 +48,9 @@ public class UserService {
     };
 
     long total = userRepository.count(spec);
-
     List<User> users = userRepository.findAll(spec, pageRequest).getContent();
+
+    users.forEach(user -> user.setPassword(null));
 
     users.forEach(user -> user.setPassword(null));
 
@@ -62,15 +63,14 @@ public class UserService {
 
   public User getUserById(Integer userId) {
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("User does not exist"));
+        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
     user.setPassword(null);
     return user;
   }
 
   public User getUserByPhone(String username) {
     User user = userRepository.findByPhone(username)
-        .orElseThrow(() -> new RuntimeException("User does not exist"));
-    user.setPassword(null);
+        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
     return user;
   }
 
@@ -81,8 +81,9 @@ public class UserService {
     if (userRepository.findByPhone(user.getPhone()).isPresent()) {
       throw new RuntimeException("Số điện thoại " + user.getPhone() + " đã tồn tại");
     }
+
     Role role = roleRepository.findById(user.getRole().getId())
-        .orElseThrow(() -> new RuntimeException("Role not found with id: " + user.getRole().getId()));
+        .orElseThrow(() -> new RuntimeException("Không tìm thấy vai trò với ID: " + user.getRole().getId()));
 
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     user.setRole(role);
@@ -96,14 +97,14 @@ public class UserService {
 
   public User upgradeUser(Integer userId) {
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("User does not exist"));
+        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
     if (user.getRole().getName() == Role.RoleName.BROKER) {
-      throw new RuntimeException("Your account has been upgraded");
+      throw new RuntimeException("Tài khoản của bạn đã được nâng cấp");
     }
 
     Role brokerRole = roleRepository.findById(2)
-        .orElseThrow(() -> new RuntimeException("Role BROKER not found"));
+        .orElseThrow(() -> new RuntimeException("Không tìm thấy vai trò BROKER"));
 
     user.setRole(brokerRole);
     user.setUpdatedAt(LocalDateTime.now());
@@ -117,29 +118,24 @@ public class UserService {
     return userRepository.findById(userId).map(existingUser -> {
       existingUser.setFullName(updatedUser.getFullName());
       existingUser.setEmail(updatedUser.getEmail());
-
-      if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-        existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-      }
-
       existingUser.setPhone(updatedUser.getPhone());
       existingUser.setUpdatedAt(LocalDateTime.now());
 
       if (updatedUser.getRole() != null && updatedUser.getRole().getId() != null) {
         Role role = roleRepository.findById(updatedUser.getRole().getId())
-            .orElseThrow(() -> new RuntimeException("Role does not exist"));
+            .orElseThrow(() -> new RuntimeException("Vai trò không tồn tại"));
         existingUser.setRole(role);
       }
 
       User savedUser = userRepository.save(existingUser);
       savedUser.setPassword(null);
       return savedUser;
-    }).orElseThrow(() -> new RuntimeException("User does not exist"));
+    }).orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
   }
 
   public void deleteUser(Integer userId) {
     if (!userRepository.existsById(userId)) {
-      throw new RuntimeException("User does not exist");
+      throw new RuntimeException("Người dùng không tồn tại");
     }
     userRepository.deleteById(userId);
   }
