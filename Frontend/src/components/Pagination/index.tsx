@@ -75,8 +75,11 @@ const Pagination = ({
           <Flex align='center' gap='26px'>
             <Text whiteSpace='nowrap'>Số lượng trên 1 trang:</Text>
             <CustomSelect
-              placeholder={itemsPerPage.toString()}
+              variant='flushed'
+              borderRadius='unset'
               fontSize='xs'
+              sx={{ _hover: { bgColor: 'transparent' } }}
+              placeholder={itemsPerPage.toString()}
               onChange={handleItemsPerPageChange}
               options={ISelectOptions}
               aria-label='items-per-page'
