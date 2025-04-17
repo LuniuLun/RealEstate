@@ -23,15 +23,13 @@ const UserModal = ({ selectedUser, isModalOpen, onClose, handleSubmit, isSubmitt
     handleSubmit: handleRegisterSubmit,
     reset,
     setValue,
-    getValues,
     formState: { errors }
   } = useForm<IUserFormData>({
     defaultValues: {
       fullName: selectedUser?.fullName || '',
       email: selectedUser?.email || '',
       phone: selectedUser?.phone || '',
-      role: selectedUser?.role,
-      password: selectedUser?.password || ''
+      role: selectedUser?.role
     }
   })
 
@@ -41,7 +39,6 @@ const UserModal = ({ selectedUser, isModalOpen, onClose, handleSubmit, isSubmitt
       setValue('email', selectedUser.email)
       setValue('phone', selectedUser.phone)
       setValue('role', selectedUser.role)
-      setValue('password', selectedUser.password)
     } else reset()
   }, [selectedUser])
 
@@ -135,50 +132,6 @@ const UserModal = ({ selectedUser, isModalOpen, onClose, handleSubmit, isSubmitt
             })}
             sx={{ w: '100%', _hover: { bgColor: 'transparent' } }}
           />
-        </Flex>
-        <Flex gap={4} flexDirection={{ base: 'column', md: 'row' }}>
-          <FormControl>
-            <TextField
-              placeholder='Mật khẩu *'
-              type='password'
-              {...register('password', {
-                required: 'Vui lòng nhập mật khẩu',
-                minLength: { value: 8, message: 'Mật khẩu phải có ít nhất 8 ký tự' },
-                validate: (value) => {
-                  if (!/[A-Z]/.test(value)) return 'Mật khẩu phải chứa ít nhất một chữ in hoa'
-                  if (!/[a-z]/.test(value)) return 'Mật khẩu phải chứa ít nhất một chữ thường'
-                  if (!/[0-9]/.test(value)) return 'Mật khẩu phải chứa ít nhất một chữ số'
-                  if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) return 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt'
-                }
-              })}
-              errorMessage={errors.password?.message}
-              variant='flushed'
-              borderBottom='1px solid'
-              borderColor='brand.sliver'
-              aria-label='check-password'
-              isDisabled={isSubmitting}
-            />
-          </FormControl>
-          <FormControl>
-            <TextField
-              placeholder='Nhập lại mật khẩu *'
-              type='password'
-              {...register('confirmPassword', {
-                required: 'Vui lòng xác nhận lại mật khẩu',
-                validate: (value) => {
-                  if (value !== getValues('password')) {
-                    return 'Mật khẩu nhập lại không khớp'
-                  }
-                }
-              })}
-              errorMessage={errors.confirmPassword?.message}
-              variant='flushed'
-              borderBottom='1px solid'
-              borderColor='brand.sliver'
-              aria-label='confirmPassword'
-              isDisabled={isSubmitting}
-            />
-          </FormControl>
         </Flex>
       </Stack>
     </CustomModal>
