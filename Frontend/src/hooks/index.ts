@@ -12,6 +12,7 @@ export { default as useValidateToken } from './UseUser/useValidateToken'
 export { default as useGetCurrentUser } from './UseUser/useGetCurrentUser'
 export { default as useUpdateProfile } from './UseUser/useUpdateProfile'
 export { default as useUpgradeUser } from './UseUser/useUpgradeUser'
+export { default as useUpdateStatusUser } from './UseUser/useUpdateStatusUser'
 
 export { default as useGetProperty } from './UseProperty/useGetProperty'
 export { default as useGetPropertyByUser } from './UseProperty/useGetPropertyByUser'
