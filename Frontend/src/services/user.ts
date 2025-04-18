@@ -279,3 +279,38 @@ export const upgradeUser = async (id: number): Promise<IApiResponse<IUser>> => {
     }
   }
 }
+
+export const updateStatusUser = async (id: number): Promise<IApiResponse<IUser>> => {
+  try {
+    const token = authStore.getState().token?.token
+    if (!token) {
+      return {
+        status: 'error',
+        message: MESSAGE.auth.REQUIRE
+      }
+    }
+    const response = await fetch(`${baseUrl}/status/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    })
+
+    if (!response.ok) {
+      return {
+        status: 'error',
+        message: MESSAGE.user.EDIT_FAILED
+      }
+    }
+
+    const data = await response.json()
+    return {
+      status: 'success',
+      message: MESSAGE.user.EDIT_SUCCESS,
+      data
+    }
+  } catch (error: unknown) {
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
+    }
+  }
+}

@@ -11,9 +11,7 @@ const MESSAGE = {
     FILTER_SUCCESS: 'Lọc người dùng thành công',
     FILTER_FAILED: 'Lọc người dùng thất bại',
     UPGRADE_SUCCESS: 'Nâng cấp người dùng thành công',
-    UPGRADE_FAILED: 'Nâng cấp tài khoản thất bại',
-    BLOCK_SUCCESS: 'Khoá người dùng thành công',
-    BLOCK_FAILED: 'Khoá tài khoản thất bại'
+    UPGRADE_FAILED: 'Nâng cấp tài khoản thất bại'
   },
   property: {
     ADD_SUCCESS: 'Thêm bất động sản thành công',
