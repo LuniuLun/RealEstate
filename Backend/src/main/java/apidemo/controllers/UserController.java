@@ -144,8 +144,8 @@ public class UserController {
     }
   }
 
-  @PutMapping("/block/{id}")
-  public ResponseEntity<?> blockUser(@PathVariable Integer id) {
+  @PutMapping("/status/{id}")
+  public ResponseEntity<?> updateStatusUser(@PathVariable Integer id) {
     try {
       User currentUser = getCurrentUser();
 
@@ -155,8 +155,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
 
-      User blockedUser = userService.blockUser(id);
-      return ResponseEntity.ok(blockedUser);
+      User updatedStatusUser = userService.updateStatusUser(id);
+      return ResponseEntity.ok(updatedStatusUser);
     } catch (RuntimeException e) {
       Map<String, String> errorResponse = new HashMap<>();
       errorResponse.put("message", e.getMessage());
