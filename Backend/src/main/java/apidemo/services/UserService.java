@@ -115,11 +115,11 @@ public class UserService {
     return savedUser;
   }
 
-  public User blockUser(Integer userId) {
+  public User updateStatusUser(Integer userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
-    user.setIsEnabled(false);
+    user.setIsEnabled(!user.getIsEnabled());
     user.setUpdatedAt(LocalDateTime.now());
 
     User savedUser = userRepository.save(user);
