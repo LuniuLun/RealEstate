@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import apidemo.models.Role;
+import apidemo.models.Role.RoleName;
 import apidemo.models.User;
 import apidemo.repositories.RoleRepository;
 import apidemo.repositories.UserRepository;
@@ -39,27 +40,33 @@ public class UserService {
       Map<String, String> filters) {
     Pageable pageRequest = filter.createPageRequest(limit, page, sortBy, typeOfSort);
 
+    Map<String, String> filtersCopy = new HashMap<>(filters);
+    String searchQuery = filtersCopy.get("searchQuery");
+
     Specification<User> spec = (root, query, criteriaBuilder) -> {
       Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
 
-      Predicate predicate = criteriaBuilder.notEqual(roleJoin.get("name"), "ADMIN");
+      Predicate predicate = criteriaBuilder.notEqual(roleJoin.get("name"), RoleName.ADMIN.toString());
 
-      String searchQuery = filters.get("searchQuery");
       if (searchQuery != null && !searchQuery.isEmpty()) {
         String likePattern = "%" + searchQuery + "%";
         Predicate searchPredicate = criteriaBuilder.or(
-            criteriaBuilder.like(root.get("fullName"), likePattern),
-            criteriaBuilder.like(root.get("phone"), likePattern),
-            criteriaBuilder.like(root.get("email"), likePattern));
+            criteriaBuilder.like(criteriaBuilder.lower(root.get("fullName")), likePattern.toLowerCase()),
+            criteriaBuilder.like(criteriaBuilder.lower(root.get("phone")), likePattern.toLowerCase()),
+            criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), likePattern.toLowerCase()));
         predicate = criteriaBuilder.and(predicate, searchPredicate);
-
-        filters.remove("searchQuery");
       }
 
-      for (Map.Entry<String, String> entry : filters.entrySet()) {
-        if (entry.getValue() != null && !entry.getValue().isEmpty()) {
-          predicate = criteriaBuilder.and(predicate,
-              criteriaBuilder.like(root.get(entry.getKey()).as(String.class), "%" + entry.getValue() + "%"));
+      for (Map.Entry<String, String> entry : filtersCopy.entrySet()) {
+        if (!entry.getKey().equals("searchQuery") && entry.getValue() != null && !entry.getValue().isEmpty()) {
+          try {
+            predicate = criteriaBuilder.and(predicate,
+                criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get(entry.getKey())),
+                    ("%" + entry.getValue() + "%").toLowerCase()));
+          } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Trường " + entry.getKey() + " không tồn tại trong user");
+          }
         }
       }
 
