@@ -13,6 +13,7 @@ export interface IUser {
   email: string
   password: string
   phone: string
+  isEnabled: boolean
   createdAt: string
   updatedAt: string
 }

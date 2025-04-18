@@ -6,7 +6,8 @@ const userSummaryTable = (user: IUser) => ({
   Role: user.role.name,
   Email: user.email,
   'Số điện thoại': user.phone,
-  'Ngày tạo': new Date(user.createdAt).toLocaleDateString()
+  'Ngày tạo': new Date(user.createdAt).toLocaleDateString(),
+  'Trạng thái': user.isEnabled ? 'Hoạt động' : 'Đã khoá'
 })
 
 export default userSummaryTable
