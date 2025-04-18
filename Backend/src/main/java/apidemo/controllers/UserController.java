@@ -149,7 +149,7 @@ public class UserController {
     try {
       User currentUser = getCurrentUser();
 
-      if (!currentUser.getId().equals(id)) {
+      if (currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "Bạn không có quyền khoá người dùng này");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
