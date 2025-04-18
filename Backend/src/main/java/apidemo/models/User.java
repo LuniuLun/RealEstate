@@ -18,6 +18,9 @@ public class User {
   @JoinColumn(name = "role_id", nullable = false)
   private Role role;
 
+  @Column(name = "is_enabled", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
+  private Boolean isEnabled = true;
+
   @Column(nullable = false, length = 100)
   private String fullName;
 
@@ -64,6 +67,14 @@ public class User {
 
   public void setRole(Role role) {
     this.role = role;
+  }
+
+  public Boolean getIsEnabled() {
+    return isEnabled;
+  }
+
+  public void setIsEnabled(Boolean isEnabled) {
+    this.isEnabled = isEnabled;
   }
 
   public String getFullName() {
