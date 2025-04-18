@@ -1,6 +1,9 @@
 package apidemo.services;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,20 +40,34 @@ public class UserService {
     Pageable pageRequest = filter.createPageRequest(limit, page, sortBy, typeOfSort);
 
     Specification<User> spec = (root, query, criteriaBuilder) -> {
-      Predicate predicate = criteriaBuilder.conjunction();
+      Join<User, Role> roleJoin = root.join("role", JoinType.INNER);
+
+      Predicate predicate = criteriaBuilder.notEqual(roleJoin.get("name"), "ADMIN");
+
+      String searchQuery = filters.get("searchQuery");
+      if (searchQuery != null && !searchQuery.isEmpty()) {
+        String likePattern = "%" + searchQuery + "%";
+        Predicate searchPredicate = criteriaBuilder.or(
+            criteriaBuilder.like(root.get("fullName"), likePattern),
+            criteriaBuilder.like(root.get("phone"), likePattern),
+            criteriaBuilder.like(root.get("email"), likePattern));
+        predicate = criteriaBuilder.and(predicate, searchPredicate);
+
+        filters.remove("searchQuery");
+      }
+
       for (Map.Entry<String, String> entry : filters.entrySet()) {
         if (entry.getValue() != null && !entry.getValue().isEmpty()) {
           predicate = criteriaBuilder.and(predicate,
               criteriaBuilder.like(root.get(entry.getKey()).as(String.class), "%" + entry.getValue() + "%"));
         }
       }
+
       return predicate;
     };
 
     long total = userRepository.count(spec);
     List<User> users = userRepository.findAll(spec, pageRequest).getContent();
-
-    users.forEach(user -> user.setPassword(null));
 
     users.forEach(user -> user.setPassword(null));
 

@@ -38,6 +38,7 @@ public class UserController {
         filters.remove("sortBy");
         filters.remove("typeOfSort");
       }
+
       User currentUser = getCurrentUser();
       if (currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
