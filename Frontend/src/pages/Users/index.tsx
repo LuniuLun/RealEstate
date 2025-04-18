@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, Stack, useDisclosure } from '@chakra-ui/react'
 import { ITEM_PER_PAGE, SORT_USER_OPTION } from '@constants/option'
-import { useCustomToast, useGetUser, useGetUserById, useUpdateUser } from '@hooks'
+import { useUpdateStatusUser, useCustomToast, useGetUser, useGetUserById, useUpdateUser } from '@hooks'
 import { userFilterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
@@ -26,6 +26,7 @@ const Users = () => {
   const { showToast } = useCustomToast()
   const { user: currentUser, isError: isErrorUser } = useGetUserById(currentId, 'users')
   const { updateUserMutation, isLoading: isUpdatingStatus } = useUpdateUser(infiniteUserQueryKey)
+  const { updateStatusUserMutation, isLoading: isBlockingStatus } = useUpdateStatusUser(infiniteUserQueryKey)
 
   useEffect(() => {
     if (currentPage !== 0) {
@@ -59,11 +60,20 @@ const Users = () => {
       showToast({ status: 'error', title: 'Người dùng không tồn tại' })
       return
     }
+    updateStatusUserMutation.mutate(currentId, {
+      onSuccess: () => {
+        handleCloseWarningModal()
+      }
+    })
   }
 
   const handleSubmit = (data: IUser) => {
     if (currentUser?.id) {
-      updateUserMutation.mutate(data)
+      updateUserMutation.mutate(data, {
+        onSuccess: () => {
+          handleCloseUserModal()
+        }
+      })
     } else {
       // addUserMutation.mutate(data, {
       //   onSuccess: (response) => {
@@ -147,14 +157,18 @@ const Users = () => {
         </Flex>
       </Box>
 
-      {/* <WarningModal
+      <WarningModal
         isModalOpen={isWarningModalOpen}
         onClose={handleCloseWarningModal}
         title='WARNING'
-        message='Hành động này sẽ xóa vĩnh viễn người dùng. Bạn có muốn tiếp tục không?'
+        message={
+          currentUser
+            ? 'Hành động này sẽ khoá người dùng. Bạn có muốn tiếp tục?'
+            : 'Bạn có chắc muốn mở khoá người dùng này không'
+        }
         handleSubmit={handleWarningSubmit}
-        isSubmitting={deleteUserMutation.isPending}
-      /> */}
+        isSubmitting={isBlockingStatus}
+      />
 
       <UserModal
         selectedUser={currentUser}
