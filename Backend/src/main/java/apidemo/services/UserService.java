@@ -89,6 +89,7 @@ public class UserService {
     user.setRole(role);
     user.setCreatedAt(LocalDateTime.now());
     user.setUpdatedAt(LocalDateTime.now());
+    user.setIsEnabled(true);
 
     User savedUser = userRepository.save(user);
     savedUser.setPassword(null);
@@ -107,6 +108,18 @@ public class UserService {
         .orElseThrow(() -> new RuntimeException("Không tìm thấy vai trò BROKER"));
 
     user.setRole(brokerRole);
+    user.setUpdatedAt(LocalDateTime.now());
+
+    User savedUser = userRepository.save(user);
+    savedUser.setPassword(null);
+    return savedUser;
+  }
+
+  public User blockUser(Integer userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+
+    user.setIsEnabled(false);
     user.setUpdatedAt(LocalDateTime.now());
 
     User savedUser = userRepository.save(user);
