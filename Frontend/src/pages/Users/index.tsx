@@ -162,9 +162,9 @@ const Users = () => {
         onClose={handleCloseWarningModal}
         title='WARNING'
         message={
-          currentUser
+          currentUser?.isEnabled
             ? 'Hành động này sẽ khoá người dùng. Bạn có muốn tiếp tục?'
-            : 'Bạn có chắc muốn mở khoá người dùng này không'
+            : 'Bạn có chắc muốn mở khoá người dùng này không?'
         }
         handleSubmit={handleWarningSubmit}
         isSubmitting={isBlockingStatus}
