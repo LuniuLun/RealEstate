@@ -144,7 +144,7 @@ public class UserController {
     }
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/block/{id}")
   public ResponseEntity<?> blockUser(@PathVariable Integer id) {
     try {
       User currentUser = getCurrentUser();
