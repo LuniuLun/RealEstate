@@ -45,7 +45,7 @@ public class Property {
   @Column(name = "ward_name", nullable = false, length = 50)
   private String wardName;
 
-  @Column(name = "street_name", nullable = false, length = 100)
+  @Column(name = "street_name", nullable = true, length = 100)
   private String streetName;
 
   @Column(nullable = false)
