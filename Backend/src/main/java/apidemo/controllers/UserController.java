@@ -131,7 +131,7 @@ public class UserController {
 
       if (!currentUser.getId().equals(id) && currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "You are not authorized to update this user");
+        errorResponse.put("message", "Bạn không có quyền thay đổi người dùng này");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
 
@@ -144,14 +144,34 @@ public class UserController {
     }
   }
 
+  @PutMapping("/{id}")
+  public ResponseEntity<?> blockUser(@PathVariable Integer id) {
+    try {
+      User currentUser = getCurrentUser();
+
+      if (!currentUser.getId().equals(id)) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Bạn không có quyền khoá người dùng này");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+      }
+
+      User blockedUser = userService.blockUser(id);
+      return ResponseEntity.ok(blockedUser);
+    } catch (RuntimeException e) {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", e.getMessage());
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+  }
+
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
     try {
       User currentUser = getCurrentUser();
 
-      if (!currentUser.getId().equals(id) && currentUser.getRole().getName() != RoleName.ADMIN) {
+      if (currentUser.getRole().getName() != RoleName.ADMIN) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "You are not authorized to delete this user");
+        errorResponse.put("message", "Bạn không có quyền xoá người dùng này");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
 
