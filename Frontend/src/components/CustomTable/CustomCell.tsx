@@ -1,4 +1,4 @@
-import { Checkbox, Flex } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { ITableRow } from '.'
 import { memo } from 'react'
 
@@ -9,10 +9,6 @@ interface ICustomCellProps {
 
 const CustomCell = ({ header, row }: ICustomCellProps) => {
   const value = row[header]
-
-  if (typeof value === 'boolean') {
-    return <Checkbox isChecked={value} disabled aria-label={`Cell active status for ${row.name}`} />
-  }
 
   if (!value) return ''
 
