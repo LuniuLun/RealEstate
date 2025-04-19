@@ -25,17 +25,18 @@ interface UserResponse {
 }
 
 const useGetUser = (): UseGetUserReturn => {
-  const { searchQuery, sortBy, itemsPerPage } = userFilterStore(
+  const { searchQuery, sortBy, itemsPerPage, userFilterCriteria } = userFilterStore(
     useShallow((state) => ({
       searchQuery: state.searchQuery,
       sortBy: state.sortBy,
-      itemsPerPage: state.itemsPerPage
+      itemsPerPage: state.itemsPerPage,
+      userFilterCriteria: state.userFilterCriteria
     }))
   )
 
   const queryClient = useQueryClient()
 
-  const infiniteUserQueryKey = ['users', itemsPerPage, searchQuery, sortBy]
+  const infiniteUserQueryKey = ['users', itemsPerPage, searchQuery, sortBy, JSON.stringify(userFilterCriteria)]
 
   const usersQuery = useInfiniteQuery({
     queryKey: infiniteUserQueryKey,
@@ -46,7 +47,8 @@ const useGetUser = (): UseGetUserReturn => {
         property: 'searchQuery',
         value: searchQuery,
         sortBy,
-        typeOfSort: 'desc'
+        typeOfSort: 'desc',
+        userFilterCriteria
       })) as unknown as UserResponse
     },
     initialPageParam: 1,

@@ -3,10 +3,36 @@ import { BaseFilterState } from '@type/baseFilterState'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-const userFilterStore = create<BaseFilterState>()(
+export interface UserFilterCriteria {
+  isEnabled: number
+}
+
+export interface FilterState extends BaseFilterState {
+  userFilterCriteria: UserFilterCriteria
+  setUserFilterCriteria: (criteria: Partial<UserFilterCriteria>) => void
+}
+
+const initialUserFilterCriteria: UserFilterCriteria = {
+  isEnabled: -1
+}
+
+const userFilterStore = create<FilterState>()(
   persist(
     (set) => ({
       ...DEFAULT_VALUES_FILTER,
+      userFilterCriteria: initialUserFilterCriteria,
+
+      setUserFilterCriteria: (criteria: Partial<UserFilterCriteria>) =>
+        set((state) => {
+          const newUserFilterCriteria = {
+            ...state.userFilterCriteria,
+            ...criteria
+          }
+          return {
+            userFilterCriteria: newUserFilterCriteria,
+            currentPage: 0
+          }
+        }),
 
       setCurrentPage: (currentPage: number) => set(() => ({ currentPage })),
 
@@ -36,6 +62,7 @@ const userFilterStore = create<BaseFilterState>()(
 
       resetFilters: () =>
         set(() => ({
+          userFilterCriteria: initialUserFilterCriteria,
           currentPage: 0
         }))
     }),

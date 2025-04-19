@@ -3,18 +3,30 @@ import MESSAGE from '@constants/message'
 import { IUser, TRegisterUserRequest } from '@type/models'
 import { IFilterOptions } from '@type/filterOptions'
 import { authStore } from '@stores'
+import { UserFilterCriteria } from '@stores/UserFilter'
 
 const baseUrl = `${import.meta.env.VITE_APP_BASE_URL}${import.meta.env.VITE_APP_USER_ENDPOINT}`
+export interface EnhancedFilterOptions extends IFilterOptions {
+  userFilterCriteria?: UserFilterCriteria
+}
 
 export const fetchUsers = async (
-  params: IFilterOptions = {
+  params: EnhancedFilterOptions = {
     page: '1',
     limit: '10',
     typeOfSort: 'desc'
   }
 ): Promise<IApiResponse<IUser[]>> => {
   try {
-    const { property = '', value = '', sortBy = '', typeOfSort = 'desc', limit = '10', page = '1' } = params
+    const {
+      property = '',
+      value = '',
+      sortBy = '',
+      typeOfSort = 'desc',
+      limit = '10',
+      page = '1',
+      userFilterCriteria
+    } = params
     const token = authStore.getState().token?.token
     if (!token) {
       return {
@@ -36,6 +48,12 @@ export const fetchUsers = async (
     } else {
       calledUrl.searchParams.append('sortBy', 'createdAt')
       calledUrl.searchParams.append('typeOfSort', 'desc')
+    }
+
+    if (userFilterCriteria) {
+      if (userFilterCriteria.isEnabled !== -1) {
+        calledUrl.searchParams.append('isEnabled', userFilterCriteria.isEnabled.toString())
+      }
     }
 
     const response = await fetch(calledUrl.toString(), {
