@@ -58,14 +58,26 @@ public class UserService {
       }
 
       for (Map.Entry<String, String> entry : filtersCopy.entrySet()) {
-        if (!entry.getKey().equals("searchQuery") && entry.getValue() != null && !entry.getValue().isEmpty()) {
+        String key = entry.getKey();
+        String value = entry.getValue();
+
+        if (!key.equals("searchQuery") && value != null && !value.isEmpty()) {
           try {
-            predicate = criteriaBuilder.and(predicate,
-                criteriaBuilder.like(
-                    criteriaBuilder.lower(root.get(entry.getKey())),
-                    ("%" + entry.getValue() + "%").toLowerCase()));
+            if (key.equals("isEnabled")) {
+              int isEnabledVal = Integer.parseInt(value);
+              if (isEnabledVal == 0) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get(key), false));
+              } else if (isEnabledVal == 1) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get(key), true));
+              }
+            } else {
+              predicate = criteriaBuilder.and(predicate,
+                  criteriaBuilder.like(
+                      criteriaBuilder.lower(root.get(key)),
+                      ("%" + value + "%").toLowerCase()));
+            }
           } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Trường " + entry.getKey() + " không tồn tại trong user");
+            throw new RuntimeException(key + " không tồn tại");
           }
         }
       }
