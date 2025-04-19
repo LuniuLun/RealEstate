@@ -2,9 +2,15 @@ import { ISelectOption } from '@components/CustomSelect'
 import { PropertyStatus } from '@type/models'
 
 export const SORT_USER_OPTION: ISelectOption<string>[] = [
-  { value: 'fullName', label: 'Name' },
-  { value: 'role', label: 'Role' },
-  { value: 'createdAt', label: 'Created date' }
+  { value: 'fullName', label: 'Họ tên' },
+  { value: 'role', label: 'Vai trò' },
+  { value: 'createdAt', label: 'Ngày tạo' }
+]
+
+export const STATUS_USER: ISelectOption<number>[] = [
+  { value: 0, label: 'Đã khoá' },
+  { value: 1, label: 'Đang hoạt động' },
+  { value: -1, label: 'Tất cả' }
 ]
 
 export const SORT_PROPERTY_OPTION: ISelectOption<string>[] = [
