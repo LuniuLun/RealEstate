@@ -13,6 +13,7 @@ interface IFilterProps extends FlexProps {
   sortBy: string
   setSearchQuery: (query: string) => void
   setSortBy: (sort: string) => void
+  placeholder?: string
 }
 
 const Filter = ({
@@ -23,6 +24,7 @@ const Filter = ({
   setSearchQuery,
   setSortBy,
   children,
+  placeholder,
   ...props
 }: IFilterProps) => {
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery)
@@ -59,7 +61,7 @@ const Filter = ({
         icon={<SearchIcon />}
         variant='outline'
         size='md'
-        placeholder='Tìm kiếm'
+        placeholder={placeholder || 'Tìm kiếm'}
         value={localSearchQuery}
         onChange={handleSearchChange}
         borderRadius={20}
