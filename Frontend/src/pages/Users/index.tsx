@@ -1,25 +1,26 @@
 import { Box, Flex, Heading, Stack, useDisclosure } from '@chakra-ui/react'
-import { ITEM_PER_PAGE, SORT_USER_OPTION } from '@constants/option'
+import { ITEM_PER_PAGE, SORT_USER_OPTION, STATUS_USER } from '@constants/option'
 import { useUpdateStatusUser, useCustomToast, useGetUser, useGetUserById, useUpdateUser } from '@hooks'
 import { userFilterStore } from '@stores'
 import { useShallow } from 'zustand/shallow'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { CustomTable, Filter, Pagination, WarningModal, UserModal } from '@components'
+import { CustomTable, Filter, Pagination, WarningModal, UserModal, CustomSelect } from '@components'
 import { userSummaryTable } from '@utils'
 import { FilterIcon } from '@assets/icons'
 import { IUser } from '@type/models'
 
 const Users = () => {
   const [currentId, setCurrentId] = useState<number | undefined>(undefined)
-  const { itemsPerPage, currentPage, searchQuery, sortBy } = userFilterStore(
+  const { itemsPerPage, currentPage, searchQuery, sortBy, userFilterCriteria } = userFilterStore(
     useShallow((state) => ({
       itemsPerPage: state.itemsPerPage,
       currentPage: state.currentPage,
       searchQuery: state.searchQuery,
-      sortBy: state.sortBy
+      sortBy: state.sortBy,
+      userFilterCriteria: state.userFilterCriteria
     }))
   )
-  const { setItemsPerPage, setCurrentPage, setSearchQuery, setSortBy } = userFilterStore()
+  const { setItemsPerPage, setCurrentPage, setSearchQuery, setSortBy, setUserFilterCriteria } = userFilterStore()
   const { users, usersQuery, totalUsers, isError, infiniteUserQueryKey } = useGetUser()
   const { isOpen: isWarningModalOpen, onOpen: onOpenWarningModal, onClose: onCloseWarningModal } = useDisclosure()
   const { isOpen: isUserModalOpen, onOpen: onOpenUserModal, onClose: onCloseUserModal } = useDisclosure()
@@ -33,6 +34,12 @@ const Users = () => {
       setCurrentPage(0)
     }
   }, [])
+
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setUserFilterCriteria({
+      isEnabled: e.target.value as unknown as number
+    })
+  }
 
   const handleEdit = (userId: number) => {
     setCurrentId(userId)
@@ -116,7 +123,18 @@ const Users = () => {
           sortBy={sortBy}
           setSearchQuery={setSearchQuery}
           setSortBy={setSortBy}
+          placeholder={'Nhập tên người, email hoặc số điện thoại'}
           w='100%'
+        />
+        <CustomSelect
+          options={STATUS_USER}
+          placeholder={
+            STATUS_USER.find((option) => option.value === userFilterCriteria.isEnabled)?.label || 'Chọn trạng thái'
+          }
+          value={userFilterCriteria.isEnabled}
+          onChange={handleStatusChange}
+          w='unset'
+          bgColor='brand.white'
         />
         <Box w='19px'>
           <FilterIcon />
