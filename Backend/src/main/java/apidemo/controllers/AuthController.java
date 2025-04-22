@@ -50,7 +50,11 @@ public class AuthController {
         errorResponse.put("message", "Mật khẩu hoặc số điện thoại không đúng");
         return ResponseEntity.badRequest().body(errorResponse);
       }
-
+      if (!user.getIsEnabled()) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Tài khoản của bạn đã bị khoá, vui lồng liên hệ với đội ngũ hỗ trợ");
+        return ResponseEntity.badRequest().body(errorResponse);
+      }
       Token token = jwtService.generateToken(user);
 
       List<Integer> favouritePropertyIds = favouritePropertyService
