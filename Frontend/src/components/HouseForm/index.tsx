@@ -16,7 +16,7 @@ import { CategoryName, IProperty, TPostProperty } from '@type/models'
 import { useCustomToast, useUpdateProperty } from '@hooks'
 import { useAddProperty } from '@hooks/UseProperty/useAddProperty'
 import { useGetCoordinates } from '@hooks/UseCoordinates/useGetCoordinates'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useConvertPropertyData } from '@hooks/UseProperty/useConvertProperty'
 import { useEstimatePropertyPrice } from '@hooks/UseProperty/useEstimatePropertyPrice'
 import { formatCurrency } from '@utils'
@@ -74,7 +74,11 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
   const { showToast } = useCustomToast()
   const { transformHouseData, addPropertyMutation, isLoading: isAdding } = useAddProperty()
   const { updatePropertyMutation, isLoading: isUpdating } = useUpdateProperty()
-  const { getCoordinatesMutation, isError: isGetCoordinatesError } = useGetCoordinates()
+  const {
+    getCoordinatesMutation,
+    isError: isGetCoordinatesError,
+    isLoading: isGetCoordinatesLoading
+  } = useGetCoordinates()
   const { estimatePropertyPriceMutation, isLoading: isEstimatingPrice } = useEstimatePropertyPrice()
   const { convertHouseData } = useConvertPropertyData()
   const [estimatePrice, setEstimatePrice] = useState<number>()
@@ -82,14 +86,23 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
   const districtName = watch('districtName')
   const wardName = watch('wardName')
 
-  const handleChangeStreetName = (streetName: string) => {
-    if (region && districtName && wardName && streetName) {
-      const fullAddress = `${streetName}, ${wardName}, ${districtName}, ${region}, Vietnam`
+  useEffect(() => {
+    if (region && districtName && wardName) {
+      fetchCoordinates()
+    }
+  }, [wardName])
+
+  const fetchCoordinates = (streetName?: string) => {
+    let fullAddress = streetName ? `${streetName}, ` : ''
+    if (region && districtName && wardName) {
+      fullAddress += `${wardName}, ${districtName}, ${region}, Vietnam`
+
       getCoordinatesMutation.mutate(fullAddress, {
         onSuccess: (response) => {
           if (response?.data?.lat && response?.data?.lon) {
             setValue('latitude', response.data.lat)
             setValue('longitude', response.data.lon)
+            console.log(response.data.lat, response.data.lon)
           }
         }
       })
@@ -120,10 +133,10 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
   }
 
   const handleEstimatePropertyPrice = (data: THouseFormData) => {
-    const landFormData = convertHouseData(data)
-    if (!landFormData) return
+    const houseFormData = convertHouseData(data)
+    if (!houseFormData) return
 
-    estimatePropertyPriceMutation.mutate(landFormData, {
+    estimatePropertyPriceMutation.mutate(houseFormData, {
       onSuccess: (response) => {
         if (response && response.data) {
           const roundedPrice = Math.round(response.data?.estimatedPrice)
@@ -140,7 +153,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
           label='Hình ảnh sản phẩm'
           initialImages={initialData?.images}
           onUpload={handleImageUpload}
-          isLoading={isAdding || isUpdating}
+          isLoading={isAdding || isUpdating || isEstimatingPrice}
         />
         <FormErrorMessage>{errors.images?.message}</FormErrorMessage>
       </FormControl>
@@ -156,7 +169,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
               wardName='wardName'
               streetName='streetName'
               isLoading={isAdding || isUpdating || isEstimatingPrice}
-              onStreetNameChange={handleChangeStreetName}
+              onStreetNameChange={fetchCoordinates}
             />
           </FormControl>
         </Stack>
@@ -453,7 +466,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
               my={6}
               alignSelf='flex-end'
               justifySelf='flex-end'
-              isLoading={isAdding || isUpdating || isEstimatingPrice}
+              isLoading={isAdding || isUpdating || isEstimatingPrice || isGetCoordinatesLoading}
               isDisabled={isGetCoordinatesError}
               onClick={() => handleEstimatePropertyPrice(getValues())}
             >
@@ -515,7 +528,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
           type='submit'
           my={6}
           alignSelf='flex-end'
-          isLoading={isAdding || isUpdating}
+          isLoading={isAdding || isUpdating || isEstimatingPrice || isGetCoordinatesLoading}
           isDisabled={isGetCoordinatesError}
         >
           Đăng tin
