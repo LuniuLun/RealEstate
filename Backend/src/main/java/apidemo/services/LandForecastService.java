@@ -1,5 +1,6 @@
 package apidemo.services;
 
+import apidemo.models.ForecastRequest;
 import apidemo.models.ForecastResponse;
 import apidemo.models.PricePrediction;
 import apidemo.models.MinMaxParams;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import javax.annotation.PostConstruct;
@@ -28,7 +30,7 @@ public class LandForecastService {
 
   private MinMaxParams scalerParams;
   private final Set<String> availableDistricts = new HashSet<>();
-  private final String scalerPath = "predict_scaler_params.csv";
+  private final String scalerPath = "forecast_scaler_params.csv";
   private String pythonScriptPath;
 
   @PostConstruct
@@ -72,56 +74,64 @@ public class LandForecastService {
     }
   }
 
-  public ForecastResponse generateForecast(String district, int periodDays) {
-    log.info("Generating forecast for district={}, periodDays={}", district, periodDays);
+  public ForecastResponse generateForecast(ForecastRequest request) {
+    log.info("Generating forecast for periodDays={}, with property details including district={}",
+        request.getPeriodDays(), request.getDistrict());
 
-    if (!isDistrictAvailable(district)) {
-      log.warn("District not available: {}", district);
-      throw new IllegalArgumentException("District not available: " + district);
+    if (!isDistrictAvailable(request.getDistrict())) {
+      log.warn("District not available: {}", request.getDistrict());
+      throw new IllegalArgumentException("District not available: " + request.getDistrict());
     }
 
     try {
       String minVal = String.valueOf(scalerParams.getMinValue());
       String maxVal = String.valueOf(scalerParams.getMaxValue());
+      String modelPath = "xgboost_final_model.pkl";
 
-      ProcessBuilder processBuilder = new ProcessBuilder(
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.registerModule(new JavaTimeModule());
+      ObjectNode propNode = mapper.valueToTree(request);
+      propNode.remove("district");
+      propNode.remove("periodDays");
+
+      String propertyJson = mapper.writeValueAsString(propNode);
+
+      ProcessBuilder pb = new ProcessBuilder(
           "python",
           pythonScriptPath,
-          "--district", district,
-          "--periods", String.valueOf(periodDays),
+          "--periods", String.valueOf(request.getPeriodDays()),
+          "--model", modelPath,
           "--min-val", minVal,
-          "--max-val", maxVal);
+          "--max-val", maxVal,
+          "--district", request.getDistrict(),
+          "--property-data", propertyJson);
 
-      // Set working directory to script location
+      // đặt thư mục chạy script
       Path scriptDir = Paths.get(pythonScriptPath).getParent();
-      processBuilder.directory(scriptDir.toFile());
+      pb.directory(scriptDir.toFile());
+      pb.redirectErrorStream(true);
 
-      processBuilder.redirectErrorStream(true);
+      log.debug("Executing command: {}", pb.command());
+      Process proc = pb.start();
 
-      log.debug("Executing command: {}", processBuilder.command());
-
-      Process process = processBuilder.start();
-
-      // Read output
       StringBuilder output = new StringBuilder();
-      try (BufferedReader reader = new BufferedReader(
-          new InputStreamReader(process.getInputStream()))) {
+      try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
         String line;
-        while ((line = reader.readLine()) != null) {
+        while ((line = r.readLine()) != null) {
           output.append(line);
         }
       }
 
-      int exitCode = process.waitFor();
-      if (exitCode != 0) {
-        throw new RuntimeException("Python script failed with exit code: " + exitCode);
+      int exit = proc.waitFor();
+      if (exit != 0) {
+        throw new RuntimeException("Python script failed (exit " + exit + "): " + output);
       }
 
-      return parsePythonResponse(output.toString(), district, periodDays);
+      return parsePythonResponse(output.toString(), request.getDistrict(), request.getPeriodDays());
 
-    } catch (Exception e) {
-      log.error("Error executing Python forecast script", e);
-      throw new RuntimeException("Error generating forecast", e);
+    } catch (Exception ex) {
+      log.error("Error executing Python forecast script", ex);
+      throw new RuntimeException("Error generating forecast", ex);
     }
   }
 
@@ -143,16 +153,12 @@ public class LandForecastService {
       for (JsonNode node : predictionsNode) {
         PricePrediction prediction = PricePrediction.builder()
             .date(LocalDate.parse(node.get("date").asText()))
-            .district(node.get("district").asText())
             .predictedPrice(node.get("predictedPrice").asDouble())
-            .minPrice(node.get("minPrice").asDouble())
-            .maxPrice(node.get("maxPrice").asDouble())
             .build();
         predictions.add(prediction);
       }
 
       return ForecastResponse.builder()
-          .district(district)
           .periodDays(periodDays)
           .predictions(predictions)
           .build();
