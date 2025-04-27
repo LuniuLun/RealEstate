@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -88,23 +89,47 @@ public class LandForecastService {
       String maxVal = String.valueOf(scalerParams.getMaxValue());
       String modelPath = "xgboost_final_model.pkl";
 
-      ObjectMapper mapper = new ObjectMapper();
-      mapper.registerModule(new JavaTimeModule());
-      ObjectNode propNode = mapper.valueToTree(request);
-      propNode.remove("district");
-      propNode.remove("periodDays");
+      List<String> command = new ArrayList<>();
+      command.add("python");
+      command.add(pythonScriptPath);
+      command.add("--periods");
+      command.add(String.valueOf(request.getPeriodDays()));
+      command.add("--model");
+      command.add(modelPath);
+      command.add("--min-val");
+      command.add(minVal);
+      command.add("--max-val");
+      command.add(maxVal);
+      command.add("--district");
+      command.add(request.getDistrict());
 
-      String propertyJson = mapper.writeValueAsString(propNode);
+      command.add("--width");
+      command.add(String.valueOf(request.getWidth()));
+      command.add("--length");
+      command.add(String.valueOf(request.getLength()));
+      command.add("--floors");
+      command.add(String.valueOf(request.getFloors()));
+      command.add("--rooms");
+      command.add(String.valueOf(request.getRooms()));
+      command.add("--toilets");
+      command.add(String.valueOf(request.getToilets()));
 
-      ProcessBuilder pb = new ProcessBuilder(
-          "python",
-          pythonScriptPath,
-          "--periods", String.valueOf(request.getPeriodDays()),
-          "--model", modelPath,
-          "--min-val", minVal,
-          "--max-val", maxVal,
-          "--district", request.getDistrict(),
-          "--property-data", propertyJson);
+      // Xử lý danh sách landCharacteristics
+      if (request.getLandCharacteristics() != null && !request.getLandCharacteristics().isEmpty()) {
+        command.add("--land-characteristics");
+        command.add(request.getLandCharacteristics().stream()
+            .map(String::valueOf)
+            .collect(Collectors.joining(",")));
+      }
+
+      command.add("--category-id");
+      command.add(String.valueOf(request.getCategoryId()));
+      command.add("--direction-id");
+      command.add(String.valueOf(request.getDirectionId()));
+      command.add("--furnishing-id");
+      command.add(String.valueOf(request.getFurnishingId()));
+
+      ProcessBuilder pb = new ProcessBuilder(command);
 
       // đặt thư mục chạy script
       Path scriptDir = Paths.get(pythonScriptPath).getParent();
@@ -137,16 +162,11 @@ public class LandForecastService {
 
   private ForecastResponse parsePythonResponse(String rawResponse, String district, int periodDays) {
     try {
-      String jsonResponse = extractJsonPart(rawResponse);
-
+      String response = rawResponse.replace("'", "\"");
+      String jsonResponse = extractJsonPart(response);
       ObjectMapper mapper = new ObjectMapper();
       mapper.registerModule(new JavaTimeModule());
       JsonNode root = mapper.readTree(jsonResponse);
-
-      String responseDistrict = root.get("district").asText();
-      if (!district.equals(responseDistrict)) {
-        throw new RuntimeException("District mismatch. Requested: " + district + ", Response: " + responseDistrict);
-      }
 
       List<PricePrediction> predictions = new ArrayList<>();
       JsonNode predictionsNode = root.get("predictions");
@@ -170,14 +190,15 @@ public class LandForecastService {
   }
 
   private String extractJsonPart(String rawResponse) {
-    int jsonStart = rawResponse.indexOf('{');
-    int jsonEnd = rawResponse.lastIndexOf('}') + 1;
-
-    if (jsonStart < 0 || jsonEnd <= jsonStart) {
-      throw new RuntimeException("Invalid response format - JSON not found");
+    int predictionsStart = rawResponse.indexOf("{\"predictions\":");
+    if (predictionsStart >= 0) {
+      int predictionsEnd = rawResponse.lastIndexOf("}");
+      if (predictionsEnd > predictionsStart) {
+        return rawResponse.substring(predictionsStart, predictionsEnd + 1);
+      }
     }
 
-    return rawResponse.substring(jsonStart, jsonEnd);
+    throw new RuntimeException("Invalid response format - JSON not found");
   }
 
   private MinMaxParams loadMinMaxParams() throws Exception {
