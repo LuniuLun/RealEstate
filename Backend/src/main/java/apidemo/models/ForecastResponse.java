@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ForecastResponse {
-  private String district;
   private int periodDays;
   private List<PricePrediction> predictions;
 }

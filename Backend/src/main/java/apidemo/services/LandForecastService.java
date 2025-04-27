@@ -1,5 +1,6 @@
 package apidemo.services;
 
+import apidemo.models.ForecastRequest;
 import apidemo.models.ForecastResponse;
 import apidemo.models.PricePrediction;
 import apidemo.models.MinMaxParams;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,7 +31,7 @@ public class LandForecastService {
 
   private MinMaxParams scalerParams;
   private final Set<String> availableDistricts = new HashSet<>();
-  private final String scalerPath = "predict_scaler_params.csv";
+  private final String scalerPath = "forecast_scaler_params.csv";
   private String pythonScriptPath;
 
   @PostConstruct
@@ -72,87 +75,110 @@ public class LandForecastService {
     }
   }
 
-  public ForecastResponse generateForecast(String district, int periodDays) {
-    log.info("Generating forecast for district={}, periodDays={}", district, periodDays);
+  public ForecastResponse generateForecast(ForecastRequest request) {
+    log.info("Generating forecast for periodDays={}, with property details including district={}",
+        request.getPeriodDays(), request.getDistrict());
 
-    if (!isDistrictAvailable(district)) {
-      log.warn("District not available: {}", district);
-      throw new IllegalArgumentException("District not available: " + district);
+    if (!isDistrictAvailable(request.getDistrict())) {
+      log.warn("District not available: {}", request.getDistrict());
+      throw new IllegalArgumentException("District not available: " + request.getDistrict());
     }
 
     try {
       String minVal = String.valueOf(scalerParams.getMinValue());
       String maxVal = String.valueOf(scalerParams.getMaxValue());
+      String modelPath = "xgboost_final_model.pkl";
 
-      ProcessBuilder processBuilder = new ProcessBuilder(
-          "python",
-          pythonScriptPath,
-          "--district", district,
-          "--periods", String.valueOf(periodDays),
-          "--min-val", minVal,
-          "--max-val", maxVal);
+      List<String> command = new ArrayList<>();
+      command.add("python");
+      command.add(pythonScriptPath);
+      command.add("--periods");
+      command.add(String.valueOf(request.getPeriodDays()));
+      command.add("--model");
+      command.add(modelPath);
+      command.add("--min-val");
+      command.add(minVal);
+      command.add("--max-val");
+      command.add(maxVal);
+      command.add("--district");
+      command.add(request.getDistrict());
 
-      // Set working directory to script location
+      command.add("--width");
+      command.add(String.valueOf(request.getWidth()));
+      command.add("--length");
+      command.add(String.valueOf(request.getLength()));
+      command.add("--floors");
+      command.add(String.valueOf(request.getFloors()));
+      command.add("--rooms");
+      command.add(String.valueOf(request.getRooms()));
+      command.add("--toilets");
+      command.add(String.valueOf(request.getToilets()));
+
+      // Xử lý danh sách landCharacteristics
+      if (request.getLandCharacteristics() != null && !request.getLandCharacteristics().isEmpty()) {
+        command.add("--land-characteristics");
+        command.add(request.getLandCharacteristics().stream()
+            .map(String::valueOf)
+            .collect(Collectors.joining(",")));
+      }
+
+      command.add("--category-id");
+      command.add(String.valueOf(request.getCategoryId()));
+      command.add("--direction-id");
+      command.add(String.valueOf(request.getDirectionId()));
+      command.add("--furnishing-id");
+      command.add(String.valueOf(request.getFurnishingId()));
+
+      ProcessBuilder pb = new ProcessBuilder(command);
+
+      // đặt thư mục chạy script
       Path scriptDir = Paths.get(pythonScriptPath).getParent();
-      processBuilder.directory(scriptDir.toFile());
+      pb.directory(scriptDir.toFile());
+      pb.redirectErrorStream(true);
 
-      processBuilder.redirectErrorStream(true);
+      log.debug("Executing command: {}", pb.command());
+      Process proc = pb.start();
 
-      log.debug("Executing command: {}", processBuilder.command());
-
-      Process process = processBuilder.start();
-
-      // Read output
       StringBuilder output = new StringBuilder();
-      try (BufferedReader reader = new BufferedReader(
-          new InputStreamReader(process.getInputStream()))) {
+      try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
         String line;
-        while ((line = reader.readLine()) != null) {
+        while ((line = r.readLine()) != null) {
           output.append(line);
         }
       }
 
-      int exitCode = process.waitFor();
-      if (exitCode != 0) {
-        throw new RuntimeException("Python script failed with exit code: " + exitCode);
+      int exit = proc.waitFor();
+      if (exit != 0) {
+        throw new RuntimeException("Python script failed (exit " + exit + "): " + output);
       }
 
-      return parsePythonResponse(output.toString(), district, periodDays);
+      return parsePythonResponse(output.toString(), request.getDistrict(), request.getPeriodDays());
 
-    } catch (Exception e) {
-      log.error("Error executing Python forecast script", e);
-      throw new RuntimeException("Error generating forecast", e);
+    } catch (Exception ex) {
+      log.error("Error executing Python forecast script", ex);
+      throw new RuntimeException("Error generating forecast", ex);
     }
   }
 
   private ForecastResponse parsePythonResponse(String rawResponse, String district, int periodDays) {
     try {
-      String jsonResponse = extractJsonPart(rawResponse);
-
+      String response = rawResponse.replace("'", "\"");
+      String jsonResponse = extractJsonPart(response);
       ObjectMapper mapper = new ObjectMapper();
       mapper.registerModule(new JavaTimeModule());
       JsonNode root = mapper.readTree(jsonResponse);
-
-      String responseDistrict = root.get("district").asText();
-      if (!district.equals(responseDistrict)) {
-        throw new RuntimeException("District mismatch. Requested: " + district + ", Response: " + responseDistrict);
-      }
 
       List<PricePrediction> predictions = new ArrayList<>();
       JsonNode predictionsNode = root.get("predictions");
       for (JsonNode node : predictionsNode) {
         PricePrediction prediction = PricePrediction.builder()
             .date(LocalDate.parse(node.get("date").asText()))
-            .district(node.get("district").asText())
             .predictedPrice(node.get("predictedPrice").asDouble())
-            .minPrice(node.get("minPrice").asDouble())
-            .maxPrice(node.get("maxPrice").asDouble())
             .build();
         predictions.add(prediction);
       }
 
       return ForecastResponse.builder()
-          .district(district)
           .periodDays(periodDays)
           .predictions(predictions)
           .build();
@@ -164,14 +190,15 @@ public class LandForecastService {
   }
 
   private String extractJsonPart(String rawResponse) {
-    int jsonStart = rawResponse.indexOf('{');
-    int jsonEnd = rawResponse.lastIndexOf('}') + 1;
-
-    if (jsonStart < 0 || jsonEnd <= jsonStart) {
-      throw new RuntimeException("Invalid response format - JSON not found");
+    int predictionsStart = rawResponse.indexOf("{\"predictions\":");
+    if (predictionsStart >= 0) {
+      int predictionsEnd = rawResponse.lastIndexOf("}");
+      if (predictionsEnd > predictionsStart) {
+        return rawResponse.substring(predictionsStart, predictionsEnd + 1);
+      }
     }
 
-    return rawResponse.substring(jsonStart, jsonEnd);
+    throw new RuntimeException("Invalid response format - JSON not found");
   }
 
   private MinMaxParams loadMinMaxParams() throws Exception {

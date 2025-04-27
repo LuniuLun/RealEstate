@@ -25,7 +25,7 @@ public class ForecastController {
 
   private final LandForecastService forecastService;
 
-  @PostMapping("/land")
+  @PostMapping("")
   public ResponseEntity<?> generateForecast(@RequestBody ForecastRequest request) {
     log.info("Received forecast request for district: {}, period: {} days",
         request.getDistrict(), request.getPeriodDays());
@@ -51,9 +51,7 @@ public class ForecastController {
             .body(Map.of("message", request.getDistrict() + " không tìm thấy trong dữ liệu"));
       }
 
-      ForecastResponse response = forecastService.generateForecast(
-          request.getDistrict(),
-          request.getPeriodDays());
+      ForecastResponse response = forecastService.generateForecast(request);
 
       return ResponseEntity.ok(response);
 

@@ -13,8 +13,5 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class PricePrediction {
   private LocalDate date;
-  private String district;
   private double predictedPrice;
-  private double minPrice;
-  private double maxPrice;
 }
