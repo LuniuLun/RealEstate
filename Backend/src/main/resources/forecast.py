@@ -1,169 +1,126 @@
 import argparse
 import json
 import pickle
-import os
 import sys
-import traceback
-import time
+import numpy as np
 from datetime import datetime, timedelta
-import math
 
 def log_message(message):
-    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{timestamp}] {message}", flush=True)
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {message}")
+    sys.stdout.flush()
+
+def get_mapping_value(mapping, id, default):
+    return mapping.get(id, default)
+
+def get_land_characteristics(ids):
+    id_map = {
+        1: "1 Part Residential",
+        2: "All Residential",
+        3: "Back Expansion",
+        4: "Car Alley",
+        5: "Frontage",
+        6: "No Residential"
+    }
+    return {v: 1 if i in ids else 0 for i, v in id_map.items()}
 
 def create_time_features(dates):
-    """Tạo các đặc trưng thời gian từ danh sách các ngày"""
-    time_features = []
-    for date in dates:
-        year = date.year
-        month = date.month
-        day = date.day
-        dayofweek = date.weekday()
-        quarter = (month - 1) // 3 + 1
-        dayofyear = date.timetuple().tm_yday
-        is_weekend = 1 if dayofweek >= 5 else 0
-        
-        season_dict = {1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 1, 7: 2, 8: 2, 9: 2, 10: 3, 11: 3, 12: 3}
-        season = season_dict.get(month, 0)
-        
-        min_date = datetime(2024, 1, 1)
-        days_from_min = (date - min_date).days
-        
-        month_sin = math.sin(2 * math.pi * month / 12)
-        month_cos = math.cos(2 * math.pi * month / 12)
-        
-        time_features.append({
-            'year': year,
-            'month': month,
-            'day': day,
-            'dayofweek': dayofweek,
-            'quarter': quarter,
-            'dayofyear': dayofyear,
-            'is_weekend': is_weekend,
-            'season': season,
-            'days_from_min': days_from_min,
-            'month_sin': month_sin,
-            'month_cos': month_cos
-        })
-    
-    return time_features
+    return [{
+        "year": d.year, "month": d.month, "day": d.day,
+        "dayofweek": d.weekday(), "quarter": (d.month - 1)//3 + 1,
+        "month_sin": np.sin(2 * np.pi * d.month/12),
+        "month_cos": np.cos(2 * np.pi * d.month/12),
+        "dayOfWeek_sin": np.sin(2 * np.pi * d.weekday()/7),
+        "dayOfWeek_cos": np.cos(2 * np.pi * d.weekday()/7)
+    } for d in dates]
 
-def create_lag_features(df):
-    """Tạo các đặc trưng lag và rolling statistics"""
-    lag_days = [7, 14, 30]
-    rolling_windows = [7, 14, 30]
-    lag_features = []
+def create_property_features(property_data, district):
+    directions = ["EAST", "NORTH", "NORTHEAST", "NORTHWEST", "SOUTH", "SOUTHEAST", "SOUTHWEST", "WEST"]
+    furnishing = ["HIGH_END_FURNITURE", "FULLY_FURNISHED", "BASIC_FINISHING", "RAW_HANDOVER"]
+    districts = ["Huyện Hòa Vang", "Quận Cẩm Lệ", "Quận Hải Châu", "Quận Liên Chiểu", 
+                "Quận Ngũ Hành Sơn", "Quận Sơn Trà", "Quận Thanh Khê"]
     
-    for i in range(len(df)):
-        features = {}
-        for lag in lag_days:
-            features[f'price_lag_{lag}'] = 0.0
-        
-        for window in rolling_windows:
-            features[f'price_rolling_mean_{window}'] = 0.0
-            features[f'price_rolling_std_{window}'] = 0.0
-        
-        features['price_diff_1'] = 0.0
-        features['price_diff_7'] = 0.0
-        features['price_pct_change_1'] = 0.0
-        features['price_pct_change_7'] = 0.0
-        
-        lag_features.append(features)
-    
-    return lag_features
+    feat = {
+        "Width": property_data.get("width", 5),
+        "Length": property_data.get("length", 20),
+        "Floors": property_data.get("floors", 0),
+        "Rooms": property_data.get("rooms", 0),
+        "Toilets": property_data.get("toilets", 0),
+        **get_land_characteristics(property_data.get("landCharacteristics", [])),
+        "Category_HOUSE": 1 if property_data.get("categoryId", 2) == 1 else 0,
+        "Category_LAND": 1 if property_data.get("categoryId", 2) == 2 else 0,
+        **{f"District_{d}": 1 if d == district else 0 for d in districts},
+        **{f"House Direction_{d}": 1 if d == directions[property_data.get("directionId", 3)-1] else 0
+          for d in directions},
+        **{f"Furnishing Sell_{f}": 1 if f == furnishing[property_data.get("furnishingId", 3)-1] else 0
+          for f in furnishing}
+    }
+    return feat
 
-def inverse_min_max(predictions, min_val, max_val):
-    """Chuyển đổi giá trị scale về giá gốc"""
-    return [pred * (max_val - min_val) + min_val for pred in predictions]
-
-def generate_forecast(model, feature_columns, district_name, periods, min_val, max_val):
-    """Tạo dự báo cho số ngày cụ thể"""
-    try:
-        # Tạo danh sách ngày tương lai
-        start_date = datetime.now()
-        future_dates = [start_date + timedelta(days=i) for i in range(periods)]
-        
-        # Tạo các đặc trưng
-        time_features = create_time_features(future_dates)
-        lag_features = create_lag_features(time_features)
-        
-        # Kết hợp các đặc trưng
-        X_future = []
-        for i in range(len(future_dates)):
-            feature_row = {**time_features[i], **lag_features[i]}
-            X_future.append([feature_row[col] for col in feature_columns])
-        
-        # Dự báo
-        predictions_scaled = model.predict(X_future)
-        predictions = inverse_min_max(predictions_scaled, min_val, max_val)
-        
-        # Tạo kết quả
-        result = {
-            'district': district_name,
-            'predictions': []
-        }
-        
-        for date, pred in zip(future_dates, predictions):
-            result['predictions'].append({
-                'date': date.strftime('%Y-%m-%d'),
-                'district': district_name,
-                'predictedPrice': round(pred, 6),
-                'minPrice': round(pred * 0.95, 6),
-                'maxPrice': round(pred * 1.05, 6)
-            })
-        
-        return result
+def generate_forecast(model, feature_columns, periods, min_val, max_val, property_data, district):
+    dates = [datetime.now() + timedelta(days=i) for i in range(periods)]
+    p_feats = create_property_features(property_data, district)
     
-    except Exception as e:
-        log_message(f"ERROR in generate_forecast: {str(e)}")
-        traceback.print_exc()
-        return {"error": f"Forecast generation failed: {str(e)}"}
+    Xf = []
+    for tf in create_time_features(dates):
+        feature_row = [tf.get(c, p_feats.get(c, 0)) for c in feature_columns]
+        Xf.append(feature_row)
+    
+    preds = [round(p*(max_val-min_val)+min_val, 6) for p in model.predict(Xf)]
+    return {"predictions": [{"date": d.strftime("%Y-%m-%d"), "predictedPrice": p} 
+                          for d, p in zip(dates, preds)]}
 
 def main():
-    log_message("Script started")
+    parser = argparse.ArgumentParser(description="Generate real-estate price forecast")
+    parser.add_argument("--periods", type=int, required=True)
+    parser.add_argument("--model", type=str, required=True)
+    parser.add_argument("--min-val", type=float, required=True)
+    parser.add_argument("--max-val", type=float, required=True)
+    parser.add_argument("--district", type=str, required=True)
+    parser.add_argument("--width", type=float, default=5.0)
+    parser.add_argument("--length", type=float, default=20.0)
+    parser.add_argument("--floors", type=int, default=0)
+    parser.add_argument("--rooms", type=int, default=0)
+    parser.add_argument("--toilets", type=int, default=0)
+    parser.add_argument("--land-characteristics", type=str, default="")
+    parser.add_argument("--category-id", type=int, default=2)
+    parser.add_argument("--direction-id", type=int, default=3)
+    parser.add_argument("--furnishing-id", type=int, default=3)
+    
+    args = parser.parse_args()
+    
+    prop = {
+        "width": args.width, "length": args.length, "floors": args.floors,
+        "rooms": args.rooms, "toilets": args.toilets, "categoryId": args.category_id,
+        "directionId": args.direction_id, "furnishingId": args.furnishing_id,
+        "landCharacteristics": [int(x) for x in args.land_characteristics.split(",") if x.strip()]
+    }
     
     try:
-        # Xử lý tham số đầu vào
-        parser = argparse.ArgumentParser(description='Dự báo giá bất động sản sử dụng XGBoost')
-        parser.add_argument('--district', type=str, required=True, help='Tên quận cần dự báo')
-        parser.add_argument('--periods', type=int, required=True, help='Số ngày dự báo')
-        parser.add_argument('--model', type=str, default='district_xgboost_models.pkl', help='Đường dẫn đến file model')
-        parser.add_argument('--min-val', type=float, required=True, help='Giá trị min scale')
-        parser.add_argument('--max-val', type=float, required=True, help='Giá trị max scale')
-
-        args = parser.parse_args()
+        with open(args.model, "rb") as f:
+            model_data = pickle.load(f)
+            
+        if isinstance(model_data, dict) and args.district in model_data:
+            model_info = model_data[args.district]
+            model, feature_columns = model_info["model"], model_info["feature_columns"]
+        else:
+            model = model_data
+            feature_columns = ["Width", "Length", "Floors", "Rooms", "Toilets",
+                "1 Part Residential", "All Residential", "Back Expansion", "Car Alley", "Frontage", "No Residential",
+                "Category_HOUSE", "Category_LAND", *[f"District_{d}" for d in [
+                    "Huyện Hòa Vang", "Quận Cẩm Lệ", "Quận Hải Châu", "Quận Liên Chiểu",
+                    "Quận Ngũ Hành Sơn", "Quận Sơn Trà", "Quận Thanh Khê"]],
+                *[f"House Direction_{d}" for d in [
+                    "EAST", "NORTH", "NORTHEAST", "NORTHWEST", "SOUTH", "SOUTHEAST", "SOUTHWEST", "WEST"]],
+                *[f"Furnishing Sell_{f}" for f in [
+                    "BASIC_FINISHING", "FULLY_FURNISHED", "HIGH_END_FURNITURE", "RAW_HANDOVER"]],
+                "year", "month", "day", "dayofweek", "quarter", "month_sin", "month_cos", "dayOfWeek_sin", "dayOfWeek_cos"]
+            
+        result = generate_forecast(model, feature_columns, args.periods,
+                                  args.min_val, args.max_val, prop, args.district)
+        print(json.dumps(result, ensure_ascii=False))
         
-        # Kiểm tra file tồn tại
-        if not os.path.exists(args.model):
-            raise FileNotFoundError(f"Model file not found: {args.model}")
-
-        # Load model
-        with open(args.model, 'rb') as f:
-            district_models = pickle.load(f)
-        
-        if args.district not in district_models:
-            raise ValueError(f"District not found: {args.district}")
-
-        model_info = district_models[args.district]
-        
-        # Tạo dự báo
-        forecast_result = generate_forecast(
-            model_info['model'],
-            model_info['feature_columns'],
-            args.district,
-            args.periods,
-            args.min_val,
-            args.max_val
-        )
-        
-        print(json.dumps(forecast_result, ensure_ascii=False))
-
-
     except Exception as e:
-        log_message(f"CRITICAL ERROR: {str(e)}")
-        traceback.print_exc()
-        print(json.dumps({"error": f"Critical error: {str(e)}"}, ensure_ascii=False))
+        log_message(f"Error: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
