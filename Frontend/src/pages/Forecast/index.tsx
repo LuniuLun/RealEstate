@@ -1,16 +1,16 @@
 import { useState, useCallback } from 'react'
 import { Container, Heading, Card, CardBody, Box, Stack, Skeleton } from '@chakra-ui/react'
 import { ForecastRequest, ForecastResponse } from '@type/models/forecast'
-import { useForecastLandPrice, useTransformForecastedData } from '@hooks'
+import { useForecastPrice, useTransformForecastedData } from '@hooks'
 import { CustomTable, ForecastChart, ForecastForm } from '@components'
 import { ViewMode } from '@components/ForecastChart'
 import { FormValues } from '@components/ForecastForm'
 import { ITableRow } from '@components/CustomTable'
 
-const ForecastLand = () => {
+const Forecast = () => {
   const [forecastData, setForecastData] = useState<ForecastResponse | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('daily')
-  const { forecastLandPriceMutation, isLoading, isError } = useForecastLandPrice()
+  const { ForecastPriceMutation, isLoading, isError } = useForecastPrice()
   const { data, minY, maxY } = useTransformForecastedData({ forecastData, viewMode })
 
   const handleViewModeChange = useCallback((mode: ViewMode) => {
@@ -34,7 +34,7 @@ const ForecastLand = () => {
       }
 
       try {
-        const result = await forecastLandPriceMutation.mutateAsync(forecastRequest)
+        const result = await ForecastPriceMutation.mutateAsync(forecastRequest)
         if (result.status === 'success' && result.data) {
           setForecastData(result.data)
         }
@@ -42,7 +42,7 @@ const ForecastLand = () => {
         console.error('Forecast error:', error)
       }
     },
-    [forecastLandPriceMutation]
+    [ForecastPriceMutation]
   )
 
   if (isError)
@@ -95,4 +95,4 @@ const ForecastLand = () => {
   )
 }
 
-export default ForecastLand
+export default Forecast

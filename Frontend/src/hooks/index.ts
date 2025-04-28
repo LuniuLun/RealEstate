@@ -31,5 +31,5 @@ export { default as useAddTransaction } from './UseTransaction/useAddTransaction
 export { default as useGetFavouriteProperty } from './UseFavouriteProperty/useGetFavouriteProperty'
 export { default as useToggleFavouriteProperty } from './UseFavouriteProperty/useToggleFavouriteProperty'
 
-export { default as useForecastLandPrice } from './UseForecastPrice/useForecastLandPrice'
+export { default as useForecastPrice } from './UseForecastPrice/useForecastPrice'
 export { default as useTransformForecastedData } from './UseForecastPrice/useTransformForecastedData'
