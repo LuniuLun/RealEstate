@@ -21,7 +21,16 @@ const ForecastLand = () => {
     async (formData: FormValues) => {
       const forecastRequest: ForecastRequest = {
         district: formData.district,
-        periodDays: formData.periodDays
+        periodDays: formData.periodDays,
+        width: formData.width,
+        length: formData.length,
+        floors: formData.floors,
+        rooms: formData.rooms,
+        toilets: formData.toilets,
+        landCharacteristics: formData.landCharacteristics,
+        categoryId: formData.categoryId,
+        directionId: formData.directionId,
+        furnishingId: formData.furnishingId
       }
 
       try {
