@@ -85,6 +85,8 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
   const region = watch('region')
   const districtName = watch('districtName')
   const wardName = watch('wardName')
+  const length = watch('length')
+  const width = watch('width')
 
   useEffect(() => {
     if (region && districtName && wardName) {
@@ -355,29 +357,6 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
         <Stack gap={3}>
           <Heading variant='secondary'>Diện tích và giá</Heading>
 
-          <FormControl isInvalid={!!errors.area}>
-            <FormLabel>Diện tích đất</FormLabel>
-            <Controller
-              name='area'
-              control={control}
-              rules={{
-                required: 'Vui lòng nhập diện tích',
-                min: { value: 0, message: 'Diện tích phải lớn hơn 0' }
-              }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  size='md'
-                  type='number'
-                  placeholder='m²'
-                  variant='outline'
-                  isDisabled={isAdding || isUpdating || isEstimatingPrice}
-                />
-              )}
-            />
-            <FormErrorMessage>{errors.area?.message}</FormErrorMessage>
-          </FormControl>
-
           <Flex gap={4}>
             <FormControl isInvalid={!!errors.width}>
               <FormLabel>Chiều ngang</FormLabel>
@@ -425,6 +404,25 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
               <FormErrorMessage>{errors.length?.message}</FormErrorMessage>
             </FormControl>
           </Flex>
+
+          <FormControl isInvalid={!!errors.area}>
+            <FormLabel>Diện tích đất</FormLabel>
+            <Controller
+              name='area'
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  size='md'
+                  type='number'
+                  placeholder='m²'
+                  variant='outline'
+                  isDisabled={true}
+                  value={length * width}
+                />
+              )}
+            />
+          </FormControl>
 
           <FormControl isInvalid={!!errors.price}>
             <FormLabel>Giá bán</FormLabel>
