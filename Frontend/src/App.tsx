@@ -60,7 +60,18 @@ function App() {
           <Route path='my-posts' element={<MyPosts />} />
           <Route path='transactions' element={<TransactionHistory />} />
           <Route path='saved-posts' element={<SavedPost />} />
-          <Route path='forecast' element={<ForecastLand />} />
+          <Route
+            element={
+              <ProtectedRoute
+                isAllowed={!!token}
+                userRoles={token?.user?.role?.name}
+                requiredRole={[RoleName.BROKER]}
+                redirectPath='/'
+              />
+            }
+          >
+            <Route path='forecast' element={<ForecastLand />} />
+          </Route>
           <Route
             element={
               <ProtectedRoute

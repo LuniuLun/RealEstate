@@ -15,7 +15,8 @@ import { UserCard } from '@components'
 import { authStore } from '@stores'
 import { useNavigate } from 'react-router-dom'
 import { RoleName } from '@type/models'
-import { ADMIN_NAV_ITEMS, ROLE_OPTION, USER_NAV_ITEMS } from '@constants/option'
+import { ADMIN_NAV_ITEMS, ROLE_OPTION } from '@constants/option'
+import { getUserNavItems } from '@utils'
 
 const iconMap: Record<string, JSX.Element> = {
   personal: <ProfileIcon width='24px' height='24px' />,
@@ -34,7 +35,7 @@ const UserMenu = () => {
   const navigate = useNavigate()
   const roleValue = token?.user?.role?.name
   const roleLabel = roleValue === 'CUSTOMER' ? null : ROLE_OPTION.find((option) => option.value === roleValue)?.label
-  const navItems = roleValue === RoleName.ADMIN ? ADMIN_NAV_ITEMS : USER_NAV_ITEMS
+  const navItems = roleValue === RoleName.ADMIN ? ADMIN_NAV_ITEMS : getUserNavItems(roleValue)
 
   const userMenuItems = [
     ...navItems.map((item) => ({

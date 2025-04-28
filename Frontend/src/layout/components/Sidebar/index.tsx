@@ -2,7 +2,7 @@ import { ElementType, memo, useEffect, useRef, useState } from 'react'
 import { Button, Stack, useBreakpointValue } from '@chakra-ui/react'
 import { NavItem } from '@components'
 import { useLocation } from 'react-router-dom'
-import { ADMIN_NAV_ITEMS, USER_NAV_ITEMS } from '@constants/option'
+import { ADMIN_NAV_ITEMS } from '@constants/option'
 import {
   DashboardIcon,
   ForecastIcon,
@@ -19,6 +19,7 @@ import { useSidebar } from '@hooks'
 import { authStore } from '@stores'
 import { RoleName } from '@type/models'
 import colors from '@styles/variables/colors'
+import { getUserNavItems } from '@utils'
 
 const iconMap: Record<string, ElementType> = {
   dashboard: DashboardIcon,
@@ -39,12 +40,13 @@ const Sidebar = () => {
   const sidebarRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
   const isTablet = useBreakpointValue({ base: true, xl: false })
-  const NAV_ITEMS = token?.user?.role?.name === RoleName.ADMIN ? ADMIN_NAV_ITEMS : USER_NAV_ITEMS
+  const NAV_ITEMS =
+    token?.user?.role?.name === RoleName.ADMIN ? ADMIN_NAV_ITEMS : getUserNavItems(token?.user?.role?.name)
 
   useEffect(() => {
     const currentPath = location.pathname.replace(/\/$/, '')
 
-    const matchedItem = NAV_ITEMS.find((item) => {
+    const matchedItem = NAV_ITEMS?.find((item) => {
       const itemPath = `/personal/${item.path}`.replace('//', '/')
       return currentPath === itemPath || currentPath.startsWith(itemPath + '/')
     })
@@ -90,7 +92,7 @@ const Sidebar = () => {
         <PersonalIcon />
       </Stack>
       <Stack gap={2}>
-        {NAV_ITEMS.map((item) => {
+        {NAV_ITEMS?.map((item) => {
           const Icon = iconMap[item.id] || DashboardIcon
           return (
             <NavItem
