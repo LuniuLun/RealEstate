@@ -100,7 +100,6 @@ public class UserService {
   public User getUserById(Integer userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
-    user.setPassword(null);
     return user;
   }
 
