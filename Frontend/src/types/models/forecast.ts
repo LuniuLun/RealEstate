@@ -1,6 +1,15 @@
 export interface ForecastRequest {
   district: string
   periodDays: number
+  width: number
+  length: number
+  floors: number
+  rooms: number
+  toilets: number
+  landCharacteristics: number
+  categoryId: number
+  directionId: number
+  furnishingId: number
 }
 
 export interface PricePrediction {
