@@ -9,7 +9,7 @@ export const ForecastPrice = async (forecastRequest: ForecastRequest): Promise<I
   const token = authStore.getState().token?.token
 
   try {
-    const response = await fetch(`${baseUrl}/land`, {
+    const response = await fetch(`${baseUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
