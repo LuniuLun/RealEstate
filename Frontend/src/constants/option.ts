@@ -34,7 +34,10 @@ export const PERIOD_OPTION = [
   { value: 30, label: '1 tháng' },
   { value: 90, label: '3 tháng' },
   { value: 180, label: '6 tháng' },
-  { value: 365, label: '1 năm' }
+  { value: 365, label: '1 năm' },
+  { value: 365 * 3, label: '3 năm' },
+  { value: 365 * 5, label: '5 năm' },
+  { value: 365 * 10, label: '10 năm' }
 ]
 
 export const VIEW_MODE_CHART_OPTION = [
