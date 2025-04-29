@@ -30,7 +30,8 @@ const Forecast = () => {
         landCharacteristics: formData.landCharacteristics,
         categoryId: formData.categoryId,
         directionId: formData.directionId,
-        furnishingId: formData.furnishingId
+        furnishingId: formData.furnishingId,
+        landTypeId: formData.landTypeId
       }
 
       try {

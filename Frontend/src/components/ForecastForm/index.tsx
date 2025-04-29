@@ -40,6 +40,7 @@ const ForecastForm = ({ onSubmit, isLoading }: ForecastFormProps) => {
       furnishingId: 0,
       rooms: 0,
       toilets: 0,
+      landTypeId: 0,
       landCharacteristics: []
     }
   })
@@ -133,6 +134,36 @@ const ForecastForm = ({ onSubmit, isLoading }: ForecastFormProps) => {
                   <FormErrorMessage>{errors.categoryId && errors.categoryId.message}</FormErrorMessage>
                 </FormControl>
               </Box>
+
+              {isLand && (
+                <Box mb={4}>
+                  <Text mb={2} fontWeight='medium'>
+                    Loại đất
+                  </Text>
+                  <FormControl isInvalid={!!errors.landTypeId}>
+                    <Controller
+                      name='landTypeId'
+                      control={control}
+                      rules={{
+                        required: isHouse ? 'Vui lòng chọn loại đất' : false
+                      }}
+                      render={({ field }) => (
+                        <CustomSelect
+                          {...field}
+                          placeholder='Chọn loại đất'
+                          options={FILTER_OPTION.landType}
+                          onChange={(e) => field.onChange(Number(e.target.value))}
+                          isDisabled={isLoading}
+                          sx={{ width: '100%' }}
+                          borderRadius={'md'}
+                        />
+                      )}
+                    />
+                    <FormErrorMessage>{errors.landTypeId && errors.landTypeId.message}</FormErrorMessage>
+                  </FormControl>
+                </Box>
+              )}
+
               {isLand && (
                 <Box mb={4}>
                   <FormControl isInvalid={!!errors.landCharacteristics}>

@@ -8,6 +8,7 @@ export interface ForecastRequest {
   toilets: number
   landCharacteristics: number[]
   categoryId: number
+  landTypeId: number
   directionId: number
   furnishingId: number
 }
