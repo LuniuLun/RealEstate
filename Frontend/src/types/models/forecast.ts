@@ -6,7 +6,7 @@ export interface ForecastRequest {
   floors: number
   rooms: number
   toilets: number
-  landCharacteristics: number
+  landCharacteristics: number[]
   categoryId: number
   directionId: number
   furnishingId: number
