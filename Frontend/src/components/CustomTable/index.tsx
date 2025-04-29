@@ -72,7 +72,7 @@ const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, ...props }: ICus
             {filteredHeaders.map((header, index) => (
               <Th
                 position='sticky'
-                top={16}
+                top={title ? 16 : 0}
                 key={header}
                 borderBottom='2px solid'
                 borderColor='brand.secondary'
