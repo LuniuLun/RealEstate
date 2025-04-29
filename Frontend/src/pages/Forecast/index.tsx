@@ -9,7 +9,7 @@ import { ITableRow } from '@components/CustomTable'
 
 const Forecast = () => {
   const [forecastData, setForecastData] = useState<ForecastResponse | null>(null)
-  const [viewMode, setViewMode] = useState<ViewMode>('daily')
+  const [viewMode, setViewMode] = useState<ViewMode>('weekly')
   const { ForecastPriceMutation, isLoading, isError } = useForecastPrice()
   const { data, minY, maxY } = useTransformForecastedData({ forecastData, viewMode })
 
@@ -84,7 +84,7 @@ const Forecast = () => {
           <CardBody>
             <Box mt={6}>
               <Heading variant='secondary' mb={4}>
-                {`Chi Tiết ${viewMode === 'daily' ? 'Theo Ngày' : 'Theo Tháng'}`}
+                {`Chi Tiết ${viewMode === 'weekly' ? 'Theo Tuần' : 'Theo Tháng'}`}
               </Heading>
               <CustomTable data={data as unknown as ITableRow[]} isLoaded={!isLoading} />
             </Box>

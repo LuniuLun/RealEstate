@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import { ForecastResponse, PricePrediction } from '@type/models/forecast'
 import { formatDate } from '@utils'
-import { ViewMode } from '@components/ForecastChart'
+
+export type ViewMode = 'weekly' | 'monthly'
 
 interface UseForecastDataProps {
   forecastData: ForecastResponse | null
@@ -14,10 +15,38 @@ interface ForecastDataItem {
 }
 
 const useTransformForecastedData = ({ forecastData, viewMode }: UseForecastDataProps) => {
-  const formatDailyChartData = (predictions: PricePrediction[]): ForecastDataItem[] => {
-    return predictions.map((prediction) => ({
-      date: formatDate(new Date(prediction.date)),
-      'Giá dự đoán': prediction.predictedPrice
+  const formatWeeklyChartData = (predictions: PricePrediction[]): ForecastDataItem[] => {
+    const weeklyData: Record<
+      string,
+      {
+        predictedSum: number
+        count: number
+      }
+    > = {}
+
+    predictions.forEach((prediction) => {
+      const date = new Date(prediction.date)
+      const firstDayOfWeek = new Date(date)
+      const day = date.getDay()
+      const diff = date.getDate() - day
+      firstDayOfWeek.setDate(diff)
+
+      const weekKey = `Tuần từ ${formatDate(firstDayOfWeek)}`
+
+      if (!weeklyData[weekKey]) {
+        weeklyData[weekKey] = {
+          predictedSum: 0,
+          count: 0
+        }
+      }
+
+      weeklyData[weekKey].predictedSum += prediction.predictedPrice
+      weeklyData[weekKey].count += 1
+    })
+
+    return Object.entries(weeklyData).map(([date, data]) => ({
+      date,
+      'Giá dự đoán': Math.round(data.predictedSum / data.count)
     }))
   }
 
@@ -53,8 +82,8 @@ const useTransformForecastedData = ({ forecastData, viewMode }: UseForecastDataP
 
   const data = useMemo(() => {
     if (!forecastData) return []
-    return viewMode === 'daily'
-      ? formatDailyChartData(forecastData.predictions)
+    return viewMode === 'weekly'
+      ? formatWeeklyChartData(forecastData.predictions)
       : formatMonthlyChartData(forecastData.predictions)
   }, [forecastData, viewMode])
 

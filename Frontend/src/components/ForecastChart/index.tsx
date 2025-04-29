@@ -6,7 +6,7 @@ import { CustomSelect } from '@components'
 import colors from '@styles/variables/colors'
 import { VIEW_MODE_CHART_OPTION } from '@constants/option'
 
-export type ViewMode = 'daily' | 'monthly'
+export type ViewMode = 'weekly' | 'monthly'
 
 interface ForecastDataItem {
   date: string

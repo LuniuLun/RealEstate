@@ -38,7 +38,7 @@ export const PERIOD_OPTION = [
 ]
 
 export const VIEW_MODE_CHART_OPTION = [
-  { value: 'daily', label: 'Giá theo ngày' },
+  { value: 'weekly', label: 'Giá theo tuần' },
   { value: 'monthly', label: 'Giá theo tháng' }
 ]
 
