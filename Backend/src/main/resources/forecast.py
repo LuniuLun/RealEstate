@@ -36,7 +36,8 @@ def create_time_features(dates):
 def create_property_features(property_data, district):
     directions = ["EAST", "NORTH", "NORTHEAST", "NORTHWEST", "SOUTH", "SOUTHEAST", "SOUTHWEST", "WEST"]
     furnishing = ["HIGH_END_FURNITURE", "FULLY_FURNISHED", "BASIC_FINISHING", "RAW_HANDOVER"]
-    districts = ["Huyện Hòa Vang", "Quận Cẩm Lệ", "Quận Hải Châu", "Quận Liên Chiểu", 
+    landTypes = ["RESIDENTIAL_LAND", "PROJECT_LAND", "INDUSTRIAL_LAND", "AGRICULTURAL_LAND"]
+    districts = ["Huyện Hòa Vang", "Quận Cẩm Lệ", "Quận Hải Châu", "Quận Liên Chiểu",
                 "Quận Ngũ Hành Sơn", "Quận Sơn Trà", "Quận Thanh Khê"]
     
     feat = {
@@ -52,7 +53,9 @@ def create_property_features(property_data, district):
         **{f"House Direction_{d}": 1 if d == directions[property_data.get("directionId", 3)-1] else 0
           for d in directions},
         **{f"Furnishing Sell_{f}": 1 if f == furnishing[property_data.get("furnishingId", 3)-1] else 0
-          for f in furnishing}
+          for f in furnishing},
+        **{f"Land Type_{l}": 1 if l == landTypes[property_data.get("landTypeId", 3)-1] else 0
+          for l in landTypes}
     }
     return feat
 
@@ -83,6 +86,7 @@ def main():
     parser.add_argument("--toilets", type=int, default=0)
     parser.add_argument("--land-characteristics", type=str, default="")
     parser.add_argument("--category-id", type=int, default=2)
+    parser.add_argument("--land-type-id", type=int, default=2)
     parser.add_argument("--direction-id", type=int, default=3)
     parser.add_argument("--furnishing-id", type=int, default=3)
     
@@ -91,7 +95,7 @@ def main():
     prop = {
         "width": args.width, "length": args.length, "floors": args.floors,
         "rooms": args.rooms, "toilets": args.toilets, "categoryId": args.category_id,
-        "directionId": args.direction_id, "furnishingId": args.furnishing_id,
+        "directionId": args.direction_id, "furnishingId": args.furnishing_id, "landTypeId": args.land_type_id,
         "landCharacteristics": [int(x) for x in args.land_characteristics.split(",") if x.strip()]
     }
     
@@ -113,6 +117,8 @@ def main():
                     "EAST", "NORTH", "NORTHEAST", "NORTHWEST", "SOUTH", "SOUTHEAST", "SOUTHWEST", "WEST"]],
                 *[f"Furnishing Sell_{f}" for f in [
                     "BASIC_FINISHING", "FULLY_FURNISHED", "HIGH_END_FURNITURE", "RAW_HANDOVER"]],
+                *[f"Land Type_{l}" for l in [
+                    "AGRICULTURAL_LAND", "INDUSTRIAL_LAND", "PROJECT_LAND", "RESIDENTIAL_LAND"]],
                 "year", "month", "day", "dayofweek", "quarter", "month_sin", "month_cos", "dayOfWeek_sin", "dayOfWeek_cos"]
             
         result = generate_forecast(model, feature_columns, args.periods,

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import javax.annotation.PostConstruct;
@@ -124,6 +123,8 @@ public class LandForecastService {
 
       command.add("--category-id");
       command.add(String.valueOf(request.getCategoryId()));
+      command.add("--land-type-id");
+      command.add(String.valueOf(request.getLandTypeId()));
       command.add("--direction-id");
       command.add(String.valueOf(request.getDirectionId()));
       command.add("--furnishing-id");
