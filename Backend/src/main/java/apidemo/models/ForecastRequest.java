@@ -22,6 +22,7 @@ public class ForecastRequest {
   private Integer toilets;
   private List<Integer> landCharacteristics;
   private Integer categoryId;
+  private Integer landTypeId;
   private Integer directionId;
   private Integer furnishingId;
 }
