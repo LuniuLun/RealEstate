@@ -35,6 +35,7 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/v1/auth/**").permitAll()
+            .requestMatchers("/api/v1/images/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/v1/properties/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/properties/estimate-price").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/v1/properties").authenticated()
