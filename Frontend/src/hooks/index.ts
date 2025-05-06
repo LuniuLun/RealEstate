@@ -33,3 +33,5 @@ export { default as useToggleFavouriteProperty } from './UseFavouriteProperty/us
 
 export { default as useForecastPrice } from './UseForecastPrice/useForecastPrice'
 export { default as useTransformForecastedData } from './UseForecastPrice/useTransformForecastedData'
+
+export { default as useImageValidation } from './UseImage/useImageValidation'
