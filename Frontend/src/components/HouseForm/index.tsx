@@ -82,6 +82,8 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
   const { estimatePropertyPriceMutation, isLoading: isEstimatingPrice } = useEstimatePropertyPrice()
   const { convertHouseData } = useConvertPropertyData()
   const [estimatePrice, setEstimatePrice] = useState<number>()
+  const [imagesValid, setImagesValid] = useState<boolean>(true)
+
   const region = watch('region')
   const districtName = watch('districtName')
   const wardName = watch('wardName')
@@ -93,6 +95,21 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
       fetchCoordinates()
     }
   }, [wardName])
+
+  useEffect(() => {
+    if (width && length) {
+      const numWidth = Number(width)
+      const numLength = Number(length)
+
+      if (!isNaN(numWidth) && !isNaN(numLength)) {
+        setValue('area', numWidth * numLength)
+      }
+    }
+  }, [width, length])
+
+  const handleImageValidationChange = (isValid: boolean) => {
+    setImagesValid(isValid)
+  }
 
   const fetchCoordinates = (streetName?: string) => {
     let fullAddress = streetName ? `${streetName}, ` : ''
@@ -155,6 +172,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
           label='Hình ảnh sản phẩm'
           initialImages={initialData?.images}
           onUpload={handleImageUpload}
+          onValidationChange={handleImageValidationChange}
           isLoading={isAdding || isUpdating || isEstimatingPrice}
         />
         <FormErrorMessage>{errors.images?.message}</FormErrorMessage>
@@ -418,7 +436,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
                   placeholder='m²'
                   variant='outline'
                   isDisabled={true}
-                  value={length * width}
+                  value={width && length ? Number(width) * Number(length) : 0}
                 />
               )}
             />
@@ -527,7 +545,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
           my={6}
           alignSelf='flex-end'
           isLoading={isAdding || isUpdating || isEstimatingPrice || isGetCoordinatesLoading}
-          isDisabled={isGetCoordinatesError}
+          isDisabled={isGetCoordinatesError || !imagesValid}
         >
           Đăng tin
         </Button>

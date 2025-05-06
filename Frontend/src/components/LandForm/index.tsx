@@ -74,6 +74,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
     isLoading: isGetCoordinatesLoading
   } = useGetCoordinates()
   const [estimatePrice, setEstimatePrice] = useState<number>()
+  const [imagesValid, setImagesValid] = useState<boolean>(true)
 
   const region = watch('region')
   const districtName = watch('districtName')
@@ -82,10 +83,25 @@ const LandForm = ({ initialData }: ILandFormProps) => {
   const width = watch('width')
 
   useEffect(() => {
+    if (width && length) {
+      const numWidth = Number(width)
+      const numLength = Number(length)
+
+      if (!isNaN(numWidth) && !isNaN(numLength)) {
+        setValue('area', numWidth * numLength)
+      }
+    }
+  }, [width, length])
+
+  useEffect(() => {
     if (region && districtName && wardName) {
       fetchCoordinates()
     }
   }, [wardName])
+
+  const handleImageValidationChange = (isValid: boolean) => {
+    setImagesValid(isValid)
+  }
 
   const fetchCoordinates = (streetName?: string) => {
     let fullAddress = streetName ? `${streetName}, ` : ''
@@ -161,6 +177,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
           label='Hình ảnh sản phẩm'
           initialImages={initialData?.images}
           onUpload={handleImageUpload}
+          onValidationChange={handleImageValidationChange}
           isLoading={isAdding || isUpdating || isEstimatingPrice}
         />
       </FormControl>
@@ -340,7 +357,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                   placeholder='m²'
                   variant='outline'
                   isDisabled={true}
-                  value={length * width || 0}
+                  value={width && length ? Number(width) * Number(length) : 0}
                 />
               )}
             />
@@ -448,7 +465,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
           my={6}
           alignSelf='flex-end'
           isLoading={isAdding || isUpdating || isEstimatingPrice || isGetCoordinatesLoading}
-          isDisabled={isGetCoordinatesError}
+          isDisabled={isGetCoordinatesError || !imagesValid}
         >
           {initialData ? 'Cập nhật' : 'Đăng tin'}
         </Button>
