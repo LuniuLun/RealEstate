@@ -9,6 +9,11 @@ def log_message(message):
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {message}")
     sys.stdout.flush()
 
+def convert_numpy(obj):
+    if isinstance(obj, np.generic):
+        return obj.item()  # convert float32/int32 -> float/int
+    raise TypeError(f"Type {type(obj)} not serializable")
+
 def get_mapping_value(mapping, id, default):
     return mapping.get(id, default)
 
@@ -59,7 +64,7 @@ def create_property_features(property_data, district):
     }
     return feat
 
-def generate_forecast(model, feature_columns, periods, min_val, max_val, property_data, district):
+def generate_forecast(model, feature_columns, periods, property_data, district):
     dates = [datetime.now() + timedelta(days=i) for i in range(periods)]
     p_feats = create_property_features(property_data, district)
     
@@ -68,7 +73,7 @@ def generate_forecast(model, feature_columns, periods, min_val, max_val, propert
         feature_row = [tf.get(c, p_feats.get(c, 0)) for c in feature_columns]
         Xf.append(feature_row)
     
-    preds = [round(p*(max_val-min_val)+min_val, 6) for p in model.predict(Xf)]
+    preds = [round(np.expm1(p), 6) for p in model.predict(Xf)]
     return {"predictions": [{"date": d.strftime("%Y-%m-%d"), "predictedPrice": p} 
                           for d, p in zip(dates, preds)]}
 
@@ -76,8 +81,6 @@ def main():
     parser = argparse.ArgumentParser(description="Generate real-estate price forecast")
     parser.add_argument("--periods", type=int, required=True)
     parser.add_argument("--model", type=str, required=True)
-    parser.add_argument("--min-val", type=float, required=True)
-    parser.add_argument("--max-val", type=float, required=True)
     parser.add_argument("--district", type=str, required=True)
     parser.add_argument("--width", type=float, default=5.0)
     parser.add_argument("--length", type=float, default=20.0)
@@ -121,9 +124,8 @@ def main():
                     "AGRICULTURAL_LAND", "INDUSTRIAL_LAND", "PROJECT_LAND", "RESIDENTIAL_LAND"]],
                 "year", "month", "day", "dayofweek", "quarter", "month_sin", "month_cos", "dayOfWeek_sin", "dayOfWeek_cos"]
             
-        result = generate_forecast(model, feature_columns, args.periods,
-                                  args.min_val, args.max_val, prop, args.district)
-        print(json.dumps(result, ensure_ascii=False))
+        result = generate_forecast(model, feature_columns, args.periods, prop, args.district)
+        print(json.dumps(result, ensure_ascii=False, default=convert_numpy))
         
     except Exception as e:
         log_message(f"Error: {e}")

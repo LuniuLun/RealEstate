@@ -26,17 +26,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class LandForecastService {
+public class PropertyForecastService {
 
   private MinMaxParams scalerParams;
   private final Set<String> availableDistricts = new HashSet<>();
-  private final String scalerPath = "forecast_scaler_params.csv";
   private String pythonScriptPath;
 
   @PostConstruct
   public void init() {
     try {
-      this.scalerParams = loadMinMaxParams();
       loadPythonScriptPath();
       loadDistrictsFromFile();
     } catch (Exception e) {
@@ -84,8 +82,6 @@ public class LandForecastService {
     }
 
     try {
-      String minVal = String.valueOf(scalerParams.getMinValue());
-      String maxVal = String.valueOf(scalerParams.getMaxValue());
       String modelPath = "xgboost_final_model.pkl";
 
       List<String> command = new ArrayList<>();
@@ -95,10 +91,6 @@ public class LandForecastService {
       command.add(String.valueOf(request.getPeriodDays()));
       command.add("--model");
       command.add(modelPath);
-      command.add("--min-val");
-      command.add(minVal);
-      command.add("--max-val");
-      command.add(maxVal);
       command.add("--district");
       command.add(request.getDistrict());
 
@@ -200,35 +192,6 @@ public class LandForecastService {
     }
 
     throw new RuntimeException("Invalid response format - JSON not found");
-  }
-
-  private MinMaxParams loadMinMaxParams() throws Exception {
-    ClassPathResource resource = new ClassPathResource(scalerPath);
-    try (InputStream is = resource.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-
-      // Skip header
-      reader.readLine();
-
-      double minValue = 0.0;
-      double maxValue = 0.0;
-
-      String line;
-      while ((line = reader.readLine()) != null) {
-        String[] parts = line.split(",");
-        if (parts[0].trim().equalsIgnoreCase("min")) {
-          minValue = Double.parseDouble(parts[1].trim());
-        } else if (parts[0].trim().equalsIgnoreCase("max")) {
-          maxValue = Double.parseDouble(parts[1].trim());
-        }
-      }
-
-      log.info("Loaded scaler params - min: {}, max: {}", minValue, maxValue);
-      MinMaxParams params = new MinMaxParams();
-      params.setMinValue(minValue);
-      params.setMaxValue(maxValue);
-      return params;
-    }
   }
 
   public boolean isDistrictAvailable(String district) {

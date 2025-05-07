@@ -15,7 +15,7 @@ import apidemo.models.ForecastRequest;
 import apidemo.models.ForecastResponse;
 import apidemo.models.Role.RoleName;
 import apidemo.models.User;
-import apidemo.services.LandForecastService;
+import apidemo.services.PropertyForecastService;
 
 @RestController
 @RequestMapping("/api/v1/forecast")
@@ -23,7 +23,7 @@ import apidemo.services.LandForecastService;
 @Slf4j
 public class ForecastController {
 
-  private final LandForecastService forecastService;
+  private final PropertyForecastService forecastService;
 
   @PostMapping("")
   public ResponseEntity<?> generateForecast(@RequestBody ForecastRequest request) {
