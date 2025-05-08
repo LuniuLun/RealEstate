@@ -1,6 +1,8 @@
 *.csv
 *.pmml
 *.pkl
+*.bin
+*.model
 
 /HouseValuation
 /LandValuation
