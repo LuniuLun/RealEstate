@@ -1,20 +1,20 @@
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 import useCustomToast from '@hooks/UseCustomToast'
 import { IApiResponse } from '@type/apiResponse'
-import { forecastLandPrice } from '@services/forecast'
+import { ForecastPrice } from '@services/forecast'
 import { ForecastRequest, ForecastResponse } from '@type/models/forecast'
 
-interface UseForecastLandPriceReturn {
-  forecastLandPriceMutation: UseMutationResult<IApiResponse<ForecastResponse>, Error, ForecastRequest>
+interface UseForecastPriceReturn {
+  ForecastPriceMutation: UseMutationResult<IApiResponse<ForecastResponse>, Error, ForecastRequest>
   isLoading: boolean
   isError: boolean
 }
 
-const useForecastLandPrice = (): UseForecastLandPriceReturn => {
+const useForecastPrice = (): UseForecastPriceReturn => {
   const { showToast } = useCustomToast()
 
-  const forecastLandPriceMutation = useMutation({
-    mutationFn: forecastLandPrice,
+  const ForecastPriceMutation = useMutation({
+    mutationFn: ForecastPrice,
     onSuccess: (response) => {
       if (response) {
         showToast({
@@ -32,10 +32,10 @@ const useForecastLandPrice = (): UseForecastLandPriceReturn => {
   })
 
   return {
-    isLoading: forecastLandPriceMutation.isPending,
-    isError: forecastLandPriceMutation.isError,
-    forecastLandPriceMutation
+    isLoading: ForecastPriceMutation.isPending,
+    isError: ForecastPriceMutation.isError,
+    ForecastPriceMutation
   }
 }
 
-export default useForecastLandPrice
+export default useForecastPrice

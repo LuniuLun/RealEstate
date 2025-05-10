@@ -1,4 +1,11 @@
 const MESSAGE = {
+  common: {
+    ERROR_EVENT: 'Chức năng chưa được hỗ trợ',
+    UNKNOWN_ERROR: 'Đã xảy ra lỗi không xác định',
+    NOT_FOUND: 'Không tìm thấy kết quả',
+    ERROR_NETWORK: 'Lỗi kết nối mạng',
+    REQUIRE_USER: 'Hãy đăng nhập trước khi dùng chắc năng này'
+  },
   user: {
     ADD_SUCCESS: 'Thêm người dùng thành công',
     ADD_FAILED: 'Thêm người dùng thất bại',
@@ -30,13 +37,6 @@ const MESSAGE = {
   favouriteProperty: {
     EDIT_SUCCESS: 'Cập nhật danh sách yêu thích thành công',
     EDIT_FAILED: 'Cập nhật danh sách yêu thích thất bại'
-  },
-  common: {
-    ERROR_EVENT: 'Chức năng chưa được hỗ trợ',
-    UNKNOWN_ERROR: 'Đã xảy ra lỗi không xác định',
-    NOT_FOUND: 'Không tìm thấy kết quả',
-    ERROR_NETWORK: 'Lỗi kết nối mạng',
-    REQUIRE_USER: 'Hãy đăng nhập trước khi dùng chắc năng này'
   },
   auth: {
     LOGIN_SUCCESS: 'Đăng nhập thành công',
@@ -75,6 +75,11 @@ const MESSAGE = {
   forecast: {
     FORECAST_SUCCESS: 'Dự đoán giá thành công',
     FORECAST_FAILED: 'Dự đoán giá thất bại'
+  },
+  image: {
+    VALIDATION_FAILED: 'Kiểm tra ảnh thành công',
+    VALIDATION_SUCCESS: 'Kiểm tra ảnh thất bại',
+    NSFW_CONTENT_DETECTED: 'Ảnh tải lên có chứa nội dung nhạy cảm'
   }
 }
 

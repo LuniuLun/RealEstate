@@ -6,13 +6,11 @@ import { CustomSelect } from '@components'
 import colors from '@styles/variables/colors'
 import { VIEW_MODE_CHART_OPTION } from '@constants/option'
 
-export type ViewMode = 'daily' | 'monthly'
+export type ViewMode = 'weekly' | 'monthly'
 
 interface ForecastDataItem {
   date: string
   'Giá dự đoán': number
-  'Giá thấp nhất': number
-  'Giá cao nhất': number
 }
 
 interface ForecastChartProps {
@@ -96,24 +94,6 @@ const ForecastChart = ({
                 dot={false}
                 activeDot={{ r: 6 }}
                 strokeWidth={2}
-              />
-
-              <Line
-                type='monotone'
-                dataKey='Giá thấp nhất'
-                stroke={colors.brand.green}
-                strokeDasharray='5 5'
-                dot={false}
-                activeDot={{ r: 5 }}
-              />
-
-              <Line
-                type='monotone'
-                dataKey='Giá cao nhất'
-                stroke={colors.brand.red}
-                strokeDasharray='5 5'
-                dot={false}
-                activeDot={{ r: 5 }}
               />
             </LineChart>
           </ResponsiveContainer>

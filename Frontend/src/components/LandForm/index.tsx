@@ -19,7 +19,7 @@ import { useGetCoordinates } from '@hooks/UseCoordinates/useGetCoordinates'
 import { useEstimatePropertyPrice } from '@hooks/UseProperty/useEstimatePropertyPrice'
 import { useConvertPropertyData } from '@hooks/UseProperty/useConvertProperty'
 import { formatCurrency } from '@utils'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export type TLandFormData = Omit<TPostProperty, 'house'> & {
   images: File[]
@@ -68,27 +68,59 @@ const LandForm = ({ initialData }: ILandFormProps) => {
   const { updatePropertyMutation, isLoading: isUpdating } = useUpdateProperty()
   const { estimatePropertyPriceMutation, isLoading: isEstimatingPrice } = useEstimatePropertyPrice()
   const { convertLandData } = useConvertPropertyData()
-  const { getCoordinatesMutation, isError: isGetCoordinatesError } = useGetCoordinates()
+  const {
+    getCoordinatesMutation,
+    isError: isGetCoordinatesError,
+    isLoading: isGetCoordinatesLoading
+  } = useGetCoordinates()
   const [estimatePrice, setEstimatePrice] = useState<number>()
+  const [imagesValid, setImagesValid] = useState<boolean>(true)
+
   const region = watch('region')
   const districtName = watch('districtName')
   const wardName = watch('wardName')
+  const length = watch('length')
+  const width = watch('width')
 
-  const handleChangeStreetName = (streetName: string) => {
-    if (region && districtName && wardName && streetName) {
-      const fullAddress = `${streetName}, ${wardName}, ${districtName}, ${region}, Vietnam`
+  useEffect(() => {
+    if (width && length) {
+      const numWidth = Number(width)
+      const numLength = Number(length)
+
+      if (!isNaN(numWidth) && !isNaN(numLength)) {
+        setValue('area', numWidth * numLength)
+      }
+    }
+  }, [width, length])
+
+  useEffect(() => {
+    if (region && districtName && wardName) {
+      fetchCoordinates()
+    }
+  }, [wardName])
+
+  const handleImageValidationChange = (isValid: boolean) => {
+    setImagesValid(isValid)
+  }
+
+  const fetchCoordinates = (streetName?: string) => {
+    let fullAddress = streetName ? `${streetName}, ` : ''
+    if (region && districtName && wardName) {
+      fullAddress += `${wardName}, ${districtName}, ${region}, Vietnam`
+
       getCoordinatesMutation.mutate(fullAddress, {
         onSuccess: (response) => {
           if (response?.data?.lat && response?.data?.lon) {
             setValue('latitude', response.data.lat)
             setValue('longitude', response.data.lon)
+            console.log(response.data.lat, response.data.lon)
           }
         }
       })
     }
   }
 
-  const onSubmit = (data: TLandFormData) => {
+  const onSubmit = async (data: TLandFormData) => {
     if ((!data.images || data.images.length < 3) && !initialData?.images) {
       showToast({
         title: 'Vui lòng tải lên ít nhất 3 hình ảnh',
@@ -96,6 +128,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
       })
       return
     }
+
     if (data.images.length > 10) {
       showToast({
         title: 'Số hình ảnh không vượt quá 10 hình ảnh',
@@ -103,13 +136,17 @@ const LandForm = ({ initialData }: ILandFormProps) => {
       })
       return
     }
+
     const landFormData = transformLandData(data)
-    if (!landFormData) return
-    if (initialData) {
-      updatePropertyMutation.mutate({ id: initialData.id, newProperty: landFormData })
+    if (!landFormData) {
       return
     }
-    addPropertyMutation.mutate(landFormData)
+
+    if (initialData) {
+      updatePropertyMutation.mutate({ id: initialData.id, newProperty: landFormData })
+    } else {
+      addPropertyMutation.mutate(landFormData)
+    }
   }
 
   const handleImageUpload = (files: File[], remainingInitialImages: string) => {
@@ -117,9 +154,11 @@ const LandForm = ({ initialData }: ILandFormProps) => {
     setValue('initialImages', remainingInitialImages)
   }
 
-  const handleEstimatePropertyPrice = (data: TLandFormData) => {
+  const handleEstimatePropertyPrice = async (data: TLandFormData) => {
     const landFormData = convertLandData(data)
-    if (!landFormData) return
+    if (!landFormData) {
+      return
+    }
 
     estimatePropertyPriceMutation.mutate(landFormData, {
       onSuccess: (response) => {
@@ -138,7 +177,8 @@ const LandForm = ({ initialData }: ILandFormProps) => {
           label='Hình ảnh sản phẩm'
           initialImages={initialData?.images}
           onUpload={handleImageUpload}
-          isLoading={isAdding || isUpdating}
+          onValidationChange={handleImageValidationChange}
+          isLoading={isAdding || isUpdating || isEstimatingPrice}
         />
       </FormControl>
 
@@ -153,7 +193,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
               wardName='wardName'
               streetName='streetName'
               isLoading={isAdding || isUpdating || isEstimatingPrice}
-              onStreetNameChange={handleChangeStreetName}
+              onStreetNameChange={fetchCoordinates}
             />
           </FormControl>
         </Stack>
@@ -190,7 +230,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
               render={({ field }) => (
                 <CustomSelect
                   {...field}
-                  isDisabled={isAdding || isUpdating}
+                  isDisabled={isAdding || isUpdating || isEstimatingPrice}
                   options={FILTER_OPTION.direction}
                   sx={{ width: '100%' }}
                   borderRadius='md'
@@ -255,28 +295,6 @@ const LandForm = ({ initialData }: ILandFormProps) => {
 
         <Stack gap={3}>
           <Heading variant='secondary'>Diện tích và giá</Heading>
-          <FormControl isInvalid={!!errors.area}>
-            <FormLabel>Diện tích đất</FormLabel>
-            <Controller
-              name='area'
-              control={control}
-              rules={{
-                required: 'Vui lòng nhập diện tích',
-                min: { value: 0, message: 'Diện tích phải lớn hơn 0' }
-              }}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  size='md'
-                  type='number'
-                  placeholder='m²'
-                  variant='outline'
-                  isDisabled={isAdding || isUpdating || isEstimatingPrice}
-                />
-              )}
-            />
-            <FormErrorMessage>{errors.area && errors.area.message}</FormErrorMessage>
-          </FormControl>
 
           <Flex gap={4}>
             <FormControl isInvalid={!!errors.width}>
@@ -326,6 +344,25 @@ const LandForm = ({ initialData }: ILandFormProps) => {
             </FormControl>
           </Flex>
 
+          <FormControl isInvalid={!!errors.area}>
+            <FormLabel>Diện tích đất</FormLabel>
+            <Controller
+              name='area'
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  size='md'
+                  type='number'
+                  placeholder='m²'
+                  variant='outline'
+                  isDisabled={true}
+                  value={width && length ? Number(width) * Number(length) : 0}
+                />
+              )}
+            />
+          </FormControl>
+
           <FormControl isInvalid={!!errors.price}>
             <FormLabel>Giá bán</FormLabel>
             <Controller
@@ -365,7 +402,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
               my={6}
               alignSelf='flex-end'
               justifySelf='flex-end'
-              isLoading={isAdding || isUpdating || isEstimatingPrice}
+              isLoading={isAdding || isUpdating || isEstimatingPrice || isGetCoordinatesLoading}
               isDisabled={isGetCoordinatesError}
               onClick={() => handleEstimatePropertyPrice(getValues())}
             >
@@ -427,8 +464,8 @@ const LandForm = ({ initialData }: ILandFormProps) => {
           type='submit'
           my={6}
           alignSelf='flex-end'
-          isLoading={isAdding || isUpdating}
-          isDisabled={isGetCoordinatesError}
+          isLoading={isAdding || isUpdating || isEstimatingPrice || isGetCoordinatesLoading}
+          isDisabled={isGetCoordinatesError || !imagesValid}
         >
           {initialData ? 'Cập nhật' : 'Đăng tin'}
         </Button>

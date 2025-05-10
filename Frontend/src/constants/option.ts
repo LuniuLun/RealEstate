@@ -34,33 +34,15 @@ export const PERIOD_OPTION = [
   { value: 30, label: '1 tháng' },
   { value: 90, label: '3 tháng' },
   { value: 180, label: '6 tháng' },
-  { value: 365, label: '1 năm' }
+  { value: 365, label: '1 năm' },
+  { value: 365 * 3, label: '3 năm' },
+  { value: 365 * 5, label: '5 năm' },
+  { value: 365 * 10, label: '10 năm' }
 ]
 
 export const VIEW_MODE_CHART_OPTION = [
-  { value: 'daily', label: 'Giá theo ngày' },
+  { value: 'weekly', label: 'Giá theo tuần' },
   { value: 'monthly', label: 'Giá theo tháng' }
-]
-
-export const MODULE_PERMISSION = [
-  {
-    modulePermission: 'ADMIN',
-    read: true,
-    write: true,
-    delete: true
-  },
-  {
-    modulePermission: 'BROKER',
-    read: true,
-    write: false,
-    delete: false
-  },
-  {
-    modulePermission: 'USER',
-    read: true,
-    write: false,
-    delete: false
-  }
 ]
 
 export const ADMIN_NAV_ITEMS = [
@@ -70,12 +52,11 @@ export const ADMIN_NAV_ITEMS = [
   { path: 'dashboard', id: 'dashboard', title: 'Thống kê' }
 ]
 
-export const USER_NAV_ITEMS = [
+export const BASE_USER_NAV_ITEMS = [
   { path: '', id: 'personal', title: 'Thông tin cá nhân' },
   { path: 'my-posts', id: 'myPosts', title: 'Bài viết của tôi' },
   { path: 'saved-posts', id: 'savedPosts', title: 'Bài viết đã lưu' },
   { path: 'upgrade', id: 'upgrade', title: 'Nâng cấp' },
-  { path: 'forecast', id: 'forecast', title: 'Dự đoán' },
   { path: 'transactions', id: 'transactions', title: 'Lịch sử giao dịch' }
 ]
 

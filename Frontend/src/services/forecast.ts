@@ -5,11 +5,11 @@ import { authStore } from '@stores'
 
 const baseUrl = `${import.meta.env.VITE_APP_BASE_URL}${import.meta.env.VITE_APP_FORECAST_ENDPOINT}`
 
-export const forecastLandPrice = async (forecastRequest: ForecastRequest): Promise<IApiResponse<ForecastResponse>> => {
+export const ForecastPrice = async (forecastRequest: ForecastRequest): Promise<IApiResponse<ForecastResponse>> => {
   const token = authStore.getState().token?.token
 
   try {
-    const response = await fetch(`${baseUrl}/land`, {
+    const response = await fetch(`${baseUrl}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

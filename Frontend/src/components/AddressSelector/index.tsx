@@ -1,11 +1,13 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useCallback } from 'react'
-import axios from 'axios'
 import { Controller, Control, FieldValues, Path, useWatch } from 'react-hook-form'
-import CustomSelect from '@components/CustomSelect'
-import TextField from '@components/TextField'
 import { Stack, FormControl, FormErrorMessage } from '@chakra-ui/react'
 import { debounce } from '@utils'
+import axios from 'axios'
+import TextField from '@components/TextField'
+import { ISelectOption } from '@components/CustomSelect'
+import SearchableSelect from '@components/SearchableSelect'
 
 interface Location {
   Id: string
@@ -46,20 +48,26 @@ const AddressSelector = <T extends FieldValues>({
   const [cities, setCities] = useState<City[]>([])
   const [districts, setDistricts] = useState<District[]>([])
   const [wards, setWards] = useState<Location[]>([])
-  const [currentCity, setCurrentCity] = useState<string>()
-  const [currentDistrict, setCurrentDistrict] = useState<string>()
-  const [currentWard, setCurrentWard] = useState<string>()
+  const [currentCity, setCurrentCity] = useState<string>('')
+  const [currentDistrict, setCurrentDistrict] = useState<string>('')
+  const [currentWard, setCurrentWard] = useState<string>('')
   const cityValue = useWatch({ control, name: cityName })
   const districtValue = useWatch({ control, name: districtName })
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const wardValue = wardName ? useWatch({ control, name: wardName }) : undefined
 
   const debouncedStreetNameChange = useCallback(
     debounce((value: string) => {
       onStreetNameChange?.(value)
-    }, 10000),
+    }, 1500),
     [onStreetNameChange]
   )
+
+  const cityOptions: ISelectOption<string>[] = cities.map((city) => ({ value: city.Id, label: city.Name }))
+  const districtOptions: ISelectOption<string>[] = districts.map((district) => ({
+    value: district.Id,
+    label: district.Name
+  }))
+  const wardOptions: ISelectOption<string>[] = wards.map((ward) => ({ value: ward.Id, label: ward.Name }))
 
   useEffect(() => {
     axios
@@ -68,16 +76,20 @@ const AddressSelector = <T extends FieldValues>({
         setCities(response.data)
         if (cityValue) {
           const selectedCity = response.data.find((city) => city.Name === cityValue)
-          setCurrentCity(selectedCity?.Id)
           if (selectedCity) {
+            setCurrentCity(selectedCity.Id)
             setDistricts(selectedCity.Districts)
             if (districtValue) {
               const selectedDistrict = selectedCity.Districts.find((district) => district.Name === districtValue)
-              setCurrentDistrict(selectedDistrict?.Id)
-              if (selectedDistrict && showWard && wardName && wardValue) {
-                setWards(selectedDistrict.Wards)
-                const selectedWard = selectedDistrict.Wards.find((ward) => ward.Name === wardValue)
-                setCurrentWard(selectedWard?.Id)
+              if (selectedDistrict) {
+                setCurrentDistrict(selectedDistrict.Id)
+                if (showWard && wardName && wardValue) {
+                  setWards(selectedDistrict.Wards)
+                  const selectedWard = selectedDistrict.Wards.find((ward) => ward.Name === wardValue)
+                  if (selectedWard) {
+                    setCurrentWard(selectedWard.Id)
+                  }
+                }
               }
             }
           }
@@ -94,21 +106,20 @@ const AddressSelector = <T extends FieldValues>({
         rules={{ required: 'Vui lòng chọn tỉnh thành' }}
         render={({ field, fieldState: { error } }) => (
           <FormControl isInvalid={!!error}>
-            <CustomSelect
-              {...field}
+            <SearchableSelect
               value={currentCity}
               isDisabled={isLoading}
-              sx={{ width: '100%' }}
-              borderRadius='md'
               placeholder='Chọn tỉnh thành'
-              onChange={(e) => {
-                const cityId = e.target.value
-                const selected = cities.find((city) => city.Id === cityId)
-                field.onChange(selected?.Name || '')
-                setCurrentCity(selected?.Id)
-                setDistricts(selected?.Districts || [])
+              options={cityOptions}
+              onChange={(value, label) => {
+                const selectedCity = cities.find((city) => city.Id === value)
+                field.onChange(label)
+                setCurrentCity(value)
+                setDistricts(selectedCity?.Districts || [])
+                setCurrentDistrict('')
+                setWards([])
+                setCurrentWard('')
               }}
-              options={cities.map((city) => ({ value: city.Id, label: city.Name }))}
             />
             <FormErrorMessage>{error && error.message}</FormErrorMessage>
           </FormControl>
@@ -121,20 +132,17 @@ const AddressSelector = <T extends FieldValues>({
         rules={{ required: 'Vui lòng chọn quận huyện' }}
         render={({ field, fieldState: { error } }) => (
           <FormControl isInvalid={!!error}>
-            <CustomSelect
-              {...field}
+            <SearchableSelect
               value={currentDistrict}
-              sx={{ width: '100%' }}
-              borderRadius='md'
               placeholder='Chọn quận huyện'
-              onChange={(e) => {
-                const districtId = e.target.value
-                const selected = districts.find((district) => district.Id === districtId)
-                field.onChange(selected?.Name || '')
-                setCurrentDistrict(selected?.Id)
-                setWards(selected?.Wards || [])
+              options={districtOptions}
+              onChange={(value, label) => {
+                const selectedDistrict = districts.find((district) => district.Id === value)
+                field.onChange(label)
+                setCurrentDistrict(value)
+                setWards(selectedDistrict?.Wards || [])
+                setCurrentWard('')
               }}
-              options={districts.map((district) => ({ value: district.Id, label: district.Name }))}
               isDisabled={districts.length === 0 || isLoading}
             />
             <FormErrorMessage>{error && error.message}</FormErrorMessage>
@@ -149,19 +157,14 @@ const AddressSelector = <T extends FieldValues>({
           rules={{ required: showWard ? 'Vui lòng chọn phường xã' : false }}
           render={({ field, fieldState: { error } }) => (
             <FormControl isInvalid={!!error}>
-              <CustomSelect
-                {...field}
+              <SearchableSelect
                 value={currentWard}
-                sx={{ width: '100%' }}
-                borderRadius='md'
                 placeholder='Chọn phường xã'
-                onChange={(e) => {
-                  const wardId = e.target.value
-                  const selected = wards.find((ward) => ward.Id === wardId)
-                  field.onChange(selected?.Name || '')
-                  setCurrentWard(selected?.Id)
+                options={wardOptions}
+                onChange={(value, label) => {
+                  field.onChange(label)
+                  setCurrentWard(value)
                 }}
-                options={wards.map((ward) => ({ value: ward.Id, label: ward.Name }))}
                 isDisabled={wards.length === 0 || isLoading}
               />
               <FormErrorMessage>{error && error.message}</FormErrorMessage>
@@ -174,16 +177,8 @@ const AddressSelector = <T extends FieldValues>({
         <Controller
           name={streetName}
           control={control}
-          rules={{
-            required: showStreet ? 'Vui lòng nhập số nhà, tên đường' : false,
-            validate: showStreet
-              ? (value) => {
-                  return value.trim() !== '' || 'Số nhà, tên đường không được để trống'
-                }
-              : undefined
-          }}
-          render={({ field, fieldState: { error } }) => (
-            <FormControl isInvalid={!!error}>
+          render={({ field }) => (
+            <FormControl>
               <TextField
                 {...field}
                 variant='outline'
@@ -196,7 +191,6 @@ const AddressSelector = <T extends FieldValues>({
                   debouncedStreetNameChange(value)
                 }}
               />
-              <FormErrorMessage>{error && error.message}</FormErrorMessage>
             </FormControl>
           )}
         />

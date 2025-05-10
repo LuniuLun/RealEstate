@@ -21,6 +21,7 @@ const ClientHeader = () => {
     color: 'white',
     h: '40px',
     borderRadius: 80,
+    border: 'none',
     sx: {
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)'

@@ -11,5 +11,6 @@ export { default as favouritePropertySummaryTable } from './FavouritePropertySum
 export { default as transactionSummaryTable } from './TransactionSummaryTable'
 export { default as toggleIdInArray } from './ToggleIdInArray'
 export { default as formatDate } from './FormatDate'
+export { default as getUserNavItems } from './GetUserNavItems'
 export * from './TransformUnit'
 export * from './FormatCurrency'
