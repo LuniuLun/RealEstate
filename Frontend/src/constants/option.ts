@@ -16,7 +16,7 @@ export const STATUS_USER: ISelectOption<number>[] = [
 export const SORT_PROPERTY_OPTION: ISelectOption<string>[] = [
   { value: 'price', label: 'Mệnh giá' },
   { value: 'area', label: 'Diện tích' },
-  { value: 'createdAt', label: 'Ngày giao dịch' }
+  { value: 'createdAt', label: 'Thời gian' }
 ]
 
 export const SORT_TRANSACTION_OPTION: ISelectOption<string>[] = [
