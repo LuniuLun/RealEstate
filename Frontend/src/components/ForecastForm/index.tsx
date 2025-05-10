@@ -208,18 +208,11 @@ const ForecastForm = ({ onSubmit, isLoading }: ForecastFormProps) => {
                       name='floors'
                       control={control}
                       rules={{
-                        required: isHouse ? 'Vui lòng chọn số tầng' : false
+                        required: 'Vui lòng nhập số tầng',
+                        min: { value: 1, message: 'Số tầng phải lớn hơn 0' }
                       }}
                       render={({ field }) => (
-                        <CustomSelect
-                          {...field}
-                          placeholder='Chọn số tầng'
-                          options={Array.from({ length: 10 }, (_, i) => ({ value: i + 1, label: `${i + 1} tầng` }))}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
-                          isDisabled={isLoading}
-                          sx={{ width: '100%' }}
-                          borderRadius={'md'}
-                        />
+                        <TextField {...field} size='md' type='number' placeholder='Số tầng' variant='outline' />
                       )}
                     />
                     <FormErrorMessage>{errors.floors && errors.floors.message}</FormErrorMessage>
