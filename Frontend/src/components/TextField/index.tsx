@@ -111,7 +111,7 @@ const TextField = forwardRef<HTMLInputElement, ITextFieldProps>(
               value={getDisplayValue()}
               onChange={handleChange}
               disabled={isDisabled}
-              type={type === 'password' ? (!showPassword ? 'password' : 'text') : 'text'}
+              type={type === 'password' ? (!showPassword ? 'password' : 'text') : type}
               {...props}
             />
           </Skeleton>
