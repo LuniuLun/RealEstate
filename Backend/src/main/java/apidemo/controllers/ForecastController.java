@@ -46,7 +46,7 @@ public class ForecastController {
     }
 
     try {
-      ForecastResponse response = forecastService.generateForecast(request, request.getPeriodDays());
+      ForecastResponse response = forecastService.generateForecast(request);
 
       return ResponseEntity.ok(response);
     } catch (IllegalArgumentException e) {

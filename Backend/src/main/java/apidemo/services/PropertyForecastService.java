@@ -34,12 +34,13 @@ public class PropertyForecastService {
     }
   }
 
-  public ForecastResponse generateForecast(ForecastRequest request, int periods) {
-    List<Map<String, Object>> featureVectors = ForecastPropertyFieldConverter.createForecastFeatures(request, periods);
+  public ForecastResponse generateForecast(ForecastRequest request) {
+    List<Map<String, Object>> featureVectors = ForecastPropertyFieldConverter.createForecastFeatures(request,
+        request.getPeriodDays());
     List<PricePrediction> predictions = new ArrayList<>();
     LocalDate date = LocalDate.now();
 
-    for (int i = 0; i < periods; i++, date = date.plusDays(1)) {
+    for (int i = 0; i < request.getPeriodDays(); i++, date = date.plusDays(1)) {
       Map<String, ?> raw = featureVectors.get(i);
       Map<String, Object> features = new HashMap<>();
       raw.forEach((k, v) -> features.put(k, v instanceof Number
@@ -56,23 +57,29 @@ public class PropertyForecastService {
       predictions.add(new PricePrediction(date, price));
     }
 
-    return new ForecastResponse(periods, predictions);
+    return new ForecastResponse(request.getPeriodDays(), predictions);
   }
 
   private double extractPredictedValue(Object y, Map<String, ?> decoded) {
-    if (y instanceof Map) {
-      @SuppressWarnings("unchecked")
-      Map<String, ?> m = (Map<String, ?>) y;
-      Object candidate = null;
-      if (m.containsKey("value")) {
-        candidate = m.get("value");
-      } else if (m.containsKey("result")) {
-        candidate = m.get("result");
-      }
-      if (candidate instanceof Number) {
-        return ((Number) candidate).doubleValue();
-      }
+    if (y instanceof Number) {
+      return ((Number) y).doubleValue();
     }
+
+    // if (y instanceof Map) {
+    // @SuppressWarnings("unchecked")
+    // Map<String, ?> m = (Map<String, ?>) y;
+    // Object candidate = null;
+    // if (m.containsKey("value")) {
+    // candidate = m.get("value");
+    // } else if (m.containsKey("result")) {
+    // candidate = m.get("result");
+    // }
+    // if (candidate instanceof Number) {
+    // return ((Number) candidate).doubleValue();
+    // }
+    // }
+
     throw new IllegalStateException("Không thể lấy được giá trị dự đoán từ: " + decoded);
   }
+
 }
