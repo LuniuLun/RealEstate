@@ -46,15 +46,9 @@ public class ForecastController {
     }
 
     try {
-      if (!forecastService.isDistrictAvailable(request.getDistrict())) {
-        return ResponseEntity.badRequest()
-            .body(Map.of("message", request.getDistrict() + " không tìm thấy trong dữ liệu"));
-      }
-
-      ForecastResponse response = forecastService.generateForecast(request);
+      ForecastResponse response = forecastService.generateForecast(request, request.getPeriodDays());
 
       return ResponseEntity.ok(response);
-
     } catch (IllegalArgumentException e) {
       log.warn("Invalid forecast request: {}", e.getMessage());
       return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
