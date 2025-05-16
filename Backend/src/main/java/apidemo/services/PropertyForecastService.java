@@ -23,7 +23,7 @@ public class PropertyForecastService {
     try {
       File pmml = new File(getClass()
           .getClassLoader()
-          .getResource("random_forest_final_model.pmml")
+          .getResource("RF_forecast_model.pmml")
           .toURI());
       this.modelEvaluator = new LoadingModelEvaluatorBuilder()
           .load(pmml)
