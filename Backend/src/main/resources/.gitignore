@@ -1,3 +1,7 @@
 serviceAccountKey.json
 application.properties
 application.yml
+*.pmml
+*.pkl
+*.onnx
+*.csv
