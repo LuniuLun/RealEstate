@@ -93,12 +93,6 @@ public class ForecastPropertyFieldConverter {
     features.put("dayofweek", date.getDayOfWeek().getValue() % 7); // 0-6 format
     features.put("quarter", (date.getMonthValue() - 1) / 3 + 1);
 
-    // Cyclical encoding of month and day of week
-    features.put("month_sin", Math.sin(2 * Math.PI * date.getMonthValue() / 12.0));
-    features.put("month_cos", Math.cos(2 * Math.PI * date.getMonthValue() / 12.0));
-    features.put("dayOfWeek_sin", Math.sin(2 * Math.PI * (date.getDayOfWeek().getValue() % 7) / 7.0));
-    features.put("dayOfWeek_cos", Math.cos(2 * Math.PI * (date.getDayOfWeek().getValue() % 7) / 7.0));
-
     return features;
   }
 

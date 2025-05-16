@@ -3,25 +3,28 @@ package apidemo.services;
 import apidemo.models.Property;
 import apidemo.utils.*;
 import org.jpmml.evaluator.*;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.*;
 
+@Service
 public class PropertyValuationService {
   private static final Set<String> REQUIRED_FEATURES = Set.of(
-      "Longitude", "Latitude", "Area", "Floors", "Rooms", "Toilets", "Length");
+      "Longitude", "Latitude", "Area", "Floors", "Rooms", "Toilets", "Length", "Width");
 
   private final Evaluator modelEvaluator;
   private final FeatureZscore featureZscore;
   private final FeatureRootTransform featureRootTransform;
   private final Map<String, double[]> scalerParams;
 
-  private final Set<String> sqrtFeatures = Set.of("Longitude", "Latitude", "Area", "Floors", "Rooms", "Toilets");
+  private final Set<String> sqrtFeatures = Set.of("Longitude", "Latitude", "Area", "Floors", "Rooms", "Toilets",
+      "Width");
   private final Set<String> zscoreFeatures = Set.of("Length");
 
   public PropertyValuationService() {
     try {
-      File modelFile = new File(getClass().getClassLoader().getResource("random_forest_model.pmml").toURI());
+      File modelFile = new File(getClass().getClassLoader().getResource("RF_valuation_model.pmml").toURI());
       this.modelEvaluator = new LoadingModelEvaluatorBuilder().load(modelFile).build();
       modelEvaluator.verify();
 
