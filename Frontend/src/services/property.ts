@@ -34,7 +34,7 @@ export const fetchProperties = async (
     const {
       property = '',
       value = '',
-      sortBy = '',
+      sortBy = 'updatedAt',
       typeOfSort = 'desc',
       limit = '12',
       page = '1',
@@ -49,13 +49,8 @@ export const fetchProperties = async (
       calledUrl.searchParams.append(property, value)
     }
 
-    if (sortBy) {
-      calledUrl.searchParams.append('sortBy', sortBy)
-      calledUrl.searchParams.append('typeOfSort', typeOfSort)
-    } else {
-      calledUrl.searchParams.append('sortBy', 'createdAt')
-      calledUrl.searchParams.append('typeOfSort', 'desc')
-    }
+    calledUrl.searchParams.append('sortBy', sortBy)
+    calledUrl.searchParams.append('typeOfSort', typeOfSort)
 
     if (propertyFilterCriteria) {
       if (propertyFilterCriteria.minPrice && propertyFilterCriteria.minPrice > 0) {
@@ -160,7 +155,7 @@ export const fetchPersonalProperties = async (
     const {
       property = '',
       value = '',
-      sortBy = '',
+      sortBy = 'updatedAt',
       typeOfSort = 'desc',
       limit = '5',
       page = '1',
@@ -177,13 +172,8 @@ export const fetchPersonalProperties = async (
       calledUrl.searchParams.append(property, value)
     }
 
-    if (sortBy) {
-      calledUrl.searchParams.append('sortBy', sortBy)
-      calledUrl.searchParams.append('typeOfSort', typeOfSort)
-    } else {
-      calledUrl.searchParams.append('sortBy', 'createdAt')
-      calledUrl.searchParams.append('typeOfSort', 'desc')
-    }
+    calledUrl.searchParams.append('sortBy', sortBy)
+    calledUrl.searchParams.append('typeOfSort', typeOfSort)
 
     if (personalPropertyFilterCriteria?.status) {
       calledUrl.searchParams.append('status', personalPropertyFilterCriteria.status)
