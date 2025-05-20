@@ -25,7 +25,7 @@ export const useConvertPropertyData = (): UseConvertPropertyDataReturn => {
       wardName: formData.wardName,
       streetName: formData.streetName,
       longitude: formData.longitude,
-      latitude: formData.longitude,
+      latitude: formData.latitude,
       propertyLegalDocument: {
         id: Number(formData.propertyLegalDocument),
         name: ''
@@ -67,7 +67,7 @@ export const useConvertPropertyData = (): UseConvertPropertyDataReturn => {
       wardName: formData.wardName,
       streetName: formData.streetName,
       longitude: formData.longitude,
-      latitude: formData.longitude,
+      latitude: formData.latitude,
       area: Number(formData.area),
       length: Number(formData.length),
       width: Number(formData.width),
