@@ -5,14 +5,23 @@ import apidemo.models.ForecastRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Converter for transforming ForecastRequest into features for the forecast
  * model
  */
 public class ForecastPropertyFieldConverter {
+  private static final FeatureZscore featureZscore;
+
+  static {
+    Map<String, double[]> scalerParams = ScalerParamsLoader.loadParams();
+    featureZscore = new FeatureZscore(scalerParams);
+  }
+
   /**
    * Create feature vectors for a forecast period based on a property request
    * 
@@ -55,23 +64,42 @@ public class ForecastPropertyFieldConverter {
     features.put("Rooms", request.getRooms());
     features.put("Toilets", request.getToilets());
 
+    // Apply square root transformation to selected fields
+    applySquareRootTransformation(features, "Width");
+    applySquareRootTransformation(features, "Floors");
+    applySquareRootTransformation(features, "Rooms");
+    applySquareRootTransformation(features, "Toilets");
+
+    // Apply Z-score normalization to Length field
+    Set<String> lengthField = new HashSet<>();
+    lengthField.add("Length");
+
+    // Convert features to Map<String, Double> for scaling
+    Map<String, Double> doubleFeatures = new HashMap<>();
+    for (Map.Entry<String, Object> entry : features.entrySet()) {
+      if (entry.getValue() instanceof Number) {
+        doubleFeatures.put(entry.getKey(), ((Number) entry.getValue()).doubleValue());
+      }
+    }
+
+    // Apply scaling and get the result
+    Map<String, Double> scaledDoubleFeatures = featureZscore.scale(doubleFeatures, lengthField, 1, 1);
+
+    // Update the original features with scaled values
+    for (Map.Entry<String, Double> entry : scaledDoubleFeatures.entrySet()) {
+      features.put(entry.getKey(), entry.getValue());
+    }
+
     // Land characteristics
     addLandCharacteristics(features, request.getLandCharacteristics());
 
     // Category (house or land)
-    features.put("Category_HOUSE", request.getCategoryId() == 1 ? 1 : 0);
-    features.put("Category_LAND", request.getCategoryId() == 2 ? 1 : 0);
+    features.put("Category_LAND", request.getCategoryId() == 1 ? 1 : 0);
+    features.put("Category_HOUSE", request.getCategoryId() == 2 ? 1 : 0);
 
-    // Add district one-hot encoding
     addDistrictFeatures(features, request.getDistrict());
-
-    // Add direction one-hot encoding
     addDirectionFeatures(features, request.getDirectionId());
-
-    // Add furnishing one-hot encoding
     addFurnishingFeatures(features, request.getFurnishingId());
-
-    // Add land type one-hot encoding
     addLandTypeFeatures(features, request.getLandTypeId());
 
     return features;
@@ -299,6 +327,24 @@ public class ForecastPropertyFieldConverter {
         return "AGRICULTURAL_LAND";
       default:
         return null;
+    }
+  }
+
+  /**
+   * Apply square root transformation to a field in the data map
+   * 
+   * @param data      Map containing the data
+   * @param fieldName Field name to transform
+   */
+  private static void applySquareRootTransformation(Map<String, Object> data, String fieldName) {
+    if (data.containsKey(fieldName) && data.get(fieldName) != null) {
+      Object value = data.get(fieldName);
+      if (value instanceof Number) {
+        double numValue = ((Number) value).doubleValue();
+        if (numValue >= 0) {
+          data.put(fieldName, Math.sqrt(numValue));
+        }
+      }
     }
   }
 }

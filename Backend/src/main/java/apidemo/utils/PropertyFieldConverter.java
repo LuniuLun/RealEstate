@@ -4,12 +4,20 @@ import apidemo.models.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Utility class for converting between ML model field names and entity field
  * names
  */
 public class PropertyFieldConverter {
+  private static final FeatureZscore featureZscore;
+
+  static {
+    Map<String, double[]> scalerParams = ScalerParamsLoader.loadParams();
+    featureZscore = new FeatureZscore(scalerParams);
+  }
+
   /**
    * Converts from entity fields format to ML model input fields
    *
@@ -30,6 +38,12 @@ public class PropertyFieldConverter {
     applySquareRootTransformation(mlModelInput, "Longitude");
     applySquareRootTransformation(mlModelInput, "Latitude");
     applySquareRootTransformation(mlModelInput, "Area");
+    applySquareRootTransformation(mlModelInput, "Width");
+
+    // Apply Z-score normalization to Length field
+    Set<String> lengthField = new HashSet<>();
+    lengthField.add("Length");
+    mlModelInput = featureZscore.scale(mlModelInput, lengthField, 1, 1);
 
     // Direction encoding (one-hot)
     initializeDirectionFields(mlModelInput);
@@ -127,9 +141,8 @@ public class PropertyFieldConverter {
       }
     }
 
-    // Category encoding
-    mlModelInput.put("Category_HOUSE", property.getCategory().getId() == 1 ? 1.0 : 0.0);
-    mlModelInput.put("Category_LAND", property.getCategory().getId() == 2 ? 1.0 : 0.0);
+    mlModelInput.put("Category_LAND", property.getCategory().getId() == 1 ? 1.0 : 0.0);
+    mlModelInput.put("Category_HOUSE", property.getCategory().getId() == 2 ? 1.0 : 0.0);
 
     return mlModelInput;
   }
