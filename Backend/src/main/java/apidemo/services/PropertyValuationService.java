@@ -41,12 +41,7 @@ public class PropertyValuationService {
     Map<String, Double> propertyFeatures = PropertyFieldConverter.convertToMLModelFormat(property);
     validateInputFeatures(propertyFeatures);
 
-    Map<String, Double> features = new HashMap<>(propertyFeatures);
-
-    features = featureRootTransform.transform(features, sqrtFeatures, 2.0);
-    features = featureZscore.scale(features, zscoreFeatures, 1, 1);
-
-    Map<String, ?> evaluationResult = modelEvaluator.evaluate(features);
+    Map<String, ?> evaluationResult = modelEvaluator.evaluate(propertyFeatures);
     evaluationResult = EvaluatorUtil.decodeAll(evaluationResult);
 
     Object priceResult = evaluationResult.get("y");
