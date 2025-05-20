@@ -130,18 +130,17 @@ public class FirebaseFileService {
 
   public boolean deleteFile(String imageUrl) {
     try {
-      // Extract the file path from the URL
-      String encodedFilePath = imageUrl.substring(
-          imageUrl.indexOf("/o/") + 3,
-          imageUrl.indexOf("?alt=media"));
+      int startIndex = imageUrl.indexOf("/o/") + 3;
+      int endIndex = imageUrl.indexOf("?alt=media");
 
-      // URL decode the file path
+      if (startIndex < 3 || endIndex == -1 || startIndex >= endIndex) {
+        throw new IllegalArgumentException("Invalid Firebase URL format: " + imageUrl);
+      }
+
+      String encodedFilePath = imageUrl.substring(startIndex, endIndex);
       String filePath = decodeURIComponent(encodedFilePath);
 
-      // Create BlobId from bucket and file path
       BlobId blobId = BlobId.of(BUCKET_NAME, filePath);
-
-      // Delete the file
       boolean deleted = storage.delete(blobId);
 
       if (deleted) {
