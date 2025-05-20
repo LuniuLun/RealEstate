@@ -1,5 +1,4 @@
-import { Button, Divider, Flex, Stack, Text, Box, Heading } from '@chakra-ui/react'
-import { GoogleIcon } from '@assets/icons'
+import { Button, Stack, Text, Heading } from '@chakra-ui/react'
 import { TextField } from '@components'
 import { Link } from 'react-router-dom'
 import { useForm, SubmitHandler, Controller } from 'react-hook-form'
@@ -42,7 +41,7 @@ const LoginForm = () => {
         Đăng nhập VinaHome
       </Heading>
 
-      <Button
+      {/* <Button
         variant='primary'
         bgColor='brand.blue'
         px='unset'
@@ -62,7 +61,7 @@ const LoginForm = () => {
         <Divider my={5} border='1px solid #D9D9D9' />
         <Text color='brand.yellowHeading'>Hoặc</Text>
         <Divider my={5} border='1px solid #D9D9D9' />
-      </Flex>
+      </Flex> */}
 
       <Stack gap={6}>
         <Controller
@@ -78,6 +77,7 @@ const LoginForm = () => {
           render={({ field }) => (
             <TextField
               placeholder='Số điện thoại'
+              type='number'
               variant='outline'
               borderRadius='md'
               size='md'
@@ -109,11 +109,11 @@ const LoginForm = () => {
         />
       </Stack>
 
-      <Flex justifyContent='flex-end' width='100%'>
+      {/* <Flex justifyContent='flex-end' width='100%'>
         <Link to='/forgot-password'>
           <Text color='brand.yellowHeading'>Quên mật khẩu?</Text>
         </Link>
-      </Flex>
+      </Flex> */}
 
       <Button
         mt={5}

@@ -1,5 +1,4 @@
-import { Button, Checkbox, Divider, Flex, Stack, Text, useToast, Box, Heading } from '@chakra-ui/react'
-import { GoogleIcon } from '@assets/icons'
+import { Button, Checkbox, Flex, Stack, Text, useToast, Heading } from '@chakra-ui/react'
 import { TextField } from '@components'
 import { Link } from 'react-router-dom'
 import { useForm, SubmitHandler, Controller } from 'react-hook-form'
@@ -54,7 +53,8 @@ const RegisterForm = () => {
       role: {
         id: 3,
         name: RoleName.CUSTOMER
-      }
+      },
+      isEnabled: true
     }
 
     registerUserMutation.mutate(newUser)
@@ -64,7 +64,7 @@ const RegisterForm = () => {
       <Heading fontSize='2xl' color='brand.blackTextPrimary' mb={5} alignSelf='flex-start' maxW='500px'>
         Đăng ký VinaHome
       </Heading>
-      <Button
+      {/* <Button
         variant='primary'
         bgColor='brand.blue'
         px='unset'
@@ -84,7 +84,7 @@ const RegisterForm = () => {
         <Divider my={5} border='1px solid #D9D9D9' />
         <Text color='brand.yellowHeading'>Hoặc</Text>
         <Divider my={5} border='1px solid #D9D9D9' />
-      </Flex>
+      </Flex> */}
 
       <Stack gap={6}>
         <Flex gap={2}>
@@ -121,6 +121,7 @@ const RegisterForm = () => {
             render={({ field }) => (
               <TextField
                 placeholder='Số điện thoại'
+                type='number'
                 variant='outline'
                 borderRadius='md'
                 size='md'
