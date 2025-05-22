@@ -225,18 +225,19 @@ public class PropertyController {
     }
   }
 
-  @PostMapping("/estimate-price")
-  public ResponseEntity<?> estimatePropertyPrice(@RequestBody Property property) {
-    try {
+  // @PostMapping("/estimate-price")
+  // public ResponseEntity<?> estimatePropertyPrice(@RequestBody Property
+  // property) {
+  // try {
 
-      double estimatedPrice = propertyService.getEstimatedPrice(property);
-      return ResponseEntity.ok(Map.of("estimatedPrice", estimatedPrice));
-    } catch (RuntimeException e) {
-      Map<String, String> errorResponse = new HashMap<>();
-      errorResponse.put("message", e.getMessage());
-      return ResponseEntity.badRequest().body(errorResponse);
-    }
-  }
+  // double estimatedPrice = propertyService.getEstimatedPrice(property);
+  // return ResponseEntity.ok(Map.of("estimatedPrice", estimatedPrice));
+  // } catch (RuntimeException e) {
+  // Map<String, String> errorResponse = new HashMap<>();
+  // errorResponse.put("message", e.getMessage());
+  // return ResponseEntity.badRequest().body(errorResponse);
+  // }
+  // }
 
   @PutMapping("/{id}")
   public ResponseEntity<?> updateProperty(
