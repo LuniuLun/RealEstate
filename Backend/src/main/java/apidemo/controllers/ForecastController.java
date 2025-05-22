@@ -27,34 +27,27 @@ public class ForecastController {
 
   @PostMapping("")
   public ResponseEntity<?> generateForecast(@RequestBody ForecastRequest request) {
-    log.info("Received forecast request for district: {}, period: {} days",
-        request.getDistrict(), request.getPeriodDays());
-
-    if (request.getDistrict() == null || request.getDistrict().trim().isEmpty()) {
-      return ResponseEntity.badRequest().body(Map.of("message", "Vui lòng chọn quận/huyện"));
-    }
-
-    if (request.getPeriodDays() <= 0) {
-      return ResponseEntity.badRequest().body(Map.of("message", "Số ngày không đúng"));
-    }
-
-    User currentUser = getCurrentUser();
-
-    if (currentUser.getRole().getName() != RoleName.BROKER && currentUser.getRole().getName() != RoleName.ADMIN) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN)
-          .body(Map.of("message", "Nâng cấp tài khoản trước để dùng chức năng này"));
-    }
+    log.info("Received forecast request for period: {}", request.getPeriodDays());
 
     try {
-      ForecastResponse response = forecastService.generateForecast(request);
+      if (request.getPeriodDays() > 1) {
+        User currentUser = getCurrentUser();
 
+        if (currentUser.getRole().getName() != RoleName.BROKER &&
+            currentUser.getRole().getName() != RoleName.ADMIN) {
+          return ResponseEntity.status(HttpStatus.FORBIDDEN)
+              .body(Map.of("message", "Nâng cấp tài khoản trước để dùng chức năng này"));
+        }
+      }
+
+      ForecastResponse response = forecastService.generateForecast(request);
       return ResponseEntity.ok(response);
+
     } catch (IllegalArgumentException e) {
       log.warn("Invalid forecast request: {}", e.getMessage());
       return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-
     } catch (Exception e) {
-      log.error("Error generating forecast for district: {}", request.getDistrict(), e);
+      log.error("Unexpected error: ", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("message", "Lỗi hệ thống. Vui lòng thử lại sau."));
     }
