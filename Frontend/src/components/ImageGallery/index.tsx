@@ -31,13 +31,15 @@ const ImageGallery = ({ images, alt = 'Bất động sản' }: IImageGalleryProp
 
   return (
     <Box position='relative' borderRadius='lg' overflow='hidden'>
-      <Box position='relative' height={{ base: '250px', md: '400px' }}>
+      <Box position='relative' height={{ base: '250px', md: '400px' }} maxW='100%'>
         <Image
           src={images[currentImageIndex]}
           alt={alt}
-          objectFit='cover'
+          objectFit='contain'
           w='100%'
           h='100%'
+          maxH='100%'
+          maxW='100%'
           onError={handleImageError}
         />
 
