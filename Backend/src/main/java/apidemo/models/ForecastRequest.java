@@ -12,17 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ForecastRequest {
-  private String district;
   @Builder.Default
   private Integer periodDays = 90;
-  private Double width;
-  private Double length;
-  private Integer floors;
-  private Integer rooms;
-  private Integer toilets;
-  private List<Integer> landCharacteristics;
-  private Integer categoryId;
-  private Integer landTypeId;
-  private Integer directionId;
-  private Integer furnishingId;
+  private Property property;
 }
