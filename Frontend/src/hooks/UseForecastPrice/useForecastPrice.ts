@@ -5,7 +5,7 @@ import { ForecastPrice } from '@services/forecast'
 import { ForecastRequest, ForecastResponse } from '@type/models/forecast'
 
 interface UseForecastPriceReturn {
-  ForecastPriceMutation: UseMutationResult<IApiResponse<ForecastResponse>, Error, ForecastRequest>
+  forecastPriceMutation: UseMutationResult<IApiResponse<ForecastResponse>, Error, ForecastRequest>
   isLoading: boolean
   isError: boolean
 }
@@ -13,7 +13,7 @@ interface UseForecastPriceReturn {
 const useForecastPrice = (): UseForecastPriceReturn => {
   const { showToast } = useCustomToast()
 
-  const ForecastPriceMutation = useMutation({
+  const forecastPriceMutation = useMutation({
     mutationFn: ForecastPrice,
     onSuccess: (response) => {
       if (response) {
@@ -32,9 +32,9 @@ const useForecastPrice = (): UseForecastPriceReturn => {
   })
 
   return {
-    isLoading: ForecastPriceMutation.isPending,
-    isError: ForecastPriceMutation.isError,
-    ForecastPriceMutation
+    isLoading: forecastPriceMutation.isPending,
+    isError: forecastPriceMutation.isError,
+    forecastPriceMutation
   }
 }
 
