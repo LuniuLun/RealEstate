@@ -1,21 +1,43 @@
 package apidemo.utils;
 
 import apidemo.models.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
+import java.util.List;
 
 /**
  * Utility class for converting between ML model field names and entity field
  * names
  */
 public class PropertyFieldConverter {
-  private static final FeatureZscore featureZscore;
+  /**
+   * Create feature vectors for a forecast period based on a property request
+   * 
+   * @param request The forecast request containing property details
+   * @param periods Number of days to forecast
+   * @return List of feature vectors, one for each day in the forecast period
+   */
+  public static List<Map<String, Object>> createForecastFeatures(Property property, int periods) {
+    List<Map<String, Object>> featureVectors = new ArrayList<>();
+    LocalDate startDate = LocalDate.now();
 
-  static {
-    Map<String, double[]> scalerParams = ScalerParamsLoader.loadParams();
-    featureZscore = new FeatureZscore(scalerParams);
+    // Generate time series features for each day in the forecast period
+    for (int i = 0; i < periods; i++) {
+      LocalDate forecastDate = startDate.plusDays(i);
+
+      // Combine property features with time features
+      Map<String, Object> features = new HashMap<>();
+      features.putAll(createPropertyFeatures(property));
+      features.putAll(createTimeFeatures(forecastDate));
+
+      featureVectors.add(features);
+    }
+
+    return featureVectors;
   }
 
   /**
@@ -24,13 +46,13 @@ public class PropertyFieldConverter {
    * @param property Property entity
    * @return Map containing the ML model input fields
    */
-  public static Map<String, Double> convertToMLModelFormat(Property property) {
+  public static Map<String, Double> createPropertyFeatures(Property property) {
     Map<String, Double> mlModelInput = new HashMap<>();
 
     // Basic property fields
     mlModelInput.put("Longitude", property.getLongitude());
     mlModelInput.put("Latitude", property.getLatitude());
-    mlModelInput.put("Area", property.getArea());
+    // mlModelInput.put("Area", property.getArea());
     mlModelInput.put("Width", property.getWidth());
     mlModelInput.put("Length", property.getLength());
 
@@ -38,12 +60,8 @@ public class PropertyFieldConverter {
     applySquareRootTransformation(mlModelInput, "Longitude");
     applySquareRootTransformation(mlModelInput, "Latitude");
     applySquareRootTransformation(mlModelInput, "Area");
-    applySquareRootTransformation(mlModelInput, "Width");
-
-    // Apply Z-score normalization to Length field
-    Set<String> lengthField = new HashSet<>();
-    lengthField.add("Length");
-    mlModelInput = featureZscore.scale(mlModelInput, lengthField, 1, 1);
+    applySquareRootTransformation(mlModelInput, "Length");
+    // applySquareRootTransformation(mlModelInput, "Width");
 
     // Direction encoding (one-hot)
     initializeDirectionFields(mlModelInput);
@@ -271,5 +289,24 @@ public class PropertyFieldConverter {
       default:
         return null;
     }
+  }
+
+  /**
+   * Create time-based features for a specific date
+   * 
+   * @param date The date for which to create features
+   * @return Map of time features
+   */
+  public static Map<String, Object> createTimeFeatures(LocalDate date) {
+    Map<String, Object> features = new HashMap<>();
+
+    // Basic date components
+    features.put("year", date.getYear());
+    features.put("month", date.getMonthValue());
+    features.put("day", date.getDayOfMonth());
+    features.put("dayofweek", date.getDayOfWeek().getValue() % 7); // 0-6 format
+    features.put("quarter", (date.getMonthValue() - 1) / 3 + 1);
+
+    return features;
   }
 }

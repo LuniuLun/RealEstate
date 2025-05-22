@@ -3,7 +3,7 @@ package apidemo.services;
 import apidemo.models.ForecastRequest;
 import apidemo.models.ForecastResponse;
 import apidemo.models.PricePrediction;
-import apidemo.utils.ForecastPropertyFieldConverter;
+import apidemo.utils.PropertyFieldConverter;
 import apidemo.utils.LogTransform;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
@@ -35,7 +35,7 @@ public class PropertyForecastService {
   }
 
   public ForecastResponse generateForecast(ForecastRequest request) {
-    List<Map<String, Object>> featureVectors = ForecastPropertyFieldConverter.createForecastFeatures(request,
+    List<Map<String, Object>> featureVectors = PropertyFieldConverter.createForecastFeatures(request.getProperty(),
         request.getPeriodDays());
     List<PricePrediction> predictions = new ArrayList<>();
     LocalDate date = LocalDate.now();
