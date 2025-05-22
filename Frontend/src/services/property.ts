@@ -1,12 +1,12 @@
 import { IApiResponse } from '@type/apiResponse'
 import MESSAGE from '@constants/message'
 import {
-  IEstimatePropertyResult,
+  // IEstimatePropertyResult,
   IProperty,
   IPropertyStatistic,
   PropertyStatus,
-  RoleName,
-  TPostProperty
+  RoleName
+  // TPostProperty
 } from '@type/models'
 import { authStore } from '@stores'
 import { PropertyFilterCriteria } from '@stores/PropertyFilter'
@@ -27,7 +27,8 @@ export const fetchProperties = async (
   params: EnhancedFilterOptions = {
     page: '1',
     limit: '12',
-    typeOfSort: 'desc'
+    typeOfSort: 'desc',
+    sortBy: 'updatedAt'
   }
 ): Promise<IApiResponse<IProperty[]>> => {
   try {
@@ -49,7 +50,7 @@ export const fetchProperties = async (
       calledUrl.searchParams.append(property, value)
     }
 
-    calledUrl.searchParams.append('sortBy', sortBy)
+    calledUrl.searchParams.append('sortBy', sortBy || 'updatedAt')
     calledUrl.searchParams.append('typeOfSort', typeOfSort)
 
     if (propertyFilterCriteria) {
@@ -143,6 +144,7 @@ export const fetchProperties = async (
     }
   }
 }
+
 export const fetchPersonalProperties = async (
   userId: number | undefined,
   params: EnhancedPersonalFilterOptions = {
@@ -350,39 +352,39 @@ export const addProperty = async (newProperty: FormData): Promise<IApiResponse<I
   }
 }
 
-export const estimatePropertyPrice = async (
-  property: TPostProperty
-): Promise<IApiResponse<IEstimatePropertyResult>> => {
-  try {
-    const response = await fetch(`${baseUrl}/estimate-price`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(property)
-    })
+// export const estimatePropertyPrice = async (
+//   property: TPostProperty
+// ): Promise<IApiResponse<IEstimatePropertyResult>> => {
+//   try {
+//     const response = await fetch(`${baseUrl}/estimate-price`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json'
+//       },
+//       body: JSON.stringify(property)
+//     })
 
-    const data = await response.json()
+//     const data = await response.json()
 
-    if (!response.ok) {
-      return {
-        status: 'error',
-        message: data?.message || MESSAGE.property.ESTIMATE_FAILED
-      }
-    }
+//     if (!response.ok) {
+//       return {
+//         status: 'error',
+//         message: data?.message || MESSAGE.property.ESTIMATE_FAILED
+//       }
+//     }
 
-    return {
-      status: 'success',
-      message: MESSAGE.property.ESTIMATE_SUCCESS,
-      data
-    }
-  } catch (error: unknown) {
-    return {
-      status: 'error',
-      message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
-    }
-  }
-}
+//     return {
+//       status: 'success',
+//       message: MESSAGE.property.ESTIMATE_SUCCESS,
+//       data
+//     }
+//   } catch (error: unknown) {
+//     return {
+//       status: 'error',
+//       message: error instanceof Error ? error.message : MESSAGE.common.UNKNOWN_ERROR
+//     }
+//   }
+// }
 
 export const updateProperty = async (id: number, newProperty: FormData): Promise<IApiResponse<IProperty>> => {
   try {
