@@ -207,14 +207,14 @@ export const updateUser = async (newUser: IUser): Promise<IApiResponse<IUser>> =
       body: JSON.stringify(newUser)
     })
 
+    const data = await response.json()
+
     if (!response.ok) {
       return {
         status: 'error',
-        message: MESSAGE.user.EDIT_FAILED
+        message: data.message || MESSAGE.user.EDIT_FAILED
       }
     }
-
-    const data = await response.json()
     return {
       status: 'success',
       message: MESSAGE.user.EDIT_SUCCESS,
