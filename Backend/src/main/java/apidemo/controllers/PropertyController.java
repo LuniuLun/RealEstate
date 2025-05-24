@@ -205,6 +205,14 @@ public class PropertyController {
 
       Property property = mapper.readValue(propertyDataJson, Property.class);
 
+      Property.PropertyStatus status = propertyService.determinePropertyStatus(property);
+      if (status == Property.PropertyStatus.CANCELED) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Bài viết chứa nội dung độc hại");
+        return ResponseEntity.badRequest().body(errorResponse);
+      }
+      property.setStatus(status);
+
       List<String> uploadedUrls = storageService.storeMultiFile(images);
 
       if (!uploadedUrls.isEmpty()) {
@@ -224,20 +232,6 @@ public class PropertyController {
       return ResponseEntity.badRequest().body(errorResponse);
     }
   }
-
-  // @PostMapping("/estimate-price")
-  // public ResponseEntity<?> estimatePropertyPrice(@RequestBody Property
-  // property) {
-  // try {
-
-  // double estimatedPrice = propertyService.getEstimatedPrice(property);
-  // return ResponseEntity.ok(Map.of("estimatedPrice", estimatedPrice));
-  // } catch (RuntimeException e) {
-  // Map<String, String> errorResponse = new HashMap<>();
-  // errorResponse.put("message", e.getMessage());
-  // return ResponseEntity.badRequest().body(errorResponse);
-  // }
-  // }
 
   @PutMapping("/{id}")
   public ResponseEntity<?> updateProperty(
@@ -261,6 +255,14 @@ public class PropertyController {
         errorResponse.put("message", "You are not authorized to update this property");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
       }
+
+      Property.PropertyStatus status = propertyService.determinePropertyStatus(updatedProperty);
+      if (status == Property.PropertyStatus.CANCELED) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Bài viết chứa nội dung độc hại");
+        return ResponseEntity.badRequest().body(errorResponse);
+      }
+      updatedProperty.setStatus(status);
 
       // Handle images
       List<String> finalImagesList = storageService.updateMultiFile(existingProperty.getImages(),
