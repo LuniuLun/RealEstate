@@ -163,6 +163,13 @@ public class UserService {
   }
 
   public User updateUser(Integer userId, User updatedUser) {
+    if (userRepository.existsByEmailAndIdNot(updatedUser.getEmail(), userId)) {
+      throw new RuntimeException("Email đã được sử dụng");
+    }
+    if (userRepository.existsByPhoneAndIdNot(updatedUser.getPhone(), userId)) {
+      throw new RuntimeException("Số điện thoại đã được sử dụng");
+    }
+
     return userRepository.findById(userId).map(existingUser -> {
       existingUser.setFullName(updatedUser.getFullName());
       existingUser.setEmail(updatedUser.getEmail());
