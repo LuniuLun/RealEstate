@@ -48,6 +48,8 @@ export const VIEW_MODE_CHART_OPTION = [
 export const ADMIN_NAV_ITEMS = [
   { path: '', id: 'personal', title: 'Thông tin cá nhân' },
   { path: 'posts', id: 'posts', title: 'Bài viết' },
+  { path: 'my-posts', id: 'myPosts', title: 'Bài viết của tôi' },
+  { path: 'saved-posts', id: 'savedPosts', title: 'Bài viết đã lưu' },
   { path: 'users', id: 'users', title: 'Tài khoản' },
   { path: 'dashboard', id: 'dashboard', title: 'Thống kê' }
 ]
