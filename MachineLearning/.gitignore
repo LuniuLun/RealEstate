@@ -3,6 +3,8 @@
 *.pkl
 *.bin
 *.model
+*.onnx
+*.pt
 
-/HouseValuation
 /LandValuation
+/HouseValuation
