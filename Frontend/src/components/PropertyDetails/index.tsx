@@ -21,7 +21,9 @@ const BasePropertyDetails = ({ property }: BasePropertyDetailsProps) => {
     property.direction
   )
   const formattedDate = new Date(property.updatedAt).toLocaleDateString('vi-VN')
-  const address = [property.streetName, property.wardName, property.region].filter(Boolean).join(', ')
+  const address = [property.streetName, property.wardName, property.districtName, property.region]
+    .filter(Boolean)
+    .join(', ')
   return (
     <Box bg='brand.secondary' p={4} borderRadius='lg' mb={2}>
       <Box mb={4}>
