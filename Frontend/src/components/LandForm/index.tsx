@@ -180,7 +180,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
         onSuccess: (response) => {
           if (response.data) {
             const price = response.data?.predictions[0]?.predictedPrice ?? 0
-            const roundedPrice = (Math.round(price * landFormData.area * landFormData.area * 100) / 100) * 1_000_000
+            const roundedPrice = (Math.round(price * landFormData.area * 100) / 100) * 1_000_000
             setEstimatePrice(roundedPrice)
           }
         }
@@ -208,6 +208,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
       }
     )
   }
+
   return (
     <Stack w='100%' gap={4} as='form' onSubmit={handleSubmit(onSubmit)}>
       <Flex gap={4}>
@@ -217,7 +218,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
             initialImages={initialData?.images}
             onUpload={handleImageUpload}
             onValidationChange={handleImageValidationChange}
-            isLoading={isAdding || isUpdating || isEstimateLoading}
+            isLoading={isAdding || isUpdating || isEstimateLoading || isForecastLoading}
           />
         </FormControl>
 
@@ -231,7 +232,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                 districtName='districtName'
                 wardName='wardName'
                 streetName='streetName'
-                isLoading={isAdding || isUpdating || isEstimateLoading}
+                isLoading={isAdding || isUpdating || isEstimateLoading || isForecastLoading}
                 onStreetNameChange={fetchCoordinates}
               />
             </FormControl>
@@ -249,7 +250,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
-                    isDisabled={isAdding || isUpdating || isEstimateLoading}
+                    isDisabled={isAdding || isUpdating || isEstimateLoading || isForecastLoading}
                     options={FILTER_OPTION.landType}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -269,7 +270,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
-                    isDisabled={isAdding || isUpdating || isEstimateLoading}
+                    isDisabled={isAdding || isUpdating || isEstimateLoading || isForecastLoading}
                     options={FILTER_OPTION.direction}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -293,7 +294,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                 render={({ field }) => (
                   <CustomSelect
                     {...field}
-                    isDisabled={isAdding || isUpdating || isEstimateLoading}
+                    isDisabled={isAdding || isUpdating || isEstimateLoading || isForecastLoading}
                     options={FILTER_OPTION.propertyLegalDocuments}
                     sx={{ width: '100%' }}
                     borderRadius='md'
@@ -312,7 +313,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                 render={({ field: { value, onChange } }) => {
                   return (
                     <CheckboxGroup
-                      isLoading={isAdding || isUpdating || isEstimateLoading}
+                      isLoading={isAdding || isUpdating || isEstimateLoading || isForecastLoading}
                       options={FILTER_OPTION.landCharacteristics}
                       selectedValues={(value || []).map(String)}
                       filterType='landCharacteristics'
@@ -352,7 +353,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                       type='number'
                       placeholder='m'
                       variant='outline'
-                      isDisabled={isAdding || isUpdating || isEstimateLoading}
+                      isDisabled={isAdding || isUpdating || isEstimateLoading || isForecastLoading}
                     />
                   )}
                 />
@@ -375,7 +376,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                       type='number'
                       placeholder='m'
                       variant='outline'
-                      isDisabled={isAdding || isUpdating || isEstimateLoading}
+                      isDisabled={isAdding || isUpdating || isEstimateLoading || isForecastLoading}
                     />
                   )}
                 />
@@ -418,7 +419,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                     type='price'
                     placeholder='VNĐ'
                     variant='outline'
-                    isDisabled={isAdding || isUpdating || isEstimateLoading}
+                    isDisabled={isAdding || isUpdating || isEstimateLoading || isForecastLoading}
                   />
                 )}
               />
@@ -441,7 +442,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
                 my={6}
                 alignSelf='flex-end'
                 justifySelf='flex-end'
-                isLoading={isAdding || isUpdating || isEstimateLoading || isGetCoordinatesLoading}
+                isLoading={isAdding || isUpdating || isEstimateLoading || isForecastLoading || isGetCoordinatesLoading}
                 isDisabled={isGetCoordinatesError}
                 onClick={() => handleEstimatePropertyPrice(getValues())}
               >
@@ -456,7 +457,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
           <CustomSelect
             maxW='200px'
             onChange={(e) => setPeriodDays(Number(e.target.value))}
-            isDisabled={isForecastLoading || isEstimateLoading}
+            isDisabled={isForecastLoading || isEstimateLoading || isForecastLoading}
             sx={{ width: '100%' }}
             borderRadius={'md'}
             options={PERIOD_OPTION}
@@ -465,7 +466,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
 
           <Button
             onClick={() => handleForecastPropertyPrice(getValues())}
-            isLoading={isAdding || isUpdating || isEstimateLoading || isGetCoordinatesLoading}
+            isLoading={isAdding || isUpdating || isEstimateLoading || isForecastLoading || isGetCoordinatesLoading}
             isDisabled={isGetCoordinatesError}
           >
             Dự đoán
@@ -541,18 +542,18 @@ const LandForm = ({ initialData }: ILandFormProps) => {
           />
           <FormErrorMessage>{errors.description && errors.description.message}</FormErrorMessage>
         </FormControl>
-      </Stack>
 
-      <Button
-        variant='primary'
-        type='submit'
-        my={6}
-        alignSelf='flex-end'
-        isLoading={isAdding || isUpdating || isEstimateLoading || isGetCoordinatesLoading}
-        isDisabled={isGetCoordinatesError || !imagesValid}
-      >
-        {initialData ? 'Cập nhật' : 'Đăng tin'}
-      </Button>
+        <Button
+          variant='primary'
+          type='submit'
+          my={6}
+          alignSelf='flex-end'
+          isLoading={isAdding || isUpdating || isEstimateLoading || isForecastLoading || isGetCoordinatesLoading}
+          isDisabled={isGetCoordinatesError || !imagesValid}
+        >
+          {initialData ? 'Cập nhật' : 'Đăng tin'}
+        </Button>
+      </Stack>
     </Stack>
   )
 }
