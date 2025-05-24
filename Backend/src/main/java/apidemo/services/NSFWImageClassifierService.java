@@ -25,7 +25,7 @@ public class NSFWImageClassifierService {
   private static final int IMAGE_WIDTH = 256;
   private static final int IMAGE_HEIGHT = 256;
 
-  private static final String MODEL_NAME = "classifier_model.onnx";
+  private static final String MODEL_NAME = "image_classifier_model.onnx";
   private static final float SAFE_THRESHOLD = 0.8f;
 
   private OrtEnvironment environment;
