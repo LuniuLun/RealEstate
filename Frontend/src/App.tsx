@@ -28,12 +28,15 @@ function App() {
         <Route index element={<Home />} />
         <Route path='property-listings' element={<ListingProperty />} />
         <Route path='property-detail/:id' element={<DetailPost />} />
+        <Route path='register' element={<Register />} />
+        <Route path='login' element={<Login />} />
+
         <Route
           element={
             <ProtectedRoute
               isAllowed={!!token}
               userRoles={token?.user?.role?.name}
-              requiredRole={[RoleName.CUSTOMER, RoleName.BROKER]}
+              requiredRole={[RoleName.CUSTOMER, RoleName.BROKER, RoleName.ADMIN]}
               redirectPath='/login'
             />
           }
@@ -43,8 +46,6 @@ function App() {
           <Route path='personal/upgrade' element={<Upgrade />} />
         </Route>
       </Route>
-      <Route path='register' element={<Register />} />
-      <Route path='login' element={<Login />} />
       <Route
         element={
           <ProtectedRoute
@@ -60,18 +61,20 @@ function App() {
           <Route path='my-posts' element={<MyPosts />} />
           <Route path='transactions' element={<TransactionHistory />} />
           <Route path='saved-posts' element={<SavedPost />} />
+
           <Route
             element={
               <ProtectedRoute
                 isAllowed={!!token}
                 userRoles={token?.user?.role?.name}
-                requiredRole={[RoleName.BROKER]}
+                requiredRole={[RoleName.BROKER, RoleName.ADMIN]}
                 redirectPath='/'
               />
             }
           >
             <Route path='forecast' element={<Forecast />} />
           </Route>
+
           <Route
             element={
               <ProtectedRoute
