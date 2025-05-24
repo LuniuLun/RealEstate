@@ -6,7 +6,7 @@ import { useShallow } from 'zustand/shallow'
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CustomTable, Filter, Pagination, WarningModal, UserModal, CustomSelect } from '@components'
 import { userSummaryTable } from '@utils'
-import { FilterIcon } from '@assets/icons'
+import { FilterIcon, LockIcon } from '@assets/icons'
 import { IUser } from '@type/models'
 
 const Users = () => {
@@ -158,6 +158,7 @@ const Users = () => {
           onEdit={handleEdit}
           onDelete={handleDelete}
           isLoaded={!usersQuery.isFetching}
+          deleteIcon={<LockIcon />}
         />
 
         <Flex justifyContent='center' mt={4}>

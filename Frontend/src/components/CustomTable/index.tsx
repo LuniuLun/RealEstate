@@ -27,10 +27,11 @@ interface ICustomTableProps extends TableProps {
   data: ITableRow[] | undefined
   onEdit?: (id: number) => void
   onDelete?: (id: number) => void
+  deleteIcon?: React.ReactElement
   isLoaded?: boolean
 }
 
-const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, ...props }: ICustomTableProps) => {
+const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, deleteIcon, ...props }: ICustomTableProps) => {
   if (!data || (data.length === 0 && isLoaded)) {
     return (
       <Heading variant='secondary' color='brand.red' textAlign='center' mt={10}>
@@ -153,7 +154,7 @@ const CustomTable = ({ isLoaded, title, data, onEdit, onDelete, ...props }: ICus
                           _hover={{
                             bgColor: 'brand.red'
                           }}
-                          icon={<BinIcon />}
+                          icon={deleteIcon || <BinIcon />}
                           size='sm'
                           colorScheme='red'
                           onClick={() => onDelete && onDelete(row.id as number)}
