@@ -71,7 +71,7 @@ const ListingProperty = () => {
                   price={transformPriceUnit(property.price)}
                   areaInfo={`${calculatePricePerSquareMeter(property.price, property.area)} • ${property.area} m²`}
                   location={property.wardName}
-                  time={new Date(property.createdAt).toLocaleDateString('vi-VN')}
+                  time={new Date(property.updatedAt).toLocaleDateString('vi-VN')}
                 />
               )
             })}
