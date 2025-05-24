@@ -31,11 +31,6 @@
 			<version>0.4</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<version>8.2.0</version>
@@ -68,17 +63,18 @@
 			<artifactId>google-cloud-storage</artifactId>
 			<version>1.96.0</version>
 		</dependency>
-		<dependency>
-			<groupId>org.mindrot</groupId>
-			<artifactId>jbcrypt</artifactId>
-			<version>0.4</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.jpmml/pmml-evaluator -->
 		<dependency>
 			<groupId>org.jpmml</groupId>
 			<artifactId>pmml-evaluator-metro</artifactId>
 			<version>1.7.1</version>
 		</dependency>
+    <!-- https://mvnrepository.com/artifact/org.jpmml/pmml-model -->
+    <dependency>
+        <groupId>org.jpmml</groupId>
+        <artifactId>pmml-model</artifactId>
+        <version>1.7.1</version>
+    </dependency>
 		<!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
 		<dependency>
 			<groupId>com.auth0</groupId>
@@ -99,6 +95,12 @@
       <groupId>com.microsoft.onnxruntime</groupId>
       <artifactId>onnxruntime</artifactId>
       <version>1.15.1</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/ai.djl.onnxruntime/onnxruntime-engine -->
+    <dependency>
+        <groupId>ai.djl.onnxruntime</groupId>
+        <artifactId>onnxruntime-engine</artifactId>
+        <version>0.32.0</version>
     </dependency>
 	</dependencies>
 	<build>
