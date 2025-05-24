@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import apidemo.models.Property;
 import apidemo.models.Property.PropertyStatus;
 import apidemo.models.Role.RoleName;
+import apidemo.models.ToxicityResponse;
 import apidemo.models.User;
 import apidemo.repositories.PropertyRepository;
 import apidemo.utils.Filter;
@@ -31,20 +32,22 @@ public class PropertyService {
   private final UserService userService;
   private final LandService landService;
   private final HouseService houseService;
+  private ToxicContentDetectionService toxicContentDetectionService;
+
   private final Filter filter = new Filter();
 
   public PropertyService(PropertyRepository propertyRepository,
       CategoryService categoryService,
       PropertyLegalDocumentService propertyLegalDocumentService,
-      UserService userService,
-      LandService landService,
-      HouseService houseService) {
+      UserService userService, LandService landService, HouseService houseService,
+      ToxicContentDetectionService toxicContentDetectionService) {
     this.propertyRepository = propertyRepository;
     this.categoryService = categoryService;
     this.propertyLegalDocumentService = propertyLegalDocumentService;
     this.userService = userService;
     this.landService = landService;
     this.houseService = houseService;
+    this.toxicContentDetectionService = toxicContentDetectionService;
   }
 
   public Map<String, Object> getAllProperties(Integer limit, Integer page, String sortBy, String typeOfSort,
@@ -318,7 +321,6 @@ public class PropertyService {
     requiredFields.put("Region", property.getRegion());
     requiredFields.put("District name", property.getDistrictName());
     requiredFields.put("Ward name", property.getWardName());
-    requiredFields.put("Street name", property.getStreetName());
     requiredFields.put("Longitude", property.getLongitude());
     requiredFields.put("Latitude", property.getLatitude());
     requiredFields.put("Direction", property.getDirection());
@@ -338,6 +340,46 @@ public class PropertyService {
 
     if (property.getImages() == null || property.getImages().isEmpty()) {
       throw new RuntimeException("At least one image is required for property");
+    }
+  }
+
+  /**
+   * Determine property status based on toxicity scores.
+   * - Toxicity >= 75%: Already handled elsewhere.
+   * - Toxicity 50-74%: PENDING
+   * - Toxicity < 50%: APPROVAL
+   */
+  public Property.PropertyStatus determinePropertyStatus(Property property) {
+    try {
+      double maxToxicScore = 0.0;
+
+      String title = property.getTitle();
+      String description = property.getDescription();
+
+      if (title != null && !title.trim().isEmpty()) {
+        ToxicityResponse titleToxicity = toxicContentDetectionService.detectToxicity(title);
+        double titleToxicScore = titleToxicity.getToxicScore() * 100;
+        maxToxicScore = Math.max(maxToxicScore, titleToxicScore);
+      }
+
+      if (description != null && !description.trim().isEmpty()) {
+        ToxicityResponse descriptionToxicity = toxicContentDetectionService.detectToxicity(description);
+        double descriptionToxicScore = descriptionToxicity.getToxicScore() * 100;
+        maxToxicScore = Math.max(maxToxicScore, descriptionToxicScore);
+      }
+
+      if (maxToxicScore >= 75.0) {
+        return Property.PropertyStatus.CANCELED;
+      }
+
+      if (maxToxicScore >= 50.0) {
+        return Property.PropertyStatus.PENDING;
+      }
+
+      return Property.PropertyStatus.APPROVAL;
+
+    } catch (Exception e) {
+      return Property.PropertyStatus.PENDING;
     }
   }
 
