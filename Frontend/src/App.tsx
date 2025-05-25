@@ -24,12 +24,12 @@ function App() {
 
   return (
     <Routes>
+      <Route path='register' element={<Register />} />
+      <Route path='login' element={<Login />} />
       <Route path='/' element={<DefaultLayout />}>
         <Route index element={<Home />} />
         <Route path='property-listings' element={<ListingProperty />} />
         <Route path='property-detail/:id' element={<DetailPost />} />
-        <Route path='register' element={<Register />} />
-        <Route path='login' element={<Login />} />
 
         <Route
           element={
