@@ -457,7 +457,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
           <CustomSelect
             maxW='200px'
             onChange={(e) => setPeriodDays(Number(e.target.value))}
-            isDisabled={isForecastLoading || isEstimateLoading || isForecastLoading}
+            isDisabled={isForecastLoading || isEstimateLoading || isAdding || isUpdating}
             sx={{ width: '100%' }}
             borderRadius={'md'}
             options={PERIOD_OPTION}
