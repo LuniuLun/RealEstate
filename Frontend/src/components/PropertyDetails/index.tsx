@@ -70,7 +70,9 @@ const BasePropertyDetails = ({ property }: BasePropertyDetailsProps) => {
       <Heading variant='secondary' my={2}>
         Mô tả chi tiết
       </Heading>
-      <Text>{property.description}</Text>
+      <Box whiteSpace='pre-wrap' p={2}>
+        {property.description}
+      </Box>
     </Box>
   )
 }
