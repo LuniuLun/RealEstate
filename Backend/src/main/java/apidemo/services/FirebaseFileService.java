@@ -1,15 +1,17 @@
 package apidemo.services;
 
+import apidemo.config.FirebaseConfig;
 import com.google.api.gax.paging.Page;
-import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.storage.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.ArrayList;
@@ -22,19 +24,71 @@ import java.util.Map;
 public class FirebaseFileService {
 
   private Storage storage;
-  private static final String BUCKET_NAME = "rare-animals.appspot.com";
-  private static final String FOLDER_NAME = "RealEstate";
+
+  @Autowired
+  private FirebaseConfig firebaseConfig;
 
   @EventListener
   public void init(ApplicationReadyEvent event) {
     try {
-      ClassPathResource serviceAccount = new ClassPathResource("serviceAccountKey.json");
+      // Tạo JSON string từ config properties
+      String serviceAccountJson = createServiceAccountJson();
+
+      // Tạo credentials từ JSON string
+      ServiceAccountCredentials credentials = ServiceAccountCredentials
+          .fromStream(new ByteArrayInputStream(serviceAccountJson.getBytes()));
+
       storage = StorageOptions.newBuilder()
-          .setCredentials(GoogleCredentials.fromStream(serviceAccount.getInputStream()))
-          .setProjectId("rare-animals").build().getService();
+          .setCredentials(credentials)
+          .setProjectId(firebaseConfig.getProjectId())
+          .build()
+          .getService();
+
+      System.out.println("Firebase Storage initialized successfully with project: " + firebaseConfig.getProjectId());
     } catch (Exception ex) {
       ex.printStackTrace();
+      throw new RuntimeException("Failed to initialize Firebase Storage: " + ex.getMessage());
     }
+  }
+
+  private String createServiceAccountJson() {
+    // Fix private key format - convert \\n back to actual newlines for JSON
+    String privateKey = firebaseConfig.getPrivateKey()
+        .replace("\\n", "\n"); // Convert \\n to actual newlines
+
+    // Properly escape for JSON
+    String escapedPrivateKey = privateKey
+        .replace("\\", "\\\\") // Escape backslashes
+        .replace("\"", "\\\"") // Escape quotes
+        .replace("\n", "\\n") // Escape newlines for JSON
+        .replace("\r", "\\r") // Escape carriage returns
+        .replace("\t", "\\t"); // Escape tabs
+
+    return String.format("""
+        {
+          "type": "%s",
+          "project_id": "%s",
+          "private_key_id": "%s",
+          "private_key": "%s",
+          "client_email": "%s",
+          "client_id": "%s",
+          "auth_uri": "%s",
+          "token_uri": "%s",
+          "auth_provider_x509_cert_url": "%s",
+          "client_x509_cert_url": "%s",
+          "universe_domain": "%s"
+        }""",
+        firebaseConfig.getType(),
+        firebaseConfig.getProjectId(),
+        firebaseConfig.getPrivateKeyId(),
+        escapedPrivateKey,
+        firebaseConfig.getClientEmail(),
+        firebaseConfig.getClientId(),
+        firebaseConfig.getAuthUri(),
+        firebaseConfig.getTokenUri(),
+        firebaseConfig.getAuthProviderX509CertUrl(),
+        firebaseConfig.getClientX509CertUrl(),
+        firebaseConfig.getUniverseDomain());
   }
 
   public String storeFile(MultipartFile file) {
@@ -44,13 +98,13 @@ public class FirebaseFileService {
       }
 
       String fileName = generateFileName(file.getOriginalFilename());
-      String filePath = FOLDER_NAME + "/" + fileName;
+      String filePath = firebaseConfig.getFolderName() + "/" + fileName;
 
       Map<String, String> metadata = new HashMap<>();
       metadata.put("firebaseStorageDownloadTokens", fileName);
 
       // Create BlobInfo with folder path
-      BlobId blobId = BlobId.of(BUCKET_NAME, filePath);
+      BlobId blobId = BlobId.of(firebaseConfig.getBucketName(), filePath);
       BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
           .setContentType(file.getContentType())
           .setMetadata(metadata)
@@ -60,7 +114,7 @@ public class FirebaseFileService {
       storage.create(blobInfo, file.getBytes());
 
       // Get URL of uploaded file (with folder path)
-      String imageUrl = "https://firebasestorage.googleapis.com/v0/b/" + BUCKET_NAME + "/o/" +
+      String imageUrl = "https://firebasestorage.googleapis.com/v0/b/" + firebaseConfig.getBucketName() + "/o/" +
           encodeURIComponent(filePath) + "?alt=media&token=" + fileName;
 
       System.out.println("Uploaded Successfully. Image URL: " + imageUrl);
@@ -120,8 +174,8 @@ public class FirebaseFileService {
 
   public void deleteAllFiles() {
     Page<Blob> blobs = storage.list(
-        BUCKET_NAME,
-        Storage.BlobListOption.prefix(FOLDER_NAME + "/"));
+        firebaseConfig.getBucketName(),
+        Storage.BlobListOption.prefix(firebaseConfig.getFolderName() + "/"));
 
     for (Blob blob : blobs.iterateAll()) {
       blob.delete();
@@ -140,7 +194,7 @@ public class FirebaseFileService {
       String encodedFilePath = imageUrl.substring(startIndex, endIndex);
       String filePath = decodeURIComponent(encodedFilePath);
 
-      BlobId blobId = BlobId.of(BUCKET_NAME, filePath);
+      BlobId blobId = BlobId.of(firebaseConfig.getBucketName(), filePath);
       boolean deleted = storage.delete(blobId);
 
       if (deleted) {
