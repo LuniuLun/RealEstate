@@ -1,10 +1,10 @@
 application.properties
 application.yml
+serviceAccountKey.json
 *.pmml
 *.pkl
 *.onnx
 *.csv
 *.model
-*.json
 *.bin
 *.pt
