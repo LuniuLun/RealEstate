@@ -7,22 +7,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
 public class ToxicContentDetectionService {
-
   private static final Logger logger = LoggerFactory.getLogger(ToxicContentDetectionService.class);
-  private static final String MODEL_NAME = "toxicity_detection_model.onnx";
-  private static final String TOKENIZER_NAME = "tokenizer.json";
+
+  @Value("${model.volume.folder:/resources/}")
+  private String modelFolder;
+  @Value("${model.toxicity.filename:}")
+  private String modelFilename;
+  @Value("${tokenizer.toxicity.filename:}")
+  private String tokenizerFilename;
+  @Value("${model.toxicity.url:}")
+  private String modelUrl;
+  @Value("${tokenizer.toxicity.url:}")
+  private String tokenizerUrl;
 
   private OrtEnvironment environment;
   private OrtSession session;
@@ -31,94 +39,126 @@ public class ToxicContentDetectionService {
   private List<String> merges;
   private int maxLength = 512;
 
-  // Special tokens for BPE/SentencePiece tokenizer
   private int padTokenId = 0; // <pad>
   private int eosTokenId = 1; // </s>
   private int unkTokenId = 2; // <unk>
 
-  // Metaspace replacement character
   private static final String METASPACE_CHAR = "▁";
-
-  // Pattern for multiple spaces
   private static final Pattern MULTIPLE_SPACES = Pattern.compile(" {2,}");
 
   @PostConstruct
-  public void init() throws OrtException, IOException {
-    try {
-      environment = OrtEnvironment.getEnvironment();
+  public void init() throws Exception {
+    environment = OrtEnvironment.getEnvironment();
+    byte[] modelBytes;
 
-      // Load model
-      File modelFile = new File(getClass().getClassLoader().getResource(MODEL_NAME).toURI());
-      byte[] modelBytes = Files.readAllBytes(modelFile.toPath());
-      session = environment.createSession(modelBytes, new OrtSession.SessionOptions());
+    if (modelFolder != null && !modelFolder.isBlank() && modelFilename != null && !modelFilename.isBlank()) {
+      Path modelPath = Paths.get(modelFolder, modelFilename);
+      if (Files.exists(modelPath)) {
+        modelBytes = Files.readAllBytes(modelPath);
+        logger.info("Loaded model from local path: {}", modelPath);
+      } else if (modelUrl != null && !modelUrl.isBlank()) {
+        logger.info("Model file not found locally, downloading from URL: {}", modelUrl);
+        modelBytes = downloadFileBytes(modelUrl);
+        Files.createDirectories(modelPath.getParent());
+        Files.write(modelPath, modelBytes);
+      } else {
+        throw new IOException("Model file not found locally and no valid URL provided");
+      }
+    } else if (modelUrl != null && !modelUrl.isBlank()) {
+      // Không có local info, thử download
+      logger.info("Downloading model from URL: {}", modelUrl);
+      modelBytes = downloadFileBytes(modelUrl);
+    } else {
+      throw new IOException("No valid model source specified (local or URL)");
+    }
 
-      // Load BPE tokenizer
-      loadBPETokenizer();
+    session = environment.createSession(modelBytes, new OrtSession.SessionOptions());
 
-    } catch (URISyntaxException | NullPointerException e) {
-      throw new IOException("Required file not found", e);
-    } catch (Exception e) {
-      throw e;
+    // Load tokenizer stream với logic tương tự
+    InputStream tokenizerStream = null;
+
+    if (modelFolder != null && !modelFolder.isBlank() && tokenizerFilename != null && !tokenizerFilename.isBlank()) {
+      Path tokenizerPath = Paths.get(modelFolder, tokenizerFilename);
+
+      if (Files.exists(tokenizerPath)) {
+        tokenizerStream = Files.newInputStream(tokenizerPath);
+        logger.info("Loaded tokenizer from local path: {}", tokenizerPath);
+      } else if (tokenizerUrl != null && !tokenizerUrl.isBlank()) {
+        logger.info("Tokenizer file not found locally, downloading from URL: {}", tokenizerUrl);
+        byte[] tokenizerBytes = downloadFileBytes(tokenizerUrl);
+        Files.createDirectories(tokenizerPath.getParent());
+        Files.write(tokenizerPath, tokenizerBytes);
+        tokenizerStream = new ByteArrayInputStream(tokenizerBytes);
+      } else {
+        throw new IOException("Tokenizer file not found locally and no valid URL provided");
+      }
+    } else if (tokenizerUrl != null && !tokenizerUrl.isBlank()) {
+      logger.info("Downloading tokenizer from URL: {}", tokenizerUrl);
+      tokenizerStream = downloadFileStream(tokenizerUrl); // không có tên file nên không lưu
+    } else {
+      throw new IOException("No valid tokenizer source specified (local or URL)");
+    }
+
+    try (InputStream stream = tokenizerStream) {
+      loadBPETokenizer(stream);
     }
   }
 
-  private void loadBPETokenizer() throws IOException {
-    try (InputStream tokenizerStream = getClass().getClassLoader().getResourceAsStream(TOKENIZER_NAME)) {
-      if (tokenizerStream == null) {
-        throw new IOException("Tokenizer file not found in resources: " + TOKENIZER_NAME);
+  private void loadBPETokenizer(InputStream tokenizerStream) throws IOException {
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode tokenizerJson = mapper.readTree(tokenizerStream);
+
+    vocab = new HashMap<>();
+    vocabList = new ArrayList<>();
+    JsonNode vocabNode = tokenizerJson.get("model").get("vocab");
+
+    if (vocabNode != null && vocabNode.isObject()) {
+      List<Map.Entry<String, Integer>> entries = new ArrayList<>();
+      Iterator<Map.Entry<String, JsonNode>> fields = vocabNode.fields();
+      while (fields.hasNext()) {
+        Map.Entry<String, JsonNode> entry = fields.next();
+        int tokenId = entry.getValue().asInt();
+        vocab.put(entry.getKey(), tokenId);
+        entries.add(new AbstractMap.SimpleEntry<>(entry.getKey(), tokenId));
       }
-
-      ObjectMapper mapper = new ObjectMapper();
-      JsonNode tokenizerJson = mapper.readTree(tokenizerStream);
-
-      // Extract vocabulary from BPE model
-      vocab = new HashMap<>();
-      vocabList = new ArrayList<>();
-      JsonNode vocabNode = tokenizerJson.get("model").get("vocab");
-
-      if (vocabNode != null && vocabNode.isObject()) {
-        // Collect all tokens and sort by ID
-        List<Map.Entry<String, Integer>> entries = new ArrayList<>();
-        Iterator<Map.Entry<String, JsonNode>> fields = vocabNode.fields();
-        while (fields.hasNext()) {
-          Map.Entry<String, JsonNode> entry = fields.next();
-          int tokenId = entry.getValue().asInt();
-          vocab.put(entry.getKey(), tokenId);
-          entries.add(new AbstractMap.SimpleEntry<>(entry.getKey(), tokenId));
-        }
-
-        // Sort by token ID and create vocab list
-        entries.sort(Map.Entry.comparingByValue());
-        vocabList = new ArrayList<>(Collections.nCopies(entries.size(), ""));
-        for (Map.Entry<String, Integer> entry : entries) {
-          if (entry.getValue() < vocabList.size()) {
-            vocabList.set(entry.getValue(), entry.getKey());
-          }
-        }
-
-        logger.info("Loaded BPE vocabulary with {} tokens", vocab.size());
-      } else {
-        throw new IOException("Cannot extract vocabulary from tokenizer.json");
-      }
-
-      merges = new ArrayList<>();
-      JsonNode mergesNode = tokenizerJson.get("model").get("merges");
-      if (mergesNode != null && mergesNode.isArray()) {
-        for (JsonNode mergeNode : mergesNode) {
-          merges.add(mergeNode.asText());
+      entries.sort(Map.Entry.comparingByValue());
+      vocabList = new ArrayList<>(Collections.nCopies(entries.size(), ""));
+      for (Map.Entry<String, Integer> entry : entries) {
+        if (entry.getValue() < vocabList.size()) {
+          vocabList.set(entry.getValue(), entry.getKey());
         }
       }
-
-      padTokenId = vocab.getOrDefault("<pad>", 0);
-      eosTokenId = vocab.getOrDefault("</s>", 1);
-      unkTokenId = vocab.getOrDefault("<unk>", 2);
-
-      logger.info("BPE Tokenizer loaded successfully. PAD: {}, EOS: {}, UNK: {}",
-          padTokenId, eosTokenId, unkTokenId);
-
-    } catch (Exception e) {
-      throw new IOException("Failed to load BPE tokenizer", e);
+      logger.info("Loaded BPE vocabulary with {} tokens", vocab.size());
+    } else {
+      throw new IOException("Cannot extract vocabulary from tokenizer.json");
     }
+
+    merges = new ArrayList<>();
+    JsonNode mergesNode = tokenizerJson.get("model").get("merges");
+    if (mergesNode != null && mergesNode.isArray()) {
+      for (JsonNode mergeNode : mergesNode) {
+        merges.add(mergeNode.asText());
+      }
+    }
+
+    padTokenId = vocab.getOrDefault("<pad>", 0);
+    eosTokenId = vocab.getOrDefault("</s>", 1);
+    unkTokenId = vocab.getOrDefault("<unk>", 2);
+
+    logger.info("BPE Tokenizer loaded successfully. PAD: {}, EOS: {}, UNK: {}",
+        padTokenId, eosTokenId, unkTokenId);
+  }
+
+  // Helper tải file về byte[]
+  private byte[] downloadFileBytes(String url) throws IOException {
+    try (InputStream in = new java.net.URL(url).openStream()) {
+      return in.readAllBytes();
+    }
+  }
+
+  // Helper tải file về InputStream
+  private InputStream downloadFileStream(String url) throws IOException {
+    return new java.net.URL(url).openStream();
   }
 
   private long[] encodeText(String text) {

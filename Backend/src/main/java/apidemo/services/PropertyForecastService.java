@@ -6,31 +6,68 @@ import apidemo.models.PricePrediction;
 import apidemo.utils.PropertyFieldConverter;
 import apidemo.utils.LogTransform;
 import org.jpmml.evaluator.Evaluator;
-import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
 import org.jpmml.evaluator.EvaluatorUtil;
+import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.*;
 
 @Service
 public class PropertyForecastService {
-  private final Evaluator modelEvaluator;
+  private static final Logger logger = LoggerFactory.getLogger(PropertyForecastService.class);
+
+  private Evaluator modelEvaluator;
   private final LogTransform logTransform = new LogTransform();
 
-  public PropertyForecastService() {
+  @Value("${model.volume.folder:/tmp/models/}")
+  private String modelFolder;
+  @Value("${model.forecast.url}")
+  private String modelUrl;
+  @Value("${model.forecast.filename:RF_forecast_model.pmml}")
+  private String modelFilename;
+
+  @PostConstruct
+  public void init() {
     try {
-      File pmml = new File(getClass()
-          .getClassLoader()
-          .getResource("RF_forecast_model.pmml")
-          .toURI());
-      this.modelEvaluator = new LoadingModelEvaluatorBuilder()
-          .load(pmml)
+      if (!modelFolder.endsWith("/")) {
+        modelFolder += "/";
+      }
+      String modelLocalPath = modelFolder + modelFilename;
+      File modelFile = new File(modelLocalPath);
+
+      if (!modelFile.exists()) {
+        logger.info("PMML model file not found locally, downloading from: {}", modelUrl);
+        modelFile.getParentFile().mkdirs();
+
+        try (InputStream in = new URL(modelUrl).openStream()) {
+          Files.copy(in, modelFile.toPath());
+        }
+
+        logger.info("PMML model downloaded to: {}", modelFile.getAbsolutePath());
+      } else {
+        logger.info("PMML model file found locally at: {}", modelFile.getAbsolutePath());
+      }
+
+      modelEvaluator = new LoadingModelEvaluatorBuilder()
+          .load(modelFile)
           .build();
-      this.modelEvaluator.verify();
+
+      modelEvaluator.verify();
+
+      logger.info("PMML model loaded successfully");
+
     } catch (Exception ex) {
-      throw new RuntimeException("Initialization of PropertyForecastService failed", ex);
+      logger.error("Initialization of PropertyForecastService failed", ex);
+      throw new RuntimeException(ex);
     }
   }
 
@@ -64,22 +101,6 @@ public class PropertyForecastService {
     if (y instanceof Number) {
       return ((Number) y).doubleValue();
     }
-
-    // if (y instanceof Map) {
-    // @SuppressWarnings("unchecked")
-    // Map<String, ?> m = (Map<String, ?>) y;
-    // Object candidate = null;
-    // if (m.containsKey("value")) {
-    // candidate = m.get("value");
-    // } else if (m.containsKey("result")) {
-    // candidate = m.get("result");
-    // }
-    // if (candidate instanceof Number) {
-    // return ((Number) candidate).doubleValue();
-    // }
-    // }
-
-    throw new IllegalStateException("Không thể lấy được giá trị dự đoán từ: " + decoded);
+    throw new IllegalStateException("Cannot extract predicted value from: " + decoded);
   }
-
 }

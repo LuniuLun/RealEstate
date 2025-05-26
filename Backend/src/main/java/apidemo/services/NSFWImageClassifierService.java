@@ -3,6 +3,7 @@ package apidemo.services;
 import ai.onnxruntime.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,7 +12,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,32 +24,52 @@ import apidemo.models.ImageClassificationResult;
 @Service
 public class NSFWImageClassifierService {
   private static final Logger logger = LoggerFactory.getLogger(NSFWImageClassifierService.class);
+
   private static final int IMAGE_WIDTH = 256;
   private static final int IMAGE_HEIGHT = 256;
-
-  private static final String MODEL_NAME = "image_classifier_model.onnx";
   private static final float SAFE_THRESHOLD = 0.8f;
 
   private OrtEnvironment environment;
   private OrtSession session;
   private String inputName;
 
+  @Value("${model.volume.folder:/resources/}")
+  private String modelFolder;
+  @Value("${model.nsfw.url}")
+  private String modelUrl;
+  @Value("${model.nsfw.filename:image_classifier_model.onnx}")
+  private String modelFilename;
+
   @PostConstruct
   public void init() throws OrtException, IOException {
     try {
       environment = OrtEnvironment.getEnvironment();
 
-      // Direct file loading without Spring properties
-      File modelFile;
-      try {
-        modelFile = new File(getClass().getClassLoader().getResource(MODEL_NAME).toURI());
-        logger.info("Loading model from: {}", modelFile.getAbsolutePath());
-      } catch (URISyntaxException | NullPointerException e) {
-        logger.error("Could not find model file: {}", MODEL_NAME, e);
-        throw new IOException("Model file not found", e);
+      // Build đường dẫn model file local dựa trên folder + filename
+      if (!modelFolder.endsWith("/")) {
+        modelFolder += "/";
+      }
+      String modelLocalPath = modelFolder + modelFilename;
+      File modelFile = new File(modelLocalPath);
+
+      // Nếu chưa có model thì tải về
+      if (!modelFile.exists()) {
+        logger.info("Model file not found locally, downloading from: {}", modelUrl);
+
+        // Tạo thư mục chứa model nếu chưa tồn tại
+        modelFile.getParentFile().mkdirs();
+
+        // Tải model từ URL và lưu vào thư mục mounted
+        try (InputStream in = new URL(modelUrl).openStream()) {
+          Files.copy(in, modelFile.toPath());
+        }
+
+        logger.info("Model downloaded to: {}", modelFile.getAbsolutePath());
+      } else {
+        logger.info("Model file found locally at: {}", modelFile.getAbsolutePath());
       }
 
-      // Read the model bytes
+      // Load model từ file local
       byte[] modelBytes = Files.readAllBytes(modelFile.toPath());
 
       OrtSession.SessionOptions sessionOptions = new OrtSession.SessionOptions();
@@ -55,7 +77,8 @@ public class NSFWImageClassifierService {
 
       inputName = session.getInputNames().iterator().next();
 
-      logger.info("NSFW classifier model loaded successfully from: {}", modelFile.getAbsolutePath());
+      logger.info("NSFW classifier model loaded successfully");
+
     } catch (Exception e) {
       logger.error("Failed to load NSFW classifier model", e);
       throw e;
@@ -63,11 +86,9 @@ public class NSFWImageClassifierService {
   }
 
   private ImageClassificationResult classifyBufferedImage(BufferedImage image) throws OrtException {
-    // Resize image to required dimensions
     BufferedImage resizedImage = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
     resizedImage.getGraphics().drawImage(image, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, null);
 
-    // Preprocess image - normalize to [0, 1]
     float[][][][] input = new float[1][IMAGE_HEIGHT][IMAGE_WIDTH][3];
 
     for (int y = 0; y < IMAGE_HEIGHT; y++) {
@@ -79,13 +100,10 @@ public class NSFWImageClassifierService {
       }
     }
 
-    // Create input tensor
     OnnxTensor tensor = OnnxTensor.createTensor(environment, input);
 
-    // Run inference
     OrtSession.Result result = session.run(Collections.singletonMap(inputName, tensor));
 
-    // Process output
     float[][] output = (float[][]) result.get(0).getValue();
     float[] probabilities = output[0];
 
