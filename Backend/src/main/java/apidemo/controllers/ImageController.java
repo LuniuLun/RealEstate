@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import apidemo.models.ImageClassificationResult;
-import apidemo.services.FirebaseFileService;
+import apidemo.services.AwsS3FileService;
 import apidemo.services.NSFWImageClassifierService;
 
 import java.util.ArrayList;
@@ -17,10 +17,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/images")
 public class ImageController {
-  private final NSFWImageClassifierService nsfwImageClassifier;
-  private final FirebaseFileService storageService;
 
-  public ImageController(FirebaseFileService storageService, NSFWImageClassifierService nsfwImageClassifier) {
+  private final NSFWImageClassifierService nsfwImageClassifier;
+  private final AwsS3FileService storageService;
+
+  public ImageController(AwsS3FileService storageService, NSFWImageClassifierService nsfwImageClassifier) {
     this.nsfwImageClassifier = nsfwImageClassifier;
     this.storageService = storageService;
   }
@@ -59,16 +60,16 @@ public class ImageController {
     }
   }
 
-  // @DeleteMapping("/delete")
-  // public ResponseEntity<?> deleteAllImages() {
-  // try {
-  // storageService.deleteAllFiles();
-  // return ResponseEntity.ok("All files deleted successfully");
-  // } catch (Exception e) {
-  // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-  // .body("Failed to delete files: " + e.getMessage());
-  // }
-  // }
+  @DeleteMapping("/delete")
+  public ResponseEntity<?> deleteAllImages() {
+    try {
+      storageService.deleteAllFiles();
+      return ResponseEntity.ok("All files deleted successfully");
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("Failed to delete files: " + e.getMessage());
+    }
+  }
 
   @PostMapping("/nsfw-check")
   public ResponseEntity<?> checkImage(@RequestParam("image") MultipartFile[] image) {

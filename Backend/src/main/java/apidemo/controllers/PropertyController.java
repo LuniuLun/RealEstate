@@ -15,7 +15,7 @@ import apidemo.models.Property;
 import apidemo.models.Property.PropertyStatus;
 import apidemo.models.Role.RoleName;
 import apidemo.models.User;
-import apidemo.services.FirebaseFileService;
+import apidemo.services.AwsS3FileService;
 import apidemo.services.PropertyService;
 import apidemo.services.UserService;
 
@@ -27,11 +27,11 @@ import java.util.Map;
 @RequestMapping("/api/v1/properties")
 public class PropertyController {
 
-  private final FirebaseFileService storageService;
+  private final AwsS3FileService storageService;
   private final PropertyService propertyService;
   private final UserService userService;
 
-  public PropertyController(PropertyService propertyService, FirebaseFileService storageService,
+  public PropertyController(PropertyService propertyService, AwsS3FileService storageService,
       UserService userService) {
     this.propertyService = propertyService;
     this.storageService = storageService;
