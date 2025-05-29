@@ -33,7 +33,7 @@ public class Property {
   @Column(nullable = false, length = 100)
   private String title;
 
-  @Column(nullable = false)
+  @Column(nullable = false, length = 10000)
   private String description;
 
   @Column(nullable = false, length = 50)

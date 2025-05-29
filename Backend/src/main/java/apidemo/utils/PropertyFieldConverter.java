@@ -52,7 +52,7 @@ public class PropertyFieldConverter {
     // Basic property fields
     mlModelInput.put("Longitude", property.getLongitude());
     mlModelInput.put("Latitude", property.getLatitude());
-    // mlModelInput.put("Area", property.getArea());
+    mlModelInput.put("Area", property.getArea());
     mlModelInput.put("Width", property.getWidth());
     mlModelInput.put("Length", property.getLength());
 
@@ -61,7 +61,7 @@ public class PropertyFieldConverter {
     applySquareRootTransformation(mlModelInput, "Latitude");
     applySquareRootTransformation(mlModelInput, "Area");
     applySquareRootTransformation(mlModelInput, "Length");
-    // applySquareRootTransformation(mlModelInput, "Width");
+    applySquareRootTransformation(mlModelInput, "Width");
 
     // Direction encoding (one-hot)
     initializeDirectionFields(mlModelInput);
