@@ -106,7 +106,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
 
   useEffect(() => {
     if (region && districtName && wardName) {
-      fetchCoordinates()
+      fetchCoordinates(watch('streetName'))
     }
   }, [wardName])
 

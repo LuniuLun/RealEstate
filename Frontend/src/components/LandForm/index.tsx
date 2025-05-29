@@ -108,7 +108,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
 
   useEffect(() => {
     if (region && districtName && wardName) {
-      fetchCoordinates()
+      fetchCoordinates(watch('streetName'))
     }
   }, [wardName])
 
