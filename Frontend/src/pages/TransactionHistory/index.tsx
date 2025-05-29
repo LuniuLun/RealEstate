@@ -100,7 +100,7 @@ const TransactionHistory = () => {
   if (isError) {
     return (
       <Heading variant='secondary' color='brand.red' p={10}>
-        Không tìm thấy lịch sử giao dịch cá nhân
+        Chưa thực hiện giao dịch nào
       </Heading>
     )
   }

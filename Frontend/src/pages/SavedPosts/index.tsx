@@ -72,7 +72,7 @@ const SavedPosts = () => {
   if (isError) {
     return (
       <Heading variant='secondary' color='brand.red' p={10}>
-        Không tìm thấy danh sách yêu thích
+        Không tìm thấy bài viết yêu thích
       </Heading>
     )
   }
