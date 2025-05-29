@@ -1,7 +1,6 @@
 export { default as debounce } from './Debounce'
 export { default as userSummaryTable } from './UserSummaryTable'
 export { default as updateInfiniteCache } from './UpdateInfiniteCache'
-export { default as updateCache } from './UpdateCache'
 export { default as updateItemInArray } from './UpdateItemInArray'
 export { default as removeItemInArray } from './RemoveItemFromArray'
 export { default as findInCache } from './FindInCache'

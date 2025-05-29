@@ -4,7 +4,6 @@ import { DefaultLayout, PersonalLayout } from '@layout'
 import { RoleName } from '@type/models'
 import ProtectedRoute from './routes/ProtectedRoute'
 import Home from '@pages/Home/Home'
-import Dashboard from '@pages/Dashboard'
 import Users from '@pages/Users'
 import ListingProperty from '@pages/ListingProperty'
 import Register from '@pages/Register'
@@ -86,7 +85,6 @@ function App() {
             }
           >
             <Route path='posts' element={<AllPosts />} />
-            <Route path='dashboard' element={<Dashboard />} />
             <Route path='users' element={<Users />} />
           </Route>
         </Route>
