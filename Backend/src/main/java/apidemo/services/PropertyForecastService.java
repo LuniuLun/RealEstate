@@ -5,7 +5,8 @@ import apidemo.models.ForecastResponse;
 import apidemo.models.PricePrediction;
 import apidemo.utils.PropertyFieldConverter;
 import jakarta.annotation.PostConstruct;
-import apidemo.utils.LogTransform;
+import apidemo.utils.FeatureRootTransform;
+
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.EvaluatorUtil;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
@@ -22,7 +23,7 @@ public class PropertyForecastService {
   private static final String MODEL_FILENAME = "RF_forecast_model.pmml";
 
   private Evaluator modelEvaluator;
-  private final LogTransform logTransform = new LogTransform();
+  private final FeatureRootTransform rootTransform = new FeatureRootTransform();
 
   @PostConstruct
   public void init() {
@@ -63,7 +64,7 @@ public class PropertyForecastService {
       Object y = decoded.get("y");
       double normalized = extractPredictedValue(y, decoded);
 
-      double price = logTransform.inverseTransform(normalized);
+      double price = rootTransform.inverseTransform(normalized, 2);
 
       predictions.add(new PricePrediction(date, price));
     }
