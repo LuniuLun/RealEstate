@@ -121,5 +121,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
+    <finalName>backend-real-estate-app</finalName>
 	</build>
 </project>
