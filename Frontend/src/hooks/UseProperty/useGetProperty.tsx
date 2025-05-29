@@ -25,12 +25,13 @@ interface PropertyResponse {
 }
 
 const useGetProperty = (): UseGetPropertyReturn => {
-  const { searchQuery, sortBy, itemsPerPage, propertyFilterCriteria } = propertyFilterStore(
+  const { searchQuery, sortBy, itemsPerPage, propertyFilterCriteria, currentPage } = propertyFilterStore(
     useShallow((state) => ({
       searchQuery: state.searchQuery,
       sortBy: state.sortBy,
       itemsPerPage: state.itemsPerPage,
-      propertyFilterCriteria: state.propertyFilterCriteria
+      propertyFilterCriteria: state.propertyFilterCriteria,
+      currentPage: state.currentPage
     }))
   )
 
@@ -39,6 +40,7 @@ const useGetProperty = (): UseGetPropertyReturn => {
   const infinitePropertyQueryKey = [
     'properties',
     itemsPerPage,
+    currentPage,
     searchQuery,
     sortBy,
     JSON.stringify(propertyFilterCriteria)
@@ -59,19 +61,22 @@ const useGetProperty = (): UseGetPropertyReturn => {
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) => {
-      if (!lastPage.data.properties || lastPage.data.properties.length === 0) return undefined
+      if (!lastPage.data?.properties || lastPage.data.properties.length === 0) return undefined
       const totalPages = Math.ceil(lastPage.data.total / itemsPerPage)
       return lastPageParam < totalPages ? lastPageParam + 1 : undefined
     },
     refetchOnWindowFocus: false
   })
 
+  useMemo(() => {
+    queryClient.resetQueries({ queryKey: ['properties'] })
+  }, [itemsPerPage, queryClient])
+
   const properties = useMemo(() => {
     if (!propertiesQuery.data) return []
 
     return propertiesQuery.data.pages.flatMap((page) => {
       if (!page.data) return []
-
       return page.data.properties
     })
   }, [propertiesQuery.data])
@@ -82,10 +87,10 @@ const useGetProperty = (): UseGetPropertyReturn => {
   }, [propertiesQuery.data])
 
   const reCallQuery = () => {
-    queryClient.invalidateQueries({ queryKey: infinitePropertyQueryKey })
+    queryClient.invalidateQueries({ queryKey: ['properties'] })
   }
 
-  const isLoading = propertiesQuery.isLoading
+  const isLoading = propertiesQuery.isLoading || propertiesQuery.isFetching
   const isError = propertiesQuery.isError
 
   return {
