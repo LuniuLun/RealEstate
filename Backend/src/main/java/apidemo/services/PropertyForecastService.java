@@ -4,69 +4,43 @@ import apidemo.models.ForecastRequest;
 import apidemo.models.ForecastResponse;
 import apidemo.models.PricePrediction;
 import apidemo.utils.PropertyFieldConverter;
+import jakarta.annotation.PostConstruct;
 import apidemo.utils.LogTransform;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.EvaluatorUtil;
 import org.jpmml.evaluator.LoadingModelEvaluatorBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.*;
 
 @Service
 public class PropertyForecastService {
-  private static final Logger logger = LoggerFactory.getLogger(PropertyForecastService.class);
+
+  private static final String MODEL_FILENAME = "RF_forecast_model.pmml";
 
   private Evaluator modelEvaluator;
   private final LogTransform logTransform = new LogTransform();
 
-  @Value("${model.volume.folder:/tmp/models/}")
-  private String modelFolder;
-  @Value("${model.forecast.url}")
-  private String modelUrl;
-  @Value("${model.forecast.filename:RF_forecast_model.pmml}")
-  private String modelFilename;
-
   @PostConstruct
   public void init() {
     try {
-      if (!modelFolder.endsWith("/")) {
-        modelFolder += "/";
-      }
-      String modelLocalPath = modelFolder + modelFilename;
-      File modelFile = new File(modelLocalPath);
-
-      if (!modelFile.exists()) {
-        logger.info("PMML model file not found locally, downloading from: {}", modelUrl);
-        modelFile.getParentFile().mkdirs();
-
-        try (InputStream in = new URL(modelUrl).openStream()) {
-          Files.copy(in, modelFile.toPath());
-        }
-
-        logger.info("PMML model downloaded to: {}", modelFile.getAbsolutePath());
-      } else {
-        logger.info("PMML model file found locally at: {}", modelFile.getAbsolutePath());
+      ClassPathResource resource = new ClassPathResource(MODEL_FILENAME);
+      if (!resource.exists()) {
+        throw new RuntimeException("PMML model file not found in resources: " + MODEL_FILENAME);
       }
 
-      modelEvaluator = new LoadingModelEvaluatorBuilder()
-          .load(modelFile)
-          .build();
+      try (InputStream modelStream = resource.getInputStream()) {
+        modelEvaluator = new LoadingModelEvaluatorBuilder()
+            .load(modelStream)
+            .build();
 
-      modelEvaluator.verify();
-
-      logger.info("PMML model loaded successfully");
+        modelEvaluator.verify();
+      }
 
     } catch (Exception ex) {
-      logger.error("Initialization of PropertyForecastService failed", ex);
       throw new RuntimeException(ex);
     }
   }

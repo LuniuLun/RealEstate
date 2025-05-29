@@ -5,32 +5,19 @@ import apidemo.models.ToxicityResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
 public class ToxicContentDetectionService {
-  private static final Logger logger = LoggerFactory.getLogger(ToxicContentDetectionService.class);
 
-  @Value("${model.volume.folder:/resources/}")
-  private String modelFolder;
-  @Value("${model.toxicity.filename:}")
-  private String modelFilename;
-  @Value("${tokenizer.toxicity.filename:}")
-  private String tokenizerFilename;
-  @Value("${model.toxicity.url:}")
-  private String modelUrl;
-  @Value("${tokenizer.toxicity.url:}")
-  private String tokenizerUrl;
+  private static final String MODEL_FILENAME = "toxicity_detection_model.onnx";
+  private static final String TOKENIZER_FILENAME = "tokenizer.json";
 
   private OrtEnvironment environment;
   private OrtSession session;
@@ -49,58 +36,25 @@ public class ToxicContentDetectionService {
   @PostConstruct
   public void init() throws Exception {
     environment = OrtEnvironment.getEnvironment();
-    byte[] modelBytes;
 
-    if (modelFolder != null && !modelFolder.isBlank() && modelFilename != null && !modelFilename.isBlank()) {
-      Path modelPath = Paths.get(modelFolder, modelFilename);
-      if (Files.exists(modelPath)) {
-        modelBytes = Files.readAllBytes(modelPath);
-        logger.info("Loaded model from local path: {}", modelPath);
-      } else if (modelUrl != null && !modelUrl.isBlank()) {
-        logger.info("Model file not found locally, downloading from URL: {}", modelUrl);
-        modelBytes = downloadFileBytes(modelUrl);
-        Files.createDirectories(modelPath.getParent());
-        Files.write(modelPath, modelBytes);
-      } else {
-        throw new IOException("Model file not found locally and no valid URL provided");
-      }
-    } else if (modelUrl != null && !modelUrl.isBlank()) {
-      // Không có local info, thử download
-      logger.info("Downloading model from URL: {}", modelUrl);
-      modelBytes = downloadFileBytes(modelUrl);
-    } else {
-      throw new IOException("No valid model source specified (local or URL)");
+    // Load model from resources
+    ClassPathResource modelResource = new ClassPathResource(MODEL_FILENAME);
+    if (!modelResource.exists()) {
+      throw new IOException("Resource file not found: " + MODEL_FILENAME);
     }
-
+    byte[] modelBytes;
+    try (InputStream modelStream = modelResource.getInputStream()) {
+      modelBytes = modelStream.readAllBytes();
+    }
     session = environment.createSession(modelBytes, new OrtSession.SessionOptions());
 
-    // Load tokenizer stream với logic tương tự
-    InputStream tokenizerStream = null;
-
-    if (modelFolder != null && !modelFolder.isBlank() && tokenizerFilename != null && !tokenizerFilename.isBlank()) {
-      Path tokenizerPath = Paths.get(modelFolder, tokenizerFilename);
-
-      if (Files.exists(tokenizerPath)) {
-        tokenizerStream = Files.newInputStream(tokenizerPath);
-        logger.info("Loaded tokenizer from local path: {}", tokenizerPath);
-      } else if (tokenizerUrl != null && !tokenizerUrl.isBlank()) {
-        logger.info("Tokenizer file not found locally, downloading from URL: {}", tokenizerUrl);
-        byte[] tokenizerBytes = downloadFileBytes(tokenizerUrl);
-        Files.createDirectories(tokenizerPath.getParent());
-        Files.write(tokenizerPath, tokenizerBytes);
-        tokenizerStream = new ByteArrayInputStream(tokenizerBytes);
-      } else {
-        throw new IOException("Tokenizer file not found locally and no valid URL provided");
-      }
-    } else if (tokenizerUrl != null && !tokenizerUrl.isBlank()) {
-      logger.info("Downloading tokenizer from URL: {}", tokenizerUrl);
-      tokenizerStream = downloadFileStream(tokenizerUrl); // không có tên file nên không lưu
-    } else {
-      throw new IOException("No valid tokenizer source specified (local or URL)");
+    // Load tokenizer from resources
+    ClassPathResource tokenizerResource = new ClassPathResource(TOKENIZER_FILENAME);
+    if (!tokenizerResource.exists()) {
+      throw new IOException("Resource file not found: " + TOKENIZER_FILENAME);
     }
-
-    try (InputStream stream = tokenizerStream) {
-      loadBPETokenizer(stream);
+    try (InputStream tokenizerStream = tokenizerResource.getInputStream()) {
+      loadBPETokenizer(tokenizerStream);
     }
   }
 
@@ -128,7 +82,6 @@ public class ToxicContentDetectionService {
           vocabList.set(entry.getValue(), entry.getKey());
         }
       }
-      logger.info("Loaded BPE vocabulary with {} tokens", vocab.size());
     } else {
       throw new IOException("Cannot extract vocabulary from tokenizer.json");
     }
@@ -144,21 +97,6 @@ public class ToxicContentDetectionService {
     padTokenId = vocab.getOrDefault("<pad>", 0);
     eosTokenId = vocab.getOrDefault("</s>", 1);
     unkTokenId = vocab.getOrDefault("<unk>", 2);
-
-    logger.info("BPE Tokenizer loaded successfully. PAD: {}, EOS: {}, UNK: {}",
-        padTokenId, eosTokenId, unkTokenId);
-  }
-
-  // Helper tải file về byte[]
-  private byte[] downloadFileBytes(String url) throws IOException {
-    try (InputStream in = new java.net.URL(url).openStream()) {
-      return in.readAllBytes();
-    }
-  }
-
-  // Helper tải file về InputStream
-  private InputStream downloadFileStream(String url) throws IOException {
-    return new java.net.URL(url).openStream();
   }
 
   private long[] encodeText(String text) {
@@ -170,13 +108,8 @@ public class ToxicContentDetectionService {
     // Step 2: Metaspace preprocessing - add prefix space and replace spaces with ▁
     String metaspaceText = METASPACE_CHAR + normalizedText.replace(" ", METASPACE_CHAR);
 
-    logger.debug("Original text: '{}'", text);
-    logger.debug("Metaspace text: '{}'", metaspaceText);
-
     // Step 3: Apply BPE tokenization
     List<String> tokens = bpeTokenize(metaspaceText);
-
-    logger.debug("BPE tokens: {}", tokens);
 
     // Step 4: Convert tokens to IDs
     for (String token : tokens) {
@@ -185,7 +118,6 @@ public class ToxicContentDetectionService {
         tokenIds.add(tokenId);
       } else {
         tokenIds.add(unkTokenId);
-        logger.debug("Unknown token: '{}'", token);
       }
     }
 
@@ -282,8 +214,6 @@ public class ToxicContentDetectionService {
   }
 
   public ToxicityResponse detectToxicity(String text) throws OrtException {
-    logger.info("Detecting toxicity for input text: {}", text);
-
     long[] inputIds = encodeText(text);
     long[] attentionMask = new long[inputIds.length];
 
@@ -291,10 +221,6 @@ public class ToxicContentDetectionService {
     for (int i = 0; i < inputIds.length; i++) {
       attentionMask[i] = inputIds[i] != padTokenId ? 1L : 0L;
     }
-
-    // Debug logging
-    logger.debug("Input IDs length: {}", inputIds.length);
-    logger.debug("First 20 tokens: {}", Arrays.toString(Arrays.copyOf(inputIds, Math.min(20, inputIds.length))));
 
     OnnxTensor inputIdsTensor = OnnxTensor.createTensor(environment, new long[][] { inputIds });
     OnnxTensor attentionMaskTensor = OnnxTensor.createTensor(environment, new long[][] { attentionMask });
@@ -307,10 +233,6 @@ public class ToxicContentDetectionService {
       float[][] logits = (float[][]) result.get(0).getValue();
       float[] probs = softmax(logits[0]);
 
-      // Debug logging
-      logger.debug("Raw logits: {}", Arrays.toString(logits[0]));
-      logger.debug("Probabilities: [NON-TOXIC: {}, TOXIC: {}]", probs[0], probs[1]);
-
       boolean isToxic = probs[1] > probs[0];
       double toxicScore = probs[1];
       double nonToxicScore = probs[0];
@@ -318,7 +240,6 @@ public class ToxicContentDetectionService {
           ? ToxicityResponse.ToxicityLabel.TOXIC
           : ToxicityResponse.ToxicityLabel.NON_TOXIC;
 
-      logger.info("Prediction: {} with score: {}", label, isToxic ? toxicScore : nonToxicScore);
       return new ToxicityResponse(isToxic, toxicScore, nonToxicScore, label);
 
     } finally {

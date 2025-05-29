@@ -1,86 +1,55 @@
 package apidemo.services;
 
 import ai.onnxruntime.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import apidemo.models.ImageClassificationResult;
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class NSFWImageClassifierService {
-  private static final Logger logger = LoggerFactory.getLogger(NSFWImageClassifierService.class);
 
   private static final int IMAGE_WIDTH = 256;
   private static final int IMAGE_HEIGHT = 256;
   private static final float SAFE_THRESHOLD = 0.8f;
 
+  private static final String MODEL_FILENAME = "image_classifier_model.onnx";
+
   private OrtEnvironment environment;
   private OrtSession session;
   private String inputName;
-
-  @Value("${model.volume.folder:/resources/}")
-  private String modelFolder;
-  @Value("${model.nsfw.url}")
-  private String modelUrl;
-  @Value("${model.nsfw.filename:image_classifier_model.onnx}")
-  private String modelFilename;
 
   @PostConstruct
   public void init() throws OrtException, IOException {
     try {
       environment = OrtEnvironment.getEnvironment();
 
-      // Build đường dẫn model file local dựa trên folder + filename
-      if (!modelFolder.endsWith("/")) {
-        modelFolder += "/";
-      }
-      String modelLocalPath = modelFolder + modelFilename;
-      File modelFile = new File(modelLocalPath);
-
-      // Nếu chưa có model thì tải về
-      if (!modelFile.exists()) {
-        logger.info("Model file not found locally, downloading from: {}", modelUrl);
-
-        // Tạo thư mục chứa model nếu chưa tồn tại
-        modelFile.getParentFile().mkdirs();
-
-        // Tải model từ URL và lưu vào thư mục mounted
-        try (InputStream in = new URL(modelUrl).openStream()) {
-          Files.copy(in, modelFile.toPath());
-        }
-
-        logger.info("Model downloaded to: {}", modelFile.getAbsolutePath());
-      } else {
-        logger.info("Model file found locally at: {}", modelFile.getAbsolutePath());
+      ClassPathResource resource = new ClassPathResource(MODEL_FILENAME);
+      if (!resource.exists()) {
+        throw new IOException("Resource file not found: " + MODEL_FILENAME);
       }
 
-      // Load model từ file local
-      byte[] modelBytes = Files.readAllBytes(modelFile.toPath());
+      byte[] modelBytes;
+      try (InputStream inputStream = resource.getInputStream()) {
+        modelBytes = inputStream.readAllBytes();
+      }
 
       OrtSession.SessionOptions sessionOptions = new OrtSession.SessionOptions();
       session = environment.createSession(modelBytes, sessionOptions);
 
       inputName = session.getInputNames().iterator().next();
 
-      logger.info("NSFW classifier model loaded successfully");
-
     } catch (Exception e) {
-      logger.error("Failed to load NSFW classifier model", e);
       throw e;
     }
   }
