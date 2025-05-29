@@ -174,9 +174,8 @@ export const fetchPersonalProperties = async (
       calledUrl.searchParams.append(property, value)
     }
 
-    calledUrl.searchParams.append('sortBy', sortBy)
+    calledUrl.searchParams.append('sortBy', sortBy || 'updatedAt')
     calledUrl.searchParams.append('typeOfSort', typeOfSort)
-
     if (personalPropertyFilterCriteria?.status) {
       calledUrl.searchParams.append('status', personalPropertyFilterCriteria.status)
     }
