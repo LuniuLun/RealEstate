@@ -121,7 +121,9 @@ export const fetchProperties = async (
     }
     console.log(calledUrl.toString())
 
-    const response = await fetch(calledUrl.toString())
+    const response = await fetch(calledUrl.toString(), {
+      referrerPolicy: 'unsafe-url'
+    })
 
     if (!response.ok) {
       return {
