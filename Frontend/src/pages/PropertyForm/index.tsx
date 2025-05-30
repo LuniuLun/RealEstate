@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { Flex, FormControl, Heading, Stack, Spinner, Text } from '@chakra-ui/react'
 import { CustomSelect, HouseForm, LandForm } from '@components'
 import { useParams } from 'react-router-dom'
-import { useQueryClient } from '@tanstack/react-query'
 import { useGetPropertyById } from '@hooks'
 
 const PropertyForm = () => {
   const { id } = useParams<{ id: string }>()
-  const queryClient = useQueryClient()
-  const { property, isLoading, isError } = useGetPropertyById(Number(id), queryClient, 'personalProperties')
+  const { property, isLoading, isError } = useGetPropertyById(Number(id), 'personalProperties')
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
 
   const CATEGORY = [
