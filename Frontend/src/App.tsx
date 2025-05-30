@@ -16,7 +16,6 @@ import Upgrade from '@pages/Upgrade'
 import TransactionHistory from '@pages/TransactionHistory'
 import AllPosts from '@pages/AllPosts'
 import SavedPost from '@pages/SavedPosts'
-import Forecast from '@pages/Forecast'
 
 function App() {
   const token = authStore((state) => state.token)
@@ -60,20 +59,6 @@ function App() {
           <Route path='my-posts' element={<MyPosts />} />
           <Route path='transactions' element={<TransactionHistory />} />
           <Route path='saved-posts' element={<SavedPost />} />
-
-          <Route
-            element={
-              <ProtectedRoute
-                isAllowed={!!token}
-                userRoles={token?.user?.role?.name}
-                requiredRole={[RoleName.BROKER, RoleName.ADMIN]}
-                redirectPath='/'
-              />
-            }
-          >
-            <Route path='forecast' element={<Forecast />} />
-          </Route>
-
           <Route
             element={
               <ProtectedRoute
