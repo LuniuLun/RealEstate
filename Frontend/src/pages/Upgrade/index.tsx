@@ -35,10 +35,13 @@ const Upgrade = () => {
     e.preventDefault()
     if (!selectedPlan) return
 
+    const currentOrigin = window.location.origin
+    const returnUrl = `${currentOrigin}/personal/transactions`
+
     paymentMutation.mutate({
       amount: selectedPlan.price.amount,
       orderInfo: `Mua gói ${selectedPlan.title}`,
-      vnpReturnUrl: 'http://localhost:5173/personal/transactions'
+      vnpReturnUrl: returnUrl
     })
   }
 
