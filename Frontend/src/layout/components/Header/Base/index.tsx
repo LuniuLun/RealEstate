@@ -2,11 +2,8 @@ import { Flex } from '@chakra-ui/react'
 import { LogoIcon } from '@assets/icons'
 import { HeaderActions, Logo, NavItem } from '@components'
 import { memo } from 'react'
-import { RoleName } from '@type/models'
-import useAuthStore from '@stores/Authentication'
 
 const BaseHeader = () => {
-  const { token } = useAuthStore()
   return (
     <Flex
       as='nav'
@@ -23,9 +20,7 @@ const BaseHeader = () => {
       </Flex>
       <Flex>
         <NavItem title='Trang chủ' to='/' isActive={false} />
-        {token?.user.role.name !== RoleName.ADMIN && (
-          <NavItem title='Bài đăng' to='/property-listings' isActive={false} />
-        )}
+        <NavItem title='Bài đăng' to='/property-listings' isActive={false} />
       </Flex>
       <HeaderActions />
     </Flex>

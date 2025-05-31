@@ -28,7 +28,7 @@ const DetailPost = () => {
   const handleViewModeChange = useCallback((mode: ViewMode) => {
     setViewMode(mode)
   }, [])
-  const isOverUser = token && token.user && token.user.role ? token?.user?.role.name === RoleName.BROKER : false
+  const isOverUser = !(token && token.user && token.user.role && token.user.role.name === RoleName.CUSTOMER)
 
   const handleEstimatePrice = () => {
     if (!property) return
@@ -120,9 +120,8 @@ const DetailPost = () => {
                 sx={{ width: '100%' }}
                 borderRadius={'md'}
                 options={PERIOD_OPTION}
-                placeholder='Khoaảng thời gian'
+                placeholder='Khoảng thời gian'
               />
-
               <Button onClick={handleForecastPrice} isDisabled={!property || isForecastLoading}>
                 Dự đoán
               </Button>
