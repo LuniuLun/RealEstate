@@ -8,6 +8,8 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -34,27 +36,47 @@ public class ToxicContentDetectionService {
   private static final Pattern MULTIPLE_SPACES = Pattern.compile(" {2,}");
 
   @PostConstruct
-  public void init() throws Exception {
-    environment = OrtEnvironment.getEnvironment();
+  public void init() {
+    try {
+      environment = OrtEnvironment.getEnvironment();
 
-    // Load model from resources
-    ClassPathResource modelResource = new ClassPathResource(MODEL_FILENAME);
-    if (!modelResource.exists()) {
-      throw new IOException("Resource file not found: " + MODEL_FILENAME);
-    }
-    byte[] modelBytes;
-    try (InputStream modelStream = modelResource.getInputStream()) {
-      modelBytes = modelStream.readAllBytes();
-    }
-    session = environment.createSession(modelBytes, new OrtSession.SessionOptions());
+      // Load ONNX model trực tiếp từ InputStream thay vì load toàn bộ vào memory
+      ClassPathResource modelResource = new ClassPathResource(MODEL_FILENAME);
+      if (!modelResource.exists()) {
+        throw new RuntimeException("ONNX model file not found in resources: " + MODEL_FILENAME);
+      }
 
-    // Load tokenizer from resources
-    ClassPathResource tokenizerResource = new ClassPathResource(TOKENIZER_FILENAME);
-    if (!tokenizerResource.exists()) {
-      throw new IOException("Resource file not found: " + TOKENIZER_FILENAME);
-    }
-    try (InputStream tokenizerStream = tokenizerResource.getInputStream()) {
-      loadBPETokenizer(tokenizerStream);
+      // Sử dụng temporary file thay vì ByteArrayOutputStream để tránh OOM
+      try (InputStream modelStream = modelResource.getInputStream()) {
+        File tempFile = File.createTempFile("onnx_model", ".onnx");
+        tempFile.deleteOnExit();
+
+        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+          byte[] buffer = new byte[8192];
+          int bytesRead;
+          while ((bytesRead = modelStream.read(buffer)) != -1) {
+            fos.write(buffer, 0, bytesRead);
+          }
+        }
+
+        session = environment.createSession(tempFile.getAbsolutePath(), new OrtSession.SessionOptions());
+      }
+
+      ClassPathResource tokenizerResource = new ClassPathResource(TOKENIZER_FILENAME);
+      if (!tokenizerResource.exists()) {
+        throw new RuntimeException("Tokenizer file not found in resources: " + TOKENIZER_FILENAME);
+      }
+
+      try (InputStream tokenizerStream = tokenizerResource.getInputStream()) {
+        loadBPETokenizer(tokenizerStream);
+      }
+
+    } catch (IOException ex) {
+      throw new RuntimeException("Failed to load model or tokenizer: " + ex.getMessage(), ex);
+    } catch (OrtException ex) {
+      throw new RuntimeException("ONNX Runtime initialization failed: " + ex.getMessage(), ex);
+    } catch (Exception ex) {
+      throw new RuntimeException("Unexpected error initializing ToxicContentDetectionService: " + ex.getMessage(), ex);
     }
   }
 
