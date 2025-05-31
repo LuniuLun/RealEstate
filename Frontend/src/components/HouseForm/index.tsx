@@ -100,7 +100,8 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
     isError: isGetCoordinatesError,
     isLoading: isGetCoordinatesLoading
   } = useGetCoordinates()
-  const isOverUser = token && token.user && token.user.role ? token?.user?.role.name === RoleName.BROKER : false
+  const role = token?.user?.role?.name
+  const isOverUser = role === RoleName.BROKER || role === RoleName.ADMIN
   const handleViewModeChange = useCallback((mode: ViewMode) => {
     setViewMode(mode)
   }, [])

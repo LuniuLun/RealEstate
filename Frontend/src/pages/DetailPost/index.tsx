@@ -22,13 +22,16 @@ const DetailPost = () => {
   const [viewMode, setViewMode] = useState<'weekly' | 'monthly'>('weekly')
   const { forecastPriceMutation: forecastMutation, isLoading: isForecastLoading } = useForecastPrice()
   const { forecastPriceMutation: estimateMutation, isLoading: isEstimateLoading } = useForecastPrice()
-  const { data, minY, maxY } = useTransformForecastedData({ forecastData, viewMode })
+  const { data, minY, maxY } = useTransformForecastedData({ forecastData, area: property?.area, viewMode })
   const { showToast } = useCustomToast()
 
   const handleViewModeChange = useCallback((mode: ViewMode) => {
     setViewMode(mode)
   }, [])
-  const isOverUser = !(token && token.user && token.user.role && token.user.role.name === RoleName.CUSTOMER)
+  const role = token?.user?.role?.name
+  const isOverUser = role === RoleName.BROKER || role === RoleName.ADMIN
+
+  console.log(isOverUser)
 
   const handleEstimatePrice = () => {
     if (!property) return

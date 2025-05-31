@@ -91,7 +91,8 @@ const LandForm = ({ initialData }: ILandFormProps) => {
     isError: isGetCoordinatesError,
     isLoading: isGetCoordinatesLoading
   } = useGetCoordinates()
-  const isOverUser = !(token && token.user && token.user.role && token.user.role.name === RoleName.CUSTOMER)
+  const role = token?.user?.role?.name
+  const isOverUser = role === RoleName.BROKER || role === RoleName.ADMIN
   const handleViewModeChange = useCallback((mode: ViewMode) => {
     setViewMode(mode)
   }, [])
