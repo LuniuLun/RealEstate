@@ -94,7 +94,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
     isError: isGetCoordinatesError,
     isLoading: isGetCoordinatesLoading
   } = useGetCoordinates()
-  const isOverUser = token && token.user && token.user.role ? token?.user?.role.name === RoleName.BROKER : false
+  const isOverUser = !(token && token.user && token.user.role && token.user.role.name === RoleName.CUSTOMER)
   const handleViewModeChange = useCallback((mode: ViewMode) => {
     setViewMode(mode)
   }, [])
@@ -544,7 +544,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
             sx={{ width: '100%' }}
             borderRadius={'md'}
             options={PERIOD_OPTION}
-            placeholder='Khoaảng thời gian'
+            placeholder='Khoảng thời gian'
           />
 
           <Button

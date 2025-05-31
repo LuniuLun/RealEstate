@@ -461,7 +461,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
             sx={{ width: '100%' }}
             borderRadius={'md'}
             options={PERIOD_OPTION}
-            placeholder='Khoaảng thời gian'
+            placeholder='Khoảng thời gian'
           />
 
           <Button
