@@ -76,6 +76,12 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
         }
   })
 
+  const region = watch('region')
+  const districtName = watch('districtName')
+  const wardName = watch('wardName')
+  const length = watch('length')
+  const width = watch('width')
+  const area = watch('area')
   const [viewMode, setViewMode] = useState<'weekly' | 'monthly'>('weekly')
   const [imagesValid, setImagesValid] = useState<boolean>(true)
   const [forecastData, setForecastData] = useState<ForecastResponse | null>(null)
@@ -86,7 +92,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
   const { updatePropertyMutation, isLoading: isUpdating } = useUpdateProperty()
   const { forecastPriceMutation: forecastMutation, isLoading: isForecastLoading } = useForecastPrice()
   const { forecastPriceMutation: estimateMutation, isLoading: isEstimateLoading } = useForecastPrice()
-  const { data, minY, maxY } = useTransformForecastedData({ forecastData, viewMode })
+  const { data, minY, maxY } = useTransformForecastedData({ forecastData, viewMode, area })
   const { showToast } = useCustomToast()
   const { transformHouseData, addPropertyMutation, isLoading: isAdding } = useAddProperty()
   const {
@@ -94,15 +100,10 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
     isError: isGetCoordinatesError,
     isLoading: isGetCoordinatesLoading
   } = useGetCoordinates()
-  const isOverUser = !(token && token.user && token.user.role && token.user.role.name === RoleName.CUSTOMER)
+  const isOverUser = token && token.user && token.user.role ? token?.user?.role.name === RoleName.BROKER : false
   const handleViewModeChange = useCallback((mode: ViewMode) => {
     setViewMode(mode)
   }, [])
-  const region = watch('region')
-  const districtName = watch('districtName')
-  const wardName = watch('wardName')
-  const length = watch('length')
-  const width = watch('width')
 
   useEffect(() => {
     if (region && districtName && wardName) {
@@ -199,6 +200,9 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
       {
         onSuccess: (response) => {
           if (response.data) {
+            response.data.predictions.forEach((prediction) => {
+              prediction.predictedPrice = prediction.predictedPrice * area
+            })
             setForecastData(response.data)
           }
         }
@@ -544,7 +548,7 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
             sx={{ width: '100%' }}
             borderRadius={'md'}
             options={PERIOD_OPTION}
-            placeholder='Khoảng thời gian'
+            placeholder='Khoaảng thời gian'
           />
 
           <Button

@@ -67,6 +67,12 @@ const LandForm = ({ initialData }: ILandFormProps) => {
           streetName: ''
         }
   })
+  const area = watch('area')
+  const region = watch('region')
+  const districtName = watch('districtName')
+  const wardName = watch('wardName')
+  const length = watch('length')
+  const width = watch('width')
   const [estimatePrice, setEstimatePrice] = useState<number>()
   const [imagesValid, setImagesValid] = useState<boolean>(true)
   const [forecastData, setForecastData] = useState<ForecastResponse | null>(null)
@@ -79,7 +85,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
   const { forecastPriceMutation: forecastMutation, isLoading: isForecastLoading } = useForecastPrice()
   const { forecastPriceMutation: estimateMutation, isLoading: isEstimateLoading } = useForecastPrice()
   const { convertLandData } = useConvertPropertyData()
-  const { data, minY, maxY } = useTransformForecastedData({ forecastData, viewMode })
+  const { data, minY, maxY } = useTransformForecastedData({ forecastData, viewMode, area })
   const {
     getCoordinatesMutation,
     isError: isGetCoordinatesError,
@@ -89,11 +95,6 @@ const LandForm = ({ initialData }: ILandFormProps) => {
   const handleViewModeChange = useCallback((mode: ViewMode) => {
     setViewMode(mode)
   }, [])
-  const region = watch('region')
-  const districtName = watch('districtName')
-  const wardName = watch('wardName')
-  const length = watch('length')
-  const width = watch('width')
 
   useEffect(() => {
     if (width && length) {
@@ -461,7 +462,7 @@ const LandForm = ({ initialData }: ILandFormProps) => {
             sx={{ width: '100%' }}
             borderRadius={'md'}
             options={PERIOD_OPTION}
-            placeholder='Khoảng thời gian'
+            placeholder='Khoaảng thời gian'
           />
 
           <Button

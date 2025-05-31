@@ -32,6 +32,10 @@ const ForecastChart = ({
   viewMode,
   onViewModeChange
 }: ForecastChartProps) => {
+  const yMargin = (maxY - minY) * 0.3
+  const yMin = Math.max(0, minY - yMargin)
+  const yMax = maxY + yMargin
+
   return (
     <>
       <CardHeader borderBottom='1px solid' borderColor='brand.sliver'>
@@ -67,16 +71,16 @@ const ForecastChart = ({
               />
 
               <YAxis
-                domain={[Math.floor(minY - 0.5), Math.ceil(maxY + 0.5)]}
+                domain={[yMin, yMax]}
                 width={100}
-                tickFormatter={(value) => `${formatCurrency(value)} Triệu/m²`}
+                tickFormatter={(value) => `${formatCurrency(value)} Tỷ`}
                 tick={{ fill: colors.brand.blackTextTertiary }}
                 tickLine={{ stroke: colors.brand.blackTextTertiary }}
                 axisLine={{ stroke: colors.brand.blackTextTertiary }}
               />
 
               <Tooltip
-                formatter={(value) => `${formatCurrency(Number(value))} Triệu/m²`}
+                formatter={(value) => `${formatCurrency(Number(value))} Tỷ`}
                 contentStyle={{
                   backgroundColor: colors.brand.secondary,
                   color: 'brand.blackTextPrimary',

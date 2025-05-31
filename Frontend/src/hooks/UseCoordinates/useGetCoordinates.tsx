@@ -17,7 +17,7 @@ export const useGetCoordinates = (): UseGetCoordinatesReturn => {
   const getCoordinatesMutation = useMutation({
     mutationFn: getCoordinates,
     onSuccess: (response) => {
-      if (response && response.status === 'error') {
+      if (response && response.status === 'success') {
         showToast({
           title: response.message,
           status: response.status

@@ -6,6 +6,7 @@ export type ViewMode = 'weekly' | 'monthly'
 
 interface UseForecastDataProps {
   forecastData: ForecastResponse | null
+  area?: number
   viewMode: ViewMode
 }
 
@@ -14,7 +15,7 @@ interface ForecastDataItem {
   'Giá dự đoán': number
 }
 
-const useTransformForecastedData = ({ forecastData, viewMode }: UseForecastDataProps) => {
+const useTransformForecastedData = ({ forecastData, viewMode, area = 1 }: UseForecastDataProps) => {
   const formatWeeklyChartData = (predictions: PricePrediction[]): ForecastDataItem[] => {
     const weeklyData: Record<
       string,
@@ -44,10 +45,15 @@ const useTransformForecastedData = ({ forecastData, viewMode }: UseForecastDataP
       weeklyData[weekKey].count += 1
     })
 
-    return Object.entries(weeklyData).map(([date, data]) => ({
-      date,
-      'Giá dự đoán': Math.round(data.predictedSum / data.count)
-    }))
+    return Object.entries(weeklyData).map(([date, data]) => {
+      const averagePrice = data.predictedSum / data.count
+      const finalPrice = area > 1 ? (averagePrice * area) / 1000 : averagePrice
+
+      return {
+        date,
+        'Giá dự đoán': Math.round(finalPrice * 100) / 100
+      }
+    })
   }
 
   const formatMonthlyChartData = (predictions: PricePrediction[]): ForecastDataItem[] => {
@@ -74,10 +80,15 @@ const useTransformForecastedData = ({ forecastData, viewMode }: UseForecastDataP
       monthlyData[monthKey].count += 1
     })
 
-    return Object.entries(monthlyData).map(([date, data]) => ({
-      date,
-      'Giá dự đoán': Math.round(data.predictedSum / data.count)
-    }))
+    return Object.entries(monthlyData).map(([date, data]) => {
+      const averagePrice = data.predictedSum / data.count
+      const finalPrice = area > 1 ? (averagePrice * area) / 1000 : averagePrice
+
+      return {
+        date,
+        'Giá dự đoán': Math.round(finalPrice * 100) / 100
+      }
+    })
   }
 
   const data = useMemo(() => {
@@ -85,7 +96,7 @@ const useTransformForecastedData = ({ forecastData, viewMode }: UseForecastDataP
     return viewMode === 'weekly'
       ? formatWeeklyChartData(forecastData.predictions)
       : formatMonthlyChartData(forecastData.predictions)
-  }, [forecastData, viewMode])
+  }, [forecastData, viewMode, area])
 
   const { minY, maxY } = useMemo(() => {
     if (data.length === 0) return { minY: 0, maxY: 0 }
@@ -100,7 +111,8 @@ const useTransformForecastedData = ({ forecastData, viewMode }: UseForecastDataP
   return {
     data,
     minY,
-    maxY
+    maxY,
+    unit: area > 1 ? 'tỷ đồng' : 'triệu đồng/m²'
   }
 }
 
