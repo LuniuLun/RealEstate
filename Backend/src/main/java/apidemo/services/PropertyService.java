@@ -217,7 +217,6 @@ public class PropertyService {
 
   @Transactional
   public Property updateProperty(int propertyId, Property propertyDetails) {
-    System.out.println("propertyId: " + propertyId);
     Property property = getPropertyById(propertyId);
     validatePropertyReferences(propertyDetails);
     validateProperty(propertyDetails);

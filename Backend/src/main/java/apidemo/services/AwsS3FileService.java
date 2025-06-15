@@ -45,8 +45,6 @@ public class AwsS3FileService {
       // Generate public URL
       String imageUrl = awsS3Config.getBaseUrl() + "/" + filePath;
 
-      System.out.println("Uploaded Successfully. Image URL: " + imageUrl);
-
       return imageUrl;
     } catch (IOException e) {
       e.printStackTrace();
@@ -118,10 +116,8 @@ public class AwsS3FileService {
             .build();
 
         s3Client.deleteObject(deleteObjectRequest);
-        System.out.println("Deleted: " + s3Object.key());
       }
 
-      System.out.println("All files in folder '" + awsS3Config.getFolderName() + "' have been deleted.");
     } catch (Exception e) {
       e.printStackTrace();
       throw new RuntimeException("Failed to delete all files: " + e.getMessage());
@@ -144,10 +140,8 @@ public class AwsS3FileService {
 
       s3Client.deleteObject(deleteObjectRequest);
 
-      System.out.println("Successfully deleted image: " + filePath);
       return true;
     } catch (Exception e) {
-      System.err.println("Failed to delete file: " + imageUrl);
       e.printStackTrace();
       throw new RuntimeException("Failed to delete file: " + e.getMessage());
     }
