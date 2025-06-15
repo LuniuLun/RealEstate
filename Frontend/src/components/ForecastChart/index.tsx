@@ -23,15 +23,7 @@ interface ForecastChartProps {
   onViewModeChange: (mode: ViewMode) => void
 }
 
-const ForecastChart = ({
-  district,
-  periodDays,
-  chartData,
-  minY,
-  maxY,
-  viewMode,
-  onViewModeChange
-}: ForecastChartProps) => {
+const ForecastChart = ({ periodDays, chartData, minY, maxY, viewMode, onViewModeChange }: ForecastChartProps) => {
   const yMargin = (maxY - minY) * 0.3
   const yMin = Math.max(0, minY - yMargin)
   const yMax = maxY + yMargin
@@ -42,7 +34,7 @@ const ForecastChart = ({
         <Flex justifyContent='space-between' alignItems='center'>
           <Box>
             <Heading size='md' color='brand.blackTextPrimary'>
-              Kết Quả Dự Báo - {district}
+              Kết Quả Dự Báo
             </Heading>
             <Text color='brand.blackTextSecondary'>Dự báo trong {periodDays} ngày tới</Text>
           </Box>
