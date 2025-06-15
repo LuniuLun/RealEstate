@@ -33,7 +33,6 @@ const useToggleFavouriteProperty = (queryKey: unknown[]): UseToggleFavouriteProp
           status: response.status
         })
       }
-      console.log(variables.propertyId)
 
       storeFavouritePropertyIds(toggleIdInArray(favouritePropertyIds, variables.propertyId))
       updateInfiniteCache(queryClient, queryKey, (page) => {

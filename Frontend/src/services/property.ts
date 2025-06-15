@@ -119,7 +119,6 @@ export const fetchProperties = async (
     if (!user || !(user.role.name === RoleName.ADMIN)) {
       calledUrl.searchParams.append('status', 'APPROVAL')
     }
-    console.log(calledUrl.toString())
 
     const response = await fetch(calledUrl.toString())
 

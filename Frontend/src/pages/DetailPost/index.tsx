@@ -31,8 +31,6 @@ const DetailPost = () => {
   const role = token?.user?.role?.name
   const isOverUser = role === RoleName.BROKER || role === RoleName.ADMIN
 
-  console.log(isOverUser)
-
   const handleEstimatePrice = () => {
     if (!property) return
     estimateMutation.mutate(

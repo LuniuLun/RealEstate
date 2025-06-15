@@ -18,7 +18,6 @@ export const getVNPayUrl = async (requestPayment: IPaymentRequest): Promise<IApi
       body: JSON.stringify(requestPayment)
     })
     const data = await response.json()
-    console.log(data)
 
     if (!response.ok) {
       return {

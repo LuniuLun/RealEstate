@@ -137,7 +137,6 @@ const HouseForm = ({ initialData }: IHouseFormProps) => {
           if (response?.data?.lat && response?.data?.lon) {
             setValue('latitude', response.data.lat)
             setValue('longitude', response.data.lon)
-            console.log(response.data.lat, response.data.lon)
           }
         }
       })

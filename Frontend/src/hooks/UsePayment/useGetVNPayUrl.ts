@@ -7,8 +7,6 @@ const useVNPayMutation = () => {
   const paymentMutation = useMutation({
     mutationFn: getVNPayUrl,
     onSuccess: (response) => {
-      console.log(response)
-
       if (response.status === 'success' && response.data?.paymentUrl) {
         window.location.href = response.data.paymentUrl
       }

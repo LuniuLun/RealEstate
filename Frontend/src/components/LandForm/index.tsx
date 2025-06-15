@@ -128,7 +128,6 @@ const LandForm = ({ initialData }: ILandFormProps) => {
           if (response?.data?.lat && response?.data?.lon) {
             setValue('latitude', response.data.lat)
             setValue('longitude', response.data.lon)
-            console.log(response.data.lat, response.data.lon)
           }
         }
       })
@@ -171,7 +170,6 @@ const LandForm = ({ initialData }: ILandFormProps) => {
 
   const handleEstimatePropertyPrice = (data: TLandFormData) => {
     const landFormData = convertLandData(data)
-    console.log(landFormData)
 
     if (!landFormData) {
       return
