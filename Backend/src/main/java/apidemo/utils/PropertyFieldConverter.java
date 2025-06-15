@@ -69,7 +69,7 @@ public class PropertyFieldConverter {
       Integer directionId = property.getDirection().intValue();
       String directionName = getDirectionName(directionId);
       if (directionName != null) {
-        mlModelInput.put("House Direction_" + directionName, 1.0);
+        mlModelInput.put("House_Direction_" + directionName, 1.0);
       }
     }
 
@@ -96,7 +96,7 @@ public class PropertyFieldConverter {
       if (furnishedStatus != null) {
         String statusName = getFurnishedStatusName(furnishedStatus.getId());
         if (statusName != null) {
-          mlModelInput.put("Furnishing Sell_" + statusName, 1.0);
+          mlModelInput.put("Furnishing_Sell_" + statusName, 1.0);
         }
       }
     } else {
@@ -105,12 +105,12 @@ public class PropertyFieldConverter {
     }
 
     // Set default values for land characteristics
-    mlModelInput.put("1 Part Residential", 0.0);
-    mlModelInput.put("Back Expansion", 0.0);
-    mlModelInput.put("Car Alley", 0.0);
+    mlModelInput.put("1_Part_Residential", 0.0);
+    mlModelInput.put("Back_Expansion", 0.0);
+    mlModelInput.put("Car_Alley", 0.0);
     mlModelInput.put("Frontage", 0.0);
-    mlModelInput.put("No Residential", 0.0);
-    mlModelInput.put("All Residential", 0.0);
+    mlModelInput.put("No_Residential", 0.0);
+    mlModelInput.put("All_Residential", 0.0);
 
     // Land type (one-hot)
     initializeLandTypeFields(mlModelInput);
@@ -123,7 +123,7 @@ public class PropertyFieldConverter {
       if (landType != null) {
         String landTypeName = getLandTypeName(landType.getId());
         if (landTypeName != null) {
-          mlModelInput.put("Land Type_" + landTypeName, 1.0);
+          mlModelInput.put("Land_Type_" + landTypeName, 1.0);
         }
       }
 
@@ -136,22 +136,22 @@ public class PropertyFieldConverter {
             String characteristicName = characteristic.getName();
             switch (characteristicName) {
               case "PARTIAL_RESIDENTIAL":
-                mlModelInput.put("1 Part Residential", 1.0);
+                mlModelInput.put("1_Part_Residential", 1.0);
                 break;
               case "BACK_EXPANSION":
-                mlModelInput.put("Back Expansion", 1.0);
+                mlModelInput.put("Back_Expansion", 1.0);
                 break;
               case "CAR_ALLEY":
-                mlModelInput.put("Car Alley", 1.0);
+                mlModelInput.put("Car_Alley", 1.0);
                 break;
               case "FRONTAGE":
                 mlModelInput.put("Frontage", 1.0);
                 break;
               case "NO_RESIDENTIAL":
-                mlModelInput.put("No Residential", 1.0);
+                mlModelInput.put("No_Residential", 1.0);
                 break;
               case "ALL_RESIDENTIAL":
-                mlModelInput.put("All Residential", 1.0);
+                mlModelInput.put("All_Residential", 1.0);
                 break;
             }
           }
@@ -190,7 +190,7 @@ public class PropertyFieldConverter {
         "SOUTHEAST", "SOUTHWEST", "NORTHEAST", "NORTHWEST" };
 
     for (String direction : directions) {
-      data.put("House Direction_" + direction, 0.0);
+      data.put("House_Direction_" + direction, 0.0);
     }
   }
 
@@ -203,7 +203,7 @@ public class PropertyFieldConverter {
     String[] statuses = { "HIGH_END_FURNITURE", "FULLY_FURNISHED", "BASIC_FINISHING", "RAW_HANDOVER" };
 
     for (String status : statuses) {
-      data.put("Furnishing Sell_" + status, 0.0);
+      data.put("Furnishing_Sell_" + status, 0.0);
     }
   }
 
@@ -216,7 +216,7 @@ public class PropertyFieldConverter {
     String[] landTypes = { "RESIDENTIAL_LAND", "PROJECT_LAND", "INDUSTRIAL_LAND", "AGRICULTURAL_LAND" };
 
     for (String landType : landTypes) {
-      data.put("Land Type_" + landType, 0.0);
+      data.put("Land_Type_" + landType, 0.0);
     }
   }
 

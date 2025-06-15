@@ -20,7 +20,7 @@ import java.util.*;
 @Service
 public class PropertyForecastService {
 
-  private static final String MODEL_FILENAME = "RF_forecast_model.pmml";
+  private static final String MODEL_FILENAME = "forecast_model.pmml";
 
   private Evaluator modelEvaluator;
   private final FeatureRootTransform rootTransform = new FeatureRootTransform();
