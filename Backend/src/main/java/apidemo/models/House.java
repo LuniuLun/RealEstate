@@ -37,7 +37,7 @@ public class House {
   @JoinColumn(name = "house_type_id", nullable = false)
   private HouseType houseType;
 
-  @OneToMany(mappedBy = "house")
+  @OneToMany(mappedBy = "house", cascade = CascadeType.ALL)
   private Set<HouseCharacteristicMapping> houseCharacteristicMappings;
 
   // Getters and Setters
