@@ -6,5 +6,6 @@
 *.onnx
 *.pt
 
-/LandValuation
-/HouseValuation
+/RealEstatePrediction/PredictLightGBM.ipynb
+/RealEstatePrediction/PredictRandomForest.ipynb
+/RealEstatePrediction/PredictXGBoost.ipynb
