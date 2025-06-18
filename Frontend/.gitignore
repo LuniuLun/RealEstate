@@ -146,3 +146,5 @@ dist
 
 /public
 *storybook.log
+
+.vite

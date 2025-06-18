@@ -11,10 +11,12 @@ import apidemo.models.LoginRequest;
 import apidemo.models.LogoutRequest;
 import apidemo.models.Token;
 import apidemo.models.User;
+import apidemo.services.FavouritePropertyService;
 import apidemo.services.JwtService;
 import apidemo.services.UserService;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,28 +26,43 @@ public class AuthController {
   private final UserService userService;
   private final JwtService jwtService;
   private final PasswordEncoder passwordEncoder;
+  private final FavouritePropertyService favouritePropertyService;
 
-  public AuthController(UserService userService, JwtService jwtService, PasswordEncoder passwordEncoder) {
+  public AuthController(UserService userService, JwtService jwtService, PasswordEncoder passwordEncoder,
+      FavouritePropertyService favouritePropertyService) {
     this.userService = userService;
     this.jwtService = jwtService;
     this.passwordEncoder = passwordEncoder;
+    this.favouritePropertyService = favouritePropertyService;
   }
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
     try {
-      User user = userService.getUserByUsername(loginRequest.getUsername());
-
-      if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+      User user = userService.getUserByPhone(loginRequest.getPhone());
+      if (user == null) {
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "Invalid username or password");
+        errorResponse.put("message", "Số điện thoại không tồn tại");
         return ResponseEntity.badRequest().body(errorResponse);
       }
-
+      if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Mật khẩu hoặc số điện thoại không đúng");
+        return ResponseEntity.badRequest().body(errorResponse);
+      }
+      if (!user.getIsEnabled()) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Tài khoản của bạn đã bị khoá, vui lồng liên hệ với đội ngũ hỗ trợ");
+        return ResponseEntity.badRequest().body(errorResponse);
+      }
       Token token = jwtService.generateToken(user);
+
+      List<Integer> favouritePropertyIds = favouritePropertyService
+          .getFavouritePropertyIdsByUserId(user.getId());
 
       Map<String, Object> response = new HashMap<>();
       response.put("token", token);
+      response.put("favouritePropertyIds", favouritePropertyIds);
 
       return ResponseEntity.ok(response);
     } catch (Exception e) {

@@ -24,7 +24,7 @@ public class Land {
   @JoinColumn(name = "land_type_id", nullable = false)
   private LandType landType;
 
-  @OneToMany(mappedBy = "land")
+  @OneToMany(mappedBy = "land", cascade = CascadeType.ALL)
   private Set<LandCharacteristicMapping> landCharacteristicMappings;
 
   // Getters and Setters

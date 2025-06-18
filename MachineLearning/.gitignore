@@ -1,5 +1,11 @@
 *.csv
 *.pmml
+*.pkl
+*.bin
+*.model
+*.onnx
+*.pt
 
-/HouseValuation
-/LandValuation
+/RealEstatePrediction/PredictLightGBM.ipynb
+/RealEstatePrediction/PredictRandomForest.ipynb
+/RealEstatePrediction/PredictXGBoost.ipynb

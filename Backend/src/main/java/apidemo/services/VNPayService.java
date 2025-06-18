@@ -1,8 +1,8 @@
 package apidemo.services;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import apidemo.config.VNPayConfig;
 import apidemo.models.PaymentRequest;
 
 import javax.crypto.Mac;
@@ -22,26 +22,11 @@ import java.util.TimeZone;
 @Service
 public class VNPayService {
 
-  @Value("${vnpay.tmnCode}")
-  private String vnpTmnCode;
+  private final VNPayConfig vnPayConfig;
 
-  @Value("${vnpay.secretKey}")
-  private String vnpSecretKey;
-
-  @Value("${vnpay.version}")
-  private String vnpVersion;
-
-  @Value("${vnpay.command}")
-  private String vnpCommand;
-
-  @Value("${vnpay.currCode}")
-  private String vnpCurrCode;
-
-  @Value("${vnpay.paymentUrl}")
-  private String vnpPaymentUrl;
-
-  @Value("${vnpay.timeZone}")
-  private String timeZone;
+  public VNPayService(VNPayConfig vnPayConfig) {
+    this.vnPayConfig = vnPayConfig;
+  }
 
   public String generatePaymentUrl(PaymentRequest request, String ipAddress) {
     try {
@@ -58,12 +43,12 @@ public class VNPayService {
 
       // Create parameter map
       Map<String, String> vnpParams = new HashMap<>();
-      vnpParams.put("vnp_Version", vnpVersion);
-      vnpParams.put("vnp_Command", vnpCommand);
-      vnpParams.put("vnp_TmnCode", vnpTmnCode);
+      vnpParams.put("vnp_Version", vnPayConfig.getVersion());
+      vnpParams.put("vnp_Command", vnPayConfig.getCommand());
+      vnpParams.put("vnp_TmnCode", vnPayConfig.getTmnCode());
       vnpParams.put("vnp_Amount", String.valueOf(vnpAmount));
       vnpParams.put("vnp_CreateDate", createDate);
-      vnpParams.put("vnp_CurrCode", vnpCurrCode);
+      vnpParams.put("vnp_CurrCode", vnPayConfig.getCurrCode());
       vnpParams.put("vnp_IpAddr", ipAddress);
       vnpParams.put("vnp_Locale", "vn");
       vnpParams.put("vnp_OrderInfo", request.getOrderInfo());
@@ -105,9 +90,9 @@ public class VNPayService {
       }
 
       String queryUrl = query.toString();
-      String vnpSecureHash = hmacSHA512(vnpSecretKey, hashData.toString());
+      String vnpSecureHash = hmacSHA512(vnPayConfig.getSecretKey(), hashData.toString());
       queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
-      String paymentUrl = vnpPaymentUrl + "?" + queryUrl;
+      String paymentUrl = vnPayConfig.getPaymentUrl() + "?" + queryUrl;
 
       return paymentUrl;
     } catch (Exception e) {

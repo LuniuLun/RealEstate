@@ -1,11 +1,14 @@
 package apidemo.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,11 @@ import apidemo.models.LandCharacteristicMapping;
 import apidemo.models.Property;
 import apidemo.repositories.LandCharacteristicMappingRepository;
 import apidemo.repositories.LandCharacteristicRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 @Service
 public class LandService {
@@ -53,6 +61,31 @@ public class LandService {
 
       landCharacteristicsCache.remove(savedLand);
     }
+  }
+
+  public void landFilters(List<Predicate> predicates, Map<String, String> filters,
+      CriteriaBuilder criteriaBuilder, Root<Property> root) {
+    Join<Property, Land> landJoin = root.join("land", JoinType.INNER);
+
+    Optional.ofNullable(filters.get("landType"))
+        .map(Object::toString)
+        .map(Integer::parseInt)
+        .ifPresent(landTypeId -> predicates.add(criteriaBuilder.equal(landJoin.get("landType").get("id"), landTypeId)));
+
+    // "landCharacteristics"
+    Optional.ofNullable(filters.get("landCharacteristics"))
+        .map(value -> Arrays.stream(value.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .map(Integer::parseInt)
+            .collect(Collectors.toList()))
+        .ifPresent(characteristicIds -> characteristicIds.forEach(characteristicId -> {
+          Join<Land, LandCharacteristicMapping> characteristicMappingJoin = landJoin.join("landCharacteristicMappings",
+              JoinType.INNER);
+          Join<LandCharacteristicMapping, LandCharacteristic> characteristicJoin = characteristicMappingJoin
+              .join("landCharacteristic", JoinType.INNER);
+          predicates.add(criteriaBuilder.equal(characteristicJoin.get("id"), characteristicId));
+        }));
   }
 
   /**

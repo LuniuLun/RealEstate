@@ -9,9 +9,11 @@ import apidemo.models.User;
 
 public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
-  Optional<User> findByUsername(String username);
-
   Optional<User> findByEmail(String email);
 
   Optional<User> findByPhone(String phone);
+
+  boolean existsByEmailAndIdNot(String email, Integer id);
+
+  boolean existsByPhoneAndIdNot(String phone, Integer id);
 }

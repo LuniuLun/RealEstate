@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.2.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
+    <relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>apidemo</groupId>
 	<artifactId>Springboot</artifactId>
@@ -14,7 +14,7 @@
 	<name>Springboot</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -29,11 +29,6 @@
 			<groupId>org.mindrot</groupId>
 			<artifactId>jbcrypt</artifactId>
 			<version>0.4</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.mysql</groupId>
@@ -57,28 +52,18 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.6</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
-		<dependency>
-			<groupId>com.google.firebase</groupId>
-			<artifactId>firebase-admin</artifactId>
-			<version>6.14.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.cloud</groupId>
-			<artifactId>google-cloud-storage</artifactId>
-			<version>1.96.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mindrot</groupId>
-			<artifactId>jbcrypt</artifactId>
-			<version>0.4</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.jpmml/pmml-evaluator -->
 		<dependency>
 			<groupId>org.jpmml</groupId>
 			<artifactId>pmml-evaluator-metro</artifactId>
 			<version>1.7.1</version>
 		</dependency>
+    <!-- https://mvnrepository.com/artifact/org.jpmml/pmml-model -->
+    <dependency>
+        <groupId>org.jpmml</groupId>
+        <artifactId>pmml-model</artifactId>
+        <version>1.7.1</version>
+    </dependency>
 		<!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
 		<dependency>
 			<groupId>com.auth0</groupId>
@@ -91,10 +76,38 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 			<version>3.4.2</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+    <dependency>
+      <groupId>com.microsoft.onnxruntime</groupId>
+      <artifactId>onnxruntime</artifactId>
+      <version>1.15.1</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/ai.djl.onnxruntime/onnxruntime-engine -->
+    <dependency>
+        <groupId>ai.djl.onnxruntime</groupId>
+        <artifactId>onnxruntime-engine</artifactId>
+        <version>0.32.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/s3 -->
+    <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>s3</artifactId>
+        <version>2.20.26</version>
+    </dependency>
 	</dependencies>
 	<build>
 		<plugins>
+      <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.11.0</version>
+      <configuration>
+        <release>17</release>
+      </configuration>
+    </plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -108,5 +121,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
+    <finalName>backend-real-estate-app</finalName>
 	</build>
 </project>

@@ -3,8 +3,10 @@ package apidemo.models;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
 
   @Id
@@ -16,8 +18,11 @@ public class User {
   @JoinColumn(name = "role_id", nullable = false)
   private Role role;
 
-  @Column(nullable = false, unique = true, length = 50)
-  private String username;
+  @Column(name = "is_enabled", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
+  private Boolean isEnabled = true;
+
+  @Column(nullable = false, length = 100)
+  private String fullName;
 
   @Column(nullable = false, unique = true, length = 100)
   private String email;
@@ -28,13 +33,12 @@ public class User {
   @Column(nullable = false, unique = true, length = 11)
   private String phone;
 
-  @Column(nullable = false, length = 255)
-  private String address;
-
-  @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+  @Column(name = "created_at", nullable = false, updatable = false)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime createdAt;
 
-  @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+  @Column(name = "updated_at", nullable = false)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime updatedAt;
 
   @PrePersist
@@ -65,12 +69,20 @@ public class User {
     this.role = role;
   }
 
-  public String getUsername() {
-    return username;
+  public Boolean getIsEnabled() {
+    return isEnabled;
   }
 
-  public void setUsername(String username) {
-    this.username = username;
+  public void setIsEnabled(Boolean isEnabled) {
+    this.isEnabled = isEnabled;
+  }
+
+  public String getFullName() {
+    return fullName;
+  }
+
+  public void setFullName(String fullName) {
+    this.fullName = fullName;
   }
 
   public String getEmail() {
@@ -95,14 +107,6 @@ public class User {
 
   public void setPhone(String phone) {
     this.phone = phone;
-  }
-
-  public String getAddress() {
-    return address;
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
   }
 
   public LocalDateTime getCreatedAt() {

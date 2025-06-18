@@ -1,34 +1,80 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from 'react-router-dom'
+import { authStore } from '@stores'
+import { DefaultLayout, PersonalLayout } from '@layout'
+import { RoleName } from '@type/models'
+import ProtectedRoute from './routes/ProtectedRoute'
+import Home from '@pages/Home/Home'
+import Users from '@pages/Users'
+import ListingProperty from '@pages/ListingProperty'
+import Register from '@pages/Register'
+import Login from '@pages/Login'
+import DetailPost from '@pages/DetailPost'
+import PropertyForm from '@pages/PropertyForm'
+import Profile from '@pages/Profile'
+import MyPosts from '@pages/MyPosts'
+import Upgrade from '@pages/Upgrade'
+import TransactionHistory from '@pages/TransactionHistory'
+import AllPosts from '@pages/AllPosts'
+import SavedPost from '@pages/SavedPosts'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const token = authStore((state) => state.token)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Routes>
+      <Route path='register' element={<Register />} />
+      <Route path='login' element={<Login />} />
+      <Route path='/' element={<DefaultLayout />}>
+        <Route index element={<Home />} />
+        <Route path='property-listings' element={<ListingProperty />} />
+        <Route path='property-detail/:id' element={<DetailPost />} />
+
+        <Route
+          element={
+            <ProtectedRoute
+              isAllowed={!!token}
+              userRoles={token?.user?.role?.name}
+              requiredRole={[RoleName.CUSTOMER, RoleName.BROKER, RoleName.ADMIN]}
+              redirectPath='/login'
+            />
+          }
+        >
+          <Route path='new-property' element={<PropertyForm />} />
+          <Route path='my-posts/update/:id' element={<PropertyForm />} />
+          <Route path='personal/upgrade' element={<Upgrade />} />
+        </Route>
+      </Route>
+      <Route
+        element={
+          <ProtectedRoute
+            isAllowed={!!token}
+            userRoles={token?.user?.role?.name}
+            requiredRole={[RoleName.CUSTOMER, RoleName.BROKER, RoleName.ADMIN]}
+            redirectPath='/'
+          />
+        }
+      >
+        <Route path='personal' element={<PersonalLayout />}>
+          <Route index element={<Profile />} />
+          <Route path='my-posts' element={<MyPosts />} />
+          <Route path='transactions' element={<TransactionHistory />} />
+          <Route path='saved-posts' element={<SavedPost />} />
+          <Route
+            element={
+              <ProtectedRoute
+                isAllowed={!!token}
+                userRoles={token?.user?.role?.name}
+                requiredRole={[RoleName.ADMIN]}
+                redirectPath='/'
+              />
+            }
+          >
+            <Route path='posts' element={<AllPosts />} />
+            <Route path='users' element={<Users />} />
+          </Route>
+        </Route>
+      </Route>
+    </Routes>
   )
 }
 

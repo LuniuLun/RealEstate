@@ -1,4 +1,11 @@
-serviceAccountKey.json
-*csv
 application.properties
 application.yml
+serviceAccountKey.json
+*.pmml
+*.pkl
+*.onnx
+*.csv
+*.model
+*.bin
+*.pt
+*.json

@@ -43,7 +43,7 @@ public class JwtService {
     Date expiryDate = new Date(System.currentTimeMillis() + jwtExpiration * 1000);
 
     String jwtToken = JWT.create()
-        .withSubject(user.getUsername())
+        .withSubject(user.getPhone())
         .withClaim("userId", user.getId())
         .withClaim("role", user.getRole().getName().toString())
         .withIssuedAt(new Date())
@@ -66,10 +66,10 @@ public class JwtService {
   public boolean validateToken(String token, User user) {
     try {
       DecodedJWT decodedJWT = verifyToken(token);
-      String username = decodedJWT.getSubject();
+      String phone = decodedJWT.getSubject();
       Date expirationDate = decodedJWT.getExpiresAt();
 
-      return (username.equals(user.getUsername()) &&
+      return (phone.equals(user.getPhone()) &&
           expirationDate.after(new Date()) &&
           isTokenInDatabase(token));
     } catch (JWTVerificationException exception) {
@@ -102,7 +102,7 @@ public class JwtService {
     }
   }
 
-  // Extract username from token
+  // Extract phone from token
   public String extractUsername(String token) {
     try {
       DecodedJWT decodedJWT = verifyToken(token);

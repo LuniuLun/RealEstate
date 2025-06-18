@@ -1,11 +1,15 @@
 package apidemo.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,9 +17,16 @@ import org.springframework.stereotype.Service;
 import apidemo.models.House;
 import apidemo.models.HouseCharacteristic;
 import apidemo.models.HouseCharacteristicMapping;
+import apidemo.models.HouseType;
 import apidemo.models.Property;
 import apidemo.repositories.HouseCharacteristicMappingRepository;
 import apidemo.repositories.HouseCharacteristicRepository;
+import apidemo.repositories.HouseTypeRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 @Service
 public class HouseService {
@@ -25,6 +36,9 @@ public class HouseService {
 
   @Autowired
   private HouseCharacteristicMappingRepository houseCharacteristicMappingRepository;
+
+  @Autowired
+  private HouseTypeRepository houseTypeRepository;
 
   // Cache to temporarily store house characteristic IDs during transaction
   private final Map<House, List<Integer>> houseCharacteristicsCache = new HashMap<>();
@@ -72,6 +86,42 @@ public class HouseService {
     return houseCharacteristicIds;
   }
 
+  public void houseFilters(List<Predicate> predicates, Map<String, String> filters,
+      CriteriaBuilder criteriaBuilder, Root<Property> root) {
+    Join<Property, House> houseJoin = root.join("house", JoinType.INNER);
+
+    Stream.of("bedrooms", "toilets", "floors", "furnishedStatus", "houseType")
+        .forEach(key -> Optional.ofNullable(filters.get(key))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .map(value -> {
+              switch (key) {
+                case "furnishedStatus":
+                  return criteriaBuilder.equal(houseJoin.get("furnishedStatus").get("id"), Integer.parseInt(value));
+                case "houseType":
+                  return criteriaBuilder.equal(houseJoin.get("houseType").get("id"), Integer.parseInt(value));
+                default:
+                  return criteriaBuilder.equal(houseJoin.get(key), Integer.parseInt(value));
+              }
+            })
+            .ifPresent(predicates::add));
+
+    // houseCharacteristics
+    Optional.ofNullable(filters.get("houseCharacteristics"))
+        .map(value -> Arrays.stream(value.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .map(Integer::parseInt)
+            .collect(Collectors.toList()))
+        .ifPresent(characteristicIds -> characteristicIds.forEach(characteristicId -> {
+          Join<House, HouseCharacteristicMapping> characteristicMappingJoin = houseJoin
+              .join("houseCharacteristicMappings", JoinType.INNER);
+          Join<HouseCharacteristicMapping, HouseCharacteristic> characteristicJoin = characteristicMappingJoin
+              .join("houseCharacteristic", JoinType.INNER);
+          predicates.add(criteriaBuilder.equal(characteristicJoin.get("id"), characteristicId));
+        }));
+  }
+
   /**
    * Creates and saves house characteristic mappings
    */
@@ -105,6 +155,12 @@ public class HouseService {
     existingHouse.setFloors(newHouse.getFloors());
     existingHouse.setFurnishedStatus(newHouse.getFurnishedStatus());
     existingHouse.setToilets(newHouse.getToilets());
+
+    if (newHouse.getHouseType() != null && newHouse.getHouseType().getId() != null) {
+      HouseType houseType = houseTypeRepository.findById(newHouse.getHouseType().getId())
+          .orElseThrow(() -> new RuntimeException("House type not found with id: " + newHouse.getHouseType().getId()));
+      existingHouse.setHouseType(houseType);
+    }
 
     if (newHouse.getHouseCharacteristicMappings() != null) {
       // Clear existing mappings

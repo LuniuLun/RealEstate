@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -32,16 +34,19 @@ public class Property {
   @Column(nullable = false, length = 100)
   private String title;
 
-  @Column(nullable = false, columnDefinition = "TEXT")
+  @Column(nullable = false, length = 10000)
   private String description;
 
   @Column(nullable = false, length = 50)
   private String region;
 
+  @Column(name = "district_name", nullable = false, length = 50)
+  private String districtName;
+
   @Column(name = "ward_name", nullable = false, length = 50)
   private String wardName;
 
-  @Column(name = "street_name", nullable = false, length = 100)
+  @Column(name = "street_name", nullable = true, length = 100)
   private String streetName;
 
   @Column(nullable = false)
@@ -73,9 +78,11 @@ public class Property {
   private BigDecimal price;
 
   @Column(name = "created_at", nullable = false, updatable = false)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime createdAt;
 
   @Column(name = "updated_at", nullable = false)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime updatedAt;
 
   @OneToOne(mappedBy = "property", cascade = CascadeType.ALL)
@@ -158,6 +165,14 @@ public class Property {
 
   public void setRegion(String region) {
     this.region = region;
+  }
+
+  public String getDistrictName() {
+    return districtName;
+  }
+
+  public void setDistrictName(String districtName) {
+    this.districtName = districtName;
   }
 
   public String getWardName() {

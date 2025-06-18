@@ -8,16 +8,17 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
 public class TransactionHistoryService {
+
   private final TransactionHistoryRepository transactionHistoryRepository;
   private final UserService userService;
   private final Filter filter = new Filter();
@@ -28,13 +29,19 @@ public class TransactionHistoryService {
     this.userService = userService;
   }
 
-  public List<TransactionHistory> getAllTransactions(Integer limit, Integer page, String sortBy,
+  public Map<String, Object> getAllTransactions(Integer limit, Integer page, String sortBy,
       String typeOfSort, Map<String, String> filters) {
     Pageable pageRequest = filter.createPageRequest(limit, page, sortBy, typeOfSort);
-    return transactionHistoryRepository.findAll(createSpecification(filters), pageRequest).getContent();
+    Page<TransactionHistory> pageResult = transactionHistoryRepository.findAll(createSpecification(filters),
+        pageRequest);
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("transactions", pageResult.getContent());
+    response.put("total", pageResult.getTotalElements());
+    return response;
   }
 
-  public List<TransactionHistory> getTransactionsByUserId(Integer userId, Integer limit, Integer page,
+  public Map<String, Object> getTransactionsByUserId(Integer userId, Integer limit, Integer page,
       String sortBy, String typeOfSort, Map<String, String> filters) {
     User user = userService.getUserById(userId);
     Pageable pageRequest = filter.createPageRequest(limit, page, sortBy, typeOfSort);
@@ -42,11 +49,16 @@ public class TransactionHistoryService {
     Map<String, String> combinedFilters = new HashMap<>(filters);
     combinedFilters.remove("userId");
 
-    return transactionHistoryRepository.findAll(
+    Page<TransactionHistory> pageResult = transactionHistoryRepository.findAll(
         (root, query, cb) -> cb.and(
             cb.equal(root.get("user"), user),
             applyFilters(root, cb, combinedFilters)),
-        pageRequest).getContent();
+        pageRequest);
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("transactions", pageResult.getContent());
+    response.put("total", pageResult.getTotalElements());
+    return response;
   }
 
   private Specification<TransactionHistory> createSpecification(Map<String, String> filters) {
@@ -96,5 +108,4 @@ public class TransactionHistoryService {
   public void deleteTransaction(Integer transactionId) {
     transactionHistoryRepository.delete(getTransactionById(transactionId));
   }
-
 }
