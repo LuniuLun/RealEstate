@@ -121,7 +121,8 @@ const LandForm = ({ initialData }: ILandFormProps) => {
   const fetchCoordinates = (streetName?: string) => {
     let fullAddress = streetName ? `${streetName}, ` : ''
     if (region && districtName && wardName) {
-      fullAddress += `${wardName}, ${districtName}, ${region}, Vietnam`
+      // fullAddress += `${wardName}, ${districtName}, ${region}, Vietnam`
+      fullAddress += `${wardName}, ${region}, Vietnam`
 
       getCoordinatesMutation.mutate(fullAddress, {
         onSuccess: (response) => {
